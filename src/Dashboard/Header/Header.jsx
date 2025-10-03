@@ -1,7 +1,16 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import { clearCurrentUser } from '../../Components/Auth/userStore'
 import './Header.css'
 
 export const Header = () => {
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    clearCurrentUser()
+    navigate('/login')
+  }
+
   return (
     <div className='header'>
         <div className="name">
@@ -17,7 +26,7 @@ export const Header = () => {
             </div>
         <div className="logout">
             <div className="menu-option">Raise disputes</div>
-            <div className="menu-option logout">Log Out</div>
+            <div onClick={handleLogout} className="menu-option logout">Log Out</div>
         </div>
     </div>
   )

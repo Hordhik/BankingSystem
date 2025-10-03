@@ -21,6 +21,7 @@
     border: 1px solid #EAEAEA;
     background: #FFF;
     gap: 6px;
+    cursor: pointer;
 }
 
 .name .logo{
