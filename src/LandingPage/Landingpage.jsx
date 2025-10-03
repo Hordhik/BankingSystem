@@ -1,7 +1,12 @@
 import React from 'react'
+import { Header } from '../Dashboard/Header/Header'
+import './Landingpage.css'
 
 export const Landingpage = () => {
   return (
-    <div>Landingpage</div>
+    <div className='landingpage'>
+        <Header></Header>
+    </div>
+
   )
 }

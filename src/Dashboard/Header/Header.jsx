@@ -9,7 +9,8 @@ export const Header = () => {
             <div className="id">hordhik.reddy@ybl</div>
         </div>
         <div className="menu">
-            <div className="menu-option active">Accounts</div>
+          <div className="menu-option active">Home</div>
+            <div className="menu-option">Accounts</div>
             <div className="menu-option">Credit Card</div>
             <div className="menu-option">Transfer Funds</div>
             <div className="menu-option">Loans</div>
