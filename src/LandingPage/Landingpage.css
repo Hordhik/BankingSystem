@@ -1,0 +1,50 @@
+.hero-content {
+    padding: 130px;
+    text-align: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.hero-content h1 {
+    font-size: 24px;
+    height: 17px;
+    width: 600px;
+    color: #000000;
+    font-weight: 600;
+    font-family: "Nunito", sans-serif;
+    line-height: 100%;
+    margin-bottom: 25px;
+}
+
+.hero-content h2 {
+    width: 472px;
+    height: 38px;
+    color : #808080;
+    font-weight: 500;
+    font-size: 20px;
+}
+.button-container {
+    display: flex;
+    justify-content: center;
+    width: 320px;
+    height: 36px;
+    align-items: center;
+    gap: 15px;
+}
+
+.button-container button {
+    width: 160px;
+    height: 36px;
+    background: transparent;
+    border-radius: 30px;
+    padding: 10px;
+    border-width:1px ;
+    cursor: pointer;
+    border-color: #c3c3c3;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: "Nunito", sans-serif;
+    margin-top: 50px;
+}
+    

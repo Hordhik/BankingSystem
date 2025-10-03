@@ -7,11 +7,19 @@ import './Header.css';
 export const Header = ({ isLoggedIn, userName }) => {
   return (
     <div className='header'>
-      <div className="name">
-        <div className="logo"></div>
-        {/* Only show the user ID if they are logged in */}
-        {isLoggedIn && <div className="id">{userName}</div>}
-      </div>
+          {isLoggedIn ? (
+            <>
+            <div className="name">
+            <div className="logo"></div>
+              <div className="id">{userName}</div>
+            </div>
+            </>
+          ) : (
+            <>
+              <div className='fluit_logo'>FLUIT</div>
+            </>
+          )}
+  
 
       <div className="menu">
         {/* Show different menu items based on login status */}

@@ -1,16 +1,23 @@
 // src/LandingPage/Landingpage.jsx
 
 import React from 'react';
-// Corrected import path
 import { Header } from '../components/Header/Header';
 import './Landingpage.css';
 
 export const Landingpage = () => {
   return (
-    <div className='landingpage'>
-      {/* Pass props to show the logged-out version */}
+    <>
       <Header isLoggedIn={false} />
-      {/* You can add the rest of your landing page content here */}
-    </div>
+
+      <div className="hero-content">
+        <h1>Your Money, Your Control — Anytime, Anywhere</h1>
+        <h2>Digital-first banking with bank-grade security and 24/7 support</h2>
+        
+        <div className="button-container">
+          <button>Open Your Account</button>
+          <button>Explore Features</button>
+        </div>
+      </div>
+    </>
   );
 };
