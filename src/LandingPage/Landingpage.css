@@ -1,5 +1,5 @@
 .hero-content {
-    padding: 130px;
+    margin-top: 130px;
     text-align: center;
     align-items: center;
     display: flex;
@@ -39,12 +39,11 @@
     background: transparent;
     border-radius: 30px;
     padding: 10px;
-    border-width:1px ;
+    border-width: 1px;
     cursor: pointer;
     border-color: #c3c3c3;
     font-size: 12px;
     font-weight: 500;
-    font-family: "Nunito", sans-serif;
     margin-top: 50px;
 }
-    
+
