@@ -1,11 +1,107 @@
 body{
     background-color: #F6F6F6;
 }
+
 .dashboard{
     display: flex;
-    padding: 114px 120px 50px 120px;
+    width: 100vw;
+    height: 100vh;
+}
+
+.side-bar{
+    width: 22%;
+    display: flex;
     flex-direction: column;
+    background-color: #FFFFFF;
+    padding: 18px;
+    border-right: 1px solid #EAEAEA;
+    gap: 10px;
+}
+
+.side-bar .profile{
+    display: flex;
+    padding: 10px;
     align-items: center;
-    gap: 50px;
-    position: relative;
+    border-radius: 18px;
+    gap: 10px;
+    background: #F6F6F6;
+}
+
+.side-bar .essentials-tabs, .side-bar .operationals-tabs{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tab{
+    display: flex;
+    gap: 8px;
+    height: 40px;
+    padding: 0px 6px 0px 12px;
+    border-radius: 14px;
+    font-size: 14px;
+    align-items: center;
+}
+
+.tab.active{
+    background: #F6F6F6;
+}
+
+.essentials-tabs img{
+    width: 22px;
+    height: 22px;
+}
+
+.profile img{
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #FFF;
+}
+
+.main-content{
+    width: 78%;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content .top-bar{
+    display: flex;
+    height: 54px;
+    padding: 14px 18px;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #EAEAEA;
+    background: #FFF;
+}
+
+.top-bar .kyc{
+    display: flex;
+    height: 36px;
+    padding: 15px 16px;
+    align-items: center;
+    border-radius: 16px;
+    background: #FFFAEE;
+    color: #FF7300;
+    font-family: Inter;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.top-bar .others{
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.others .theme, .others .log-out{
+    display: flex;
+    height: 36px;
+    padding: 15px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    border-radius: 16px;
+    background: #F6F6F6;
 }

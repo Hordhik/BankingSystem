@@ -1,7 +1,7 @@
 import React from 'react';
 // Corrected import paths with file extensions for clarity
-import { Header } from '../components/Header/Header.jsx';
-import { CardsSection } from '../components/CardsSection/CardsSection.jsx';
+import { Header } from './Header/Header.jsx';
+import { CardsSection } from './CardsSection/CardsSection.jsx';
 import './Landingpage.css';
 
 export const Landingpage = () => {

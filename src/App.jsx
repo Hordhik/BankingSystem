@@ -7,7 +7,7 @@ import React, { useState } from 'react'; // Import useState
 
 function App() {
   // Example: Use state to simulate login
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(true);
 
   return (
     <>
