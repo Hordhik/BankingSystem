@@ -1,0 +1,93 @@
+/* === Cards Section Styles === */
+.cards-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* --- Tabs / Toggle Switch --- */
+.tabs-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  background-color: #ffffff;
+  width: 200px;
+  padding: 6px;
+  height: 50px;
+  gap :8px;
+  border-radius: 50px;
+  /* if not taking so much space so m-t: -800px */
+  margin-top: -800px; 
+  margin-bottom: 20px
+}
+
+.tab-button {
+  border: none;
+  background: #ffffff ;
+  padding: 10px 24px;
+  font-weight: 600;
+  width: 135px;
+  color:#808080;
+  border-radius: 50px;
+  height: 36px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab-button.active {
+  background-color: #F6F6F6;
+  color: #000000;
+}
+
+/* --- Card Grid Layout --- */
+.cards-grid {
+  display: flex;
+  justify-content: center;
+  direction: column;
+  gap: 2rem;
+  flex-wrap: wrap; 
+}
+
+/* --- Individual Card Styling --- */
+.card {
+  border-radius: 16px;
+  padding: 8px;
+  height: 275px;
+  width: 325px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  text-align: left;
+}
+
+.card-image {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 20px rgba(197, 203, 255, 0.1);
+}
+
+.card-name {
+  font-size:20px;
+  color: #000;
+  font-weight: 600;
+}
+
+.card-tagline {
+  font-size: 16px;
+  color: #555e68;
+  margin-top: -220px;
+}
+
+.benefits-title {
+  margin-top: -200px;
+}
+
+.benefits-list {
+  list-style-type: none; 
+  padding-left: 0;
+  margin-top: -225px;
+  color: #555e68;
+}
+
+.benefits-list li {
+  margin-top: -210px;
+}
