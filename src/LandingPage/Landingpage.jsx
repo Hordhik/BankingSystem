@@ -3,6 +3,7 @@ import React from 'react';
 import { Header } from './Header/Header.jsx';
 import { CardsSection } from './CardsSection/CardsSection.jsx';
 import { FlowchartSection } from './FlowchartSection/FlowchartSection';
+import { FeaturesSection } from './FeaturesSection/FeaturesSection';
 import './Landingpage.css';
 
 export const Landingpage = () => {
@@ -22,6 +23,8 @@ export const Landingpage = () => {
       <CardsSection />
 
       <FlowchartSection />
+
+      <FeaturesSection />
 
     </div>
   );
