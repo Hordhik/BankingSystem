@@ -23,3 +23,5 @@ export const Landingpage = () => {
     </div>
   );
 };
+
+export default Landingpage;

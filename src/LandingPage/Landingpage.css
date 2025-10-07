@@ -47,4 +47,20 @@
     font-size: 12px;
     font-weight: 500;
 }
+.menu-option {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.menu-option:hover {
+  color: black;
+}
+
+.logout .menu-option {
+  cursor: pointer;
+}
+
+.logout .menu-option:hover {
+  color: black;
+}
 
