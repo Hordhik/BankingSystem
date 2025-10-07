@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import emailIcon from '../assets/email.png'
 import passwordIcon from '../assets/password.png'
@@ -118,6 +118,6 @@ const SignUpPage = () => {
   )
 }
 
-export default SignUpPage
+export default SignUpPage;
 
 
