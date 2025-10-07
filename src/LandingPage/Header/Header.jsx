@@ -1,28 +1,39 @@
-// src/components/Header/Header.jsx
-
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Header.css';
 
-// Accept `isLoggedIn` and `userName` as props
 export const Header = ({ isLoggedIn, userName }) => {
+  const navigate = useNavigate();
+
+  const handleLogin = () => {
+    navigate('/login');
+  };
+
+  const handleSignUp = () => {
+    navigate('/signup');
+  };
+
+  const handleLogout = () => {
+    // Add any logout logic here
+    navigate('/login');
+  };
+
   return (
     <div className='header'>
-          {isLoggedIn ? (
-            <>
-            <div className="name">
+      {isLoggedIn ? (
+        <>
+          <div className="name">
             <div className="logo"></div>
-              <div className="id">{userName}</div>
-            </div>
-            </>
-          ) : (
-            <>
-              <div className='fluit_logo'>FLUIT</div>
-            </>
-          )}
-  
+            <div className="id">{userName}</div>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className='fluit_logo'>FLUIT</div>
+        </>
+      )}
 
       <div className="menu">
-        {/* Show different menu items based on login status */}
         {isLoggedIn ? (
           <>
             <div className="menu-option active">Accounts</div>
@@ -43,16 +54,15 @@ export const Header = ({ isLoggedIn, userName }) => {
       </div>
 
       <div className="logout">
-        {/* Show "Log Out" or "Log In" based on login status */}
         {isLoggedIn ? (
           <>
             <div className="menu-option">Raise disputes</div>
-            <div className="menu-option logout">Log Out</div>
+            <div className="menu-option logout" onClick={handleLogout}>Log Out</div>
           </>
         ) : (
           <>
-            <div className="menu-option">Sign Up</div>
-            <div className="menu-option logout">Log In</div>
+            <div className="menu-option" onClick={handleSignUp}>Sign Up</div>
+            <div className="menu-option logout" onClick={handleLogin}>Log In</div>
           </>
         )}
       </div>
