@@ -1,0 +1,92 @@
+/* === Cards Section Styles === */
+.cards-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* --- Tabs / Toggle Switch --- */
+.tabs-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  background-color: #ffffff;
+  width: 200px;
+  padding: 6px;
+  height: 50px;
+  gap :8px;
+  border-radius: 50px;
+  margin-bottom: 16px;
+}
+
+.tab-button {
+  border: none;
+  background: #ffffff ;
+  padding: 10px 24px;
+  font-weight: 600;
+  width: 135px;
+  color:#808080;
+  border-radius: 50px;
+  height: 36px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab-button.active {
+  background-color: #F6F6F6;
+  color: #000000;
+}
+
+/* --- Card Grid Layout --- */
+.cards-grid {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  gap: 20px;
+}
+
+/* --- Individual Card Styling --- */
+.card {
+  border-radius: 16px;
+  width: 325px;
+  box-shadow: 0 10px 20px rgba(57, 56, 56, 0.1);
+  padding: 10px;
+}
+
+.card-image {
+  width: 100%;
+  border-radius: 12px;
+  padding: 8px;
+}
+
+.card h3 {
+  font-size:20px;
+  text-align: center;
+  font-weight: 600;
+  padding: 10px;
+}
+
+.card-tagline {
+  font-size: 16px;
+  color: #555e68;
+  padding: 0px 10px;
+}
+
+.benefits-title {
+  font-size: 16px;
+  padding: 10px;
+}
+
+.benefits-list {
+  list-style-type: none; 
+  color: #555e68;
+  line-height: 1.4;
+  padding: 0px 8px;
+}
+
+.benefit-icon {
+  width: 16px; 
+  height: 16px;  
+  stroke-width: 2;
+  margin-right: 8px;
+}

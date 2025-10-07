@@ -1,11 +1,8 @@
 .header {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
     height: 90px;
     padding: 16px 120px 26px 120px;
     display: flex;
+    width: 100%;
     justify-content: space-between;
     align-items: center;
     background-blend-mode: multiply;
@@ -70,3 +67,16 @@
     background: #F6F6F6;
     border: none;
 }
+
+.fluit_logo {
+    width: 109px;
+    height: 28px;
+    font-weight: 800;
+    font-size: 40px;
+    font-family: "Nunito", sans-serif;
+    line-height: 1;
+    margin-bottom: 12px;  
+    padding: 0 8px;
+    letter-spacing: -1px;
+}
+

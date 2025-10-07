@@ -1,0 +1,66 @@
+.landing-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 60px;
+}
+
+.hero-content {
+    text-align: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.hero-content h1 {
+    font-size: 24px;
+    width: 600px;
+    color: #000000;
+    font-weight: 600;
+    font-family: "Nunito", sans-serif;
+}
+
+.hero-content h2 {
+    width: 472px;
+    color : #808080;
+    font-weight: 500;
+    font-size: 20px;
+}
+.button-container {
+    display: flex;
+    justify-content: center;
+    width: 320px;
+    align-items: center;
+    gap: 15px;
+}
+
+.button-container button {
+    width: 160px;
+    height: 36px;
+    background: white;
+    border-radius: 30px;
+    padding: 10px;
+    border-width: 1px;
+    cursor: pointer;
+    border-color: #c3c3c3;
+    font-size: 12px;
+    font-weight: 500;
+}
+.menu-option {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.menu-option:hover {
+  color: black;
+}
+
+.logout .menu-option {
+  cursor: pointer;
+}
+
+.logout .menu-option:hover {
+  color: black;
+}
+
