@@ -8,6 +8,7 @@ import loans from '../assets/icons/loans.svg';
 import offers from '../assets/icons/offers.svg';
 import ticket from '../assets/icons/ticket.svg';
 import settings from '../assets/icons/settings.svg';
+import Payments from './Payments/Payments';
 
 export const Dashboard = () => {
   // State to manage active tabs for both groups
@@ -75,7 +76,7 @@ export const Dashboard = () => {
           </div>
         </div>
         <div className="content">
-          content
+          <Payments/>
         </div>
       </div>
     </div>

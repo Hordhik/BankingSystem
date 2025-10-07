@@ -1,0 +1,82 @@
+.debit-cards{
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    font-size: 24px;
+    color: #333;
+    padding: 30px;
+    gap: 20px;
+    border-radius: 40px;
+    border: 1px solid #EAEAEA;
+    background: #FFF;
+}
+
+.debit-cards img {
+    width: 50%;
+
+}
+
+.debit-cards .details{
+    text-align: start;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.debit-cards .details .sub{
+    color: #808080;
+    font-family: "SF Pro Rounded";
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.debit-cards .details .main{
+    color: #000;
+    font-family: "SF Pro Text";
+    font-size: 28px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.debit-cards .details .btns{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #000;
+    font-family: Inter;
+    font-size: 14px;
+    width: 100%;
+    font-weight: 500;
+}
+
+.debit-cards .details .btns .btn-history,
+.debit-cards .details .btns .btn-transfer
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.debit-cards .details .btns .btn-history{
+    flex: 1;
+}
+
+.debit-cards .details .btns .btn-transfer{
+    flex: 2;
+}
+
+.debit-cards .details .btns .btn-history img,
+.debit-cards .details .btns .btn-transfer img{
+    width: 100%;
+    height: 40px;
+    padding: 6px;
+    border-radius: 10px;
+    border: 1px solid #F3F3F3;
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+}
+
