@@ -16,6 +16,7 @@
   height: 50px;
   gap :8px;
   border-radius: 50px;
+  margin-bottom: 16px;
 }
 
 .tab-button {
@@ -40,38 +41,52 @@
 .cards-grid {
   display: flex;
   justify-content: center;
+  flex-direction: row;
+  gap: 20px;
 }
 
 /* --- Individual Card Styling --- */
 .card {
   border-radius: 16px;
-  padding: 8px;
   width: 325px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-  text-align: left;
+  box-shadow: 0 10px 20px rgba(57, 56, 56, 0.1);
+  padding: 10px;
 }
 
 .card-image {
   width: 100%;
   border-radius: 12px;
-  margin-bottom: 20px;
-  box-shadow: 0 10px 20px rgba(197, 203, 255, 0.1);
+  padding: 8px;
 }
 
-.card-name {
+.card h3 {
   font-size:20px;
-  color: #000;
+  text-align: center;
   font-weight: 600;
+  padding: 10px;
 }
 
 .card-tagline {
   font-size: 16px;
   color: #555e68;
+  padding: 0px 10px;
 }
 
+.benefits-title {
+  font-size: 16px;
+  padding: 10px;
+}
 
 .benefits-list {
   list-style-type: none; 
-  padding-left: 0;
   color: #555e68;
+  line-height: 1.4;
+  padding: 0px 8px;
+}
+
+.benefit-icon {
+  width: 16px; 
+  height: 16px;  
+  stroke-width: 2;
+  margin-right: 8px;
 }
