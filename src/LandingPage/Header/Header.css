@@ -1,11 +1,8 @@
 .header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
     height: 90px;
     padding: 16px 120px 26px 120px;
     display: flex;
+    width: 100%;
     justify-content: space-between;
     align-items: center;
     background-blend-mode: multiply;

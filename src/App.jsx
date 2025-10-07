@@ -6,6 +6,9 @@ import SignUpPage from './Components/LoginPages/SignupPage'
 import { Dashboard } from './Dashboard/Dashboard'
 
 function App() {
+  // Example: Use state to simulate login
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(true);
+
   return (
     <Router>
       <Routes>
