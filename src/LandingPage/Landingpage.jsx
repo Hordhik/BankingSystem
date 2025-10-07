@@ -10,7 +10,7 @@ export const Landingpage = () => {
     <>
       <Header isLoggedIn={false} />
 
-      {/* This <main> tag is the key correction. 
+      {/* This <main> tag is the key correction.
         It wraps all the page content below the header, allowing for proper layout control.
       */}
       <main className="main-content">
