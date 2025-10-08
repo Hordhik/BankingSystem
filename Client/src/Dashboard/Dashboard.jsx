@@ -1,17 +1,18 @@
 import { useState } from 'react';
 import './Dashboard.css';
-import profile_img from '../assets/profile.svg';
-import dashboard from '../assets/icons/dashboard.svg';
-import wallet from '../assets/icons/wallet.svg';
-import card from '../assets/icons/card.svg';
-import loans from '../assets/icons/loans.svg';
-import offers from '../assets/icons/offers.svg';
-import ticket from '../assets/icons/ticket.svg';
-import settings from '../assets/icons/settings.svg';
-import Payments from './Payments/Payments';
+import profile_img from '/src/assets/profile.svg';
+import dashboard from '/src/assets/icons/dashboard.svg';
+import wallet from '/src/assets/icons/wallet.svg';
+import card from '/src/assets/icons/card.svg';
+import loans from '/src/assets/icons/loans.svg';
+import offers from '/src/assets/icons/offers.svg';
+import ticket from '/src/assets/icons/ticket.svg';
+import settings from '/src/assets/icons/settings.svg';
+import Payments from './Payments/Payments.jsx';
+import TransfersPayments from './TransfersPayments/TransfersPayments.jsx';
 
 export const Dashboard = () => {
-  // State to manage active tabs for both groups
+  // State to manage active tabs
   const [activeTab, setActiveTab] = useState("Dashboard");
 
   let essentialsTabs = [
@@ -26,6 +27,21 @@ export const Dashboard = () => {
     { name: "Support Tickets", icon: ticket },
     { name: "Settings", icon: settings },
   ];
+
+  // Helper function to render the correct content based on the active tab
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'Dashboard':
+        return <Payments/>;
+      case 'Transfers & Payments':
+        return <TransfersPayments/>;
+      // You can add cases for other tabs here as you build them
+      // For example: case 'Cards': return <CardsComponent />;
+      default:
+        // A placeholder for tabs that don't have a component yet
+        return <div style={{ padding: '2rem' }}>{activeTab} content will be shown here.</div>;
+    }
+  };
 
   return (
     <div className='dashboard'>
@@ -75,8 +91,9 @@ export const Dashboard = () => {
             </div>
           </div>
         </div>
+        {/* The content will now change based on the selected tab */}
         <div className="content">
-          <Payments/>
+          {renderContent()}
         </div>
       </div>
     </div>
