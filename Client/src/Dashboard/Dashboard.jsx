@@ -12,6 +12,7 @@ import Payments from './Payments/Payments.jsx';
 import { LoansSection } from './LoansSection/LoansSection.jsx';
 import { OffersSection } from './OffersSection/OffersSection.jsx';
 import TransfersPayments from './TransfersPayments/TransfersPayments.jsx';
+import CardsPage from './CardsPage/CardsPage.jsx';
 
 export const Dashboard = () => {
   // State to manage active tabs
@@ -41,6 +42,8 @@ export const Dashboard = () => {
         return <Payments/>;
       case 'Transfers & Payments':
         return <TransfersPayments/>;
+      case 'Cards':
+        return <CardsPage />;
       // You can add cases for other tabs here as you build them
       // For example: case 'Cards': return <CardsComponent />;
       default:
