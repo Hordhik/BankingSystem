@@ -11,6 +11,7 @@ import settings from '/src/assets/icons/settings.svg';
 import Payments from './Payments/Payments.jsx';
 import { LoansSection } from './LoansSection/LoansSection.jsx';
 import { OffersSection } from './OffersSection/OffersSection.jsx';
+import TransfersPayments from './TransfersPayments/TransfersPayments.jsx';
 
 export const Dashboard = () => {
   // State to manage active tabs
@@ -34,11 +35,12 @@ export const Dashboard = () => {
     switch (activeTab) {
       case 'Loans & Investments':
         return <LoansSection />;
-      case 'Dashboard':
-      case 'Transfers & Payments':
-        return <Payments />;
       case 'Pre-Approved Offers':
         return <OffersSection />;
+      case 'Dashboard':
+        return <Payments/>;
+      case 'Transfers & Payments':
+        return <TransfersPayments/>;
       // You can add cases for other tabs here as you build them
       // For example: case 'Cards': return <CardsComponent />;
       default:
