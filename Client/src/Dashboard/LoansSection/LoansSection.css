@@ -1,0 +1,134 @@
+/* src/Dashboard/LoansSection/LoansSection.css */
+
+.loans-section-dashboard {
+  padding: 2rem;
+  background-color: #ffffff;
+  text-align: center;
+  font-family: "Nunito", sans-serif;
+  height: 100%;
+}
+
+.loans-title-dashboard {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 auto 1rem auto;
+}
+
+.loans-subtitle-dashboard {
+  font-size: 1rem;
+  color: #808080;
+  max-width: 450px;
+  margin: 0 auto 2.5rem auto;
+  line-height: 1.6;
+}
+
+/* --- Styles for the Loans/Investments Tabs --- */
+.product-tabs-container {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.product-tab {
+  font-family: "Nunito", sans-serif;
+  border: 1px solid #e1e8ed;
+  background-color: #f9f9f9;
+  padding: 0.6rem 1.5rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #555e68;
+  transition: all 0.2s ease;
+}
+
+.product-tab.active {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  border-color: #1a1a1a;
+}
+/* --- End of Tab Styles --- */
+
+
+.loans-grid-dashboard {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.loan-card-dashboard {
+  background-color: #f9f9f9;
+  border: 1px solid #eaeaea;
+  padding: 2rem;
+  border-radius: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.loan-card-dashboard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+}
+
+.loan-icon-wrapper-dashboard {
+  background-color: #e1e8ed;
+  color: #1a1a1a;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.loan-icon-wrapper-dashboard svg {
+  width: 28px;
+  height: 28px;
+}
+
+.loan-card-dashboard h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 0.75rem 0;
+}
+
+.loan-card-dashboard p {
+  font-size: 0.9rem;
+  color: #555e68;
+  line-height: 1.6;
+  margin: 0 0 1.5rem 0;
+  flex-grow: 1; 
+}
+
+.loan-apply-button-dashboard {
+  font-family: "Nunito", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: #1a1a1a;
+  border: none;
+  border-radius: 999px;
+  padding: 0.6rem 1.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.loan-apply-button-dashboard:hover {
+  background-color: #333333;
+}
+
+@media (max-width: 960px) {
+  .loans-grid-dashboard {
+    grid-template-columns: 1fr;
+  }
+}
+

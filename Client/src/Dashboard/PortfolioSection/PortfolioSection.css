@@ -1,0 +1,67 @@
+/* src/Dashboard/PortfolioSection/PortfolioSection.css */
+
+.portfolio-section-dashboard {
+  padding: 3rem 2rem;
+  font-family: "Nunito", sans-serif;
+  border-top: 1px solid #eaeaea; /* Separates it from the section above */
+  margin-top: 3rem;
+}
+
+.portfolio-title-dashboard {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-align: left;
+  margin: 0 0 1.5rem 0;
+}
+
+.portfolio-table-container {
+  overflow-x: auto; /* Ensures table is responsive */
+}
+
+.portfolio-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.portfolio-table th,
+.portfolio-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.portfolio-table th {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #808080;
+  text-transform: uppercase;
+}
+
+.portfolio-table td {
+  font-size: 1rem;
+  color: #333;
+}
+
+.status-pill {
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.status-active {
+  background-color: #e0f2f1; /* Light Green */
+  color: #00796b;
+}
+
+.status-growing {
+  background-color: #e3f2fd; /* Light Blue */
+  color: #1565c0;
+}
+
+.status-maturing {
+  background-color: #fff3e0; /* Light Orange */
+  color: #e65100;
+}
