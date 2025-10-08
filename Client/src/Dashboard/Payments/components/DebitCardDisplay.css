@@ -1,0 +1,141 @@
+/* src/Dashboard/Payments/components/DebitCardDisplay/DebitCardDisplay.css */
+
+/* Main container for the card and balance */
+.debit-card-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 16px;
+  border: 1px solid #eaeaea;
+}
+
+/* Styles for the card visual */
+.debit-card {
+  width: 100%;
+  max-width: 400px; /* Limits the card's width */
+  aspect-ratio: 1.586 / 1; /* Standard credit card aspect ratio */
+  border-radius: 16px;
+  padding: 1.5rem;
+  color: white;
+  background: linear-gradient(135deg, #2c3e50, #34495e); /* Dark, premium gradient */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+  position: relative;
+  font-family: "Nunito", sans-serif;
+  margin: 0 auto; /* Center the card if container is wider */
+}
+
+.debit-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.debit-card__logo {
+  font-weight: 800;
+  font-size: 1.4rem;
+  letter-spacing: 1px;
+}
+
+.debit-card__chip {
+  width: 45px;
+  height: 35px;
+  background: linear-gradient(135deg, #f1c40f, #e67e22); /* Gold gradient */
+  border-radius: 6px;
+}
+
+.debit-card__number {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.5rem;
+  font-family: 'Space Mono', monospace; /* A common font for card numbers */
+  letter-spacing: 3px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.debit-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-size: 0.9rem;
+}
+
+.debit-card__holder, .debit-card__expiry {
+  display: flex;
+  flex-direction: column;
+}
+
+.debit-card__holder .label, .debit-card__expiry .label {
+  font-size: 0.7rem;
+  color: #bdc3c7;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.debit-card__vendor-logo {
+  height: 30px; /* Controls the height of the SVG logo */
+  width: auto;
+}
+
+/* Styles for the balance display area */
+.card-balance {
+  text-align: center;
+  border-top: 1px solid #eaeaea;
+  padding-top: 1.5rem;
+}
+
+.card-balance__title {
+  font-size: 1rem;
+  color: #808080;
+  margin: 0 0 0.5rem 0;
+  font-weight: 600;
+}
+
+.card-balance__amount {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 1.5rem 0;
+}
+
+.card-balance__actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.card-balance__actions button {
+  background-color: #f0f0f0;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0.6rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.card-balance__actions button:hover {
+  background-color: #e0e0e0;
+}
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+  .debit-card-container {
+    flex-direction: row;
+    align-items: center;
+  }
+  .card-balance {
+    text-align: left;
+    border-top: none;
+    padding-top: 0;
+  }
+  .card-balance__actions {
+    justify-content: flex-start;
+  }
+}
+

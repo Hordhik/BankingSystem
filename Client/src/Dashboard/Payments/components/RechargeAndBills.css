@@ -1,0 +1,71 @@
+/* src/Dashboard/Payments/components/RechargeAndBills/RechargeAndBills.css */
+.recharge-bills-container {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 16px;
+  border: 1px solid #eaeaea;
+  margin-top: 1.5rem;
+}
+
+.recharge-bills__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.recharge-bills__title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.recharge-bills__see-all {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #808080;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.recharge-bills__see-all:hover {
+  color: #1a1a1a;
+}
+
+.recharge-bills__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 1rem;
+}
+
+.bill-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.bill-option__icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background-color: #f0f5f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #1a1a1a;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.bill-option:hover .bill-option__icon {
+  background-color: #e1e8ed;
+  transform: scale(1.05);
+}
+
+.bill-option p {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #555e68;
+  margin: 0;
+}

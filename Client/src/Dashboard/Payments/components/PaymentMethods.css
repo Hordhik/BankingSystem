@@ -1,0 +1,49 @@
+/* src/Dashboard/Payments/components/PaymentMethods/PaymentMethods.css */
+.payment-methods-container {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 16px;
+  border: 1px solid #eaeaea;
+  height: 100%;
+}
+
+.payment-methods__title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 1.5rem 0;
+}
+
+.payment-methods__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.method-card {
+  background-color: #f9f9f9;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.method-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.method-card img {
+  width: 32px;
+  height: 32px;
+}
+
+.method-card p {
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0;
+}

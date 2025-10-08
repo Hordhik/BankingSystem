@@ -1,203 +1,249 @@
+/* src/Dashboard/TransfersPayments/TransfersPayments.css */
+
 .transfers-payments {
-  padding: 24px;
-  background: #f8f9fa;
-  min-height: 100vh;
+  padding: 1.5rem;
+  font-family: "Nunito", sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
 }
 
-.tp-header h2 {
+.tp-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
   color: #1a1a1a;
-  font-size: 24px;
-  margin-bottom: 24px;
 }
 
-/* Card Section Styles */
-.cards-section {
-  margin-bottom: 32px;
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 1.5rem 0;
+  color: #1a1a1a;
 }
 
-.card-wrapper {
-  max-width: 400px;
-}
-
-.credit-card-image {
-  width: 100%;
-  height: auto;
+/* --- Card Display Section --- */
+.card-display-section {
+  background-color: #ffffff;
+  border: 1px solid #eaeaea;
   border-radius: 16px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
 }
 
-.card-details {
-  margin-top: 20px;
+.debit-card {
+  width: 100%;
+  max-width: 350px;
+  aspect-ratio: 1.586 / 1;
+  border-radius: 16px;
+  padding: 1.25rem;
+  color: white;
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+}
+
+.debit-card__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 24px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.debit-card__logo {
+  font-weight: 800;
+  font-size: 1.2rem;
+}
+
+.debit-card__chip {
+  width: 40px;
+  height: 30px;
+  background: linear-gradient(135deg, #f1c40f, #e67e22);
+  border-radius: 6px;
+}
+
+.debit-card__number {
+  font-size: 1.4rem;
+  font-family: 'Space Mono', monospace;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+.debit-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.debit-card__holder {
+  font-size: 0.8rem;
+}
+
+.debit-card__holder .label {
+  font-size: 0.6rem;
+  color: #bdc3c7;
+  display: block;
+}
+
+.card__vendor-logo {
+  height: 25px;
+  width: auto;
+}
+
+.balance-details {
+  width: 100%;
 }
 
 .balance-info h4 {
-  color: #666;
-  margin-bottom: 8px;
-  font-size: 14px;
+  font-size: 1rem;
+  color: #808080;
+  margin: 0 0 0.5rem 0;
 }
 
 .balance-amount {
-  font-size: 24px;
-  font-weight: bold;
+  font-size: 2rem;
+  font-weight: 700;
   color: #1a1a1a;
+  display: block;
+  margin-bottom: 1rem;
 }
 
 .card-actions {
   display: flex;
-  gap: 12px;
+  gap: 0.75rem;
 }
 
 .action-btn {
-  padding: 8px 16px;
-  border: none;
+  background-color: #f0f0f0;
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
-  background: #f0f2f5;
-  color: #1a1a1a;
+  padding: 0.6rem 1.25rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background-color 0.2s;
 }
 
 .action-btn:hover {
-  background: #e4e6e9;
-  transform: translateY(-1px);
+  background-color: #e0e0e0;
 }
 
-/* Transfer Section Styles */
-.transfer-section {
-  margin: 32px 0;
-}
-
-.section-header h3 {
-  color: #1a1a1a;
-  margin-bottom: 20px;
-  font-size: 20px;
+/* --- Transfer Options Section --- */
+.transfer-options-section {
+  background-color: #ffffff;
+  border: 1px solid #eaeaea;
+  border-radius: 16px;
+  padding: 1.5rem;
 }
 
 .transfer-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
 }
 
 .transfer-option {
-  background: white;
+  background-color: #f9f9f9;
+  border: 1px solid #f0f0f0;
   border-radius: 12px;
-  padding: 20px;
+  padding: 1rem;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 1rem;
   cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .transfer-option:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.08);
 }
 
 .option-icon {
+  background-color: #e1e8ed;
+  color: #1a1a1a;
   width: 48px;
   height: 48px;
+  border-radius: 50%;
   display: flex;
-  align-items: center;
   justify-content: center;
-  background: #f8f9fa;
-  border-radius: 12px;
-  font-size: 24px;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .option-details h4 {
-  margin: 0;
-  color: #1a1a1a;
-  font-size: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
 }
 
 .option-details p {
-  margin: 4px 0 0;
-  color: #666;
-  font-size: 14px;
+  font-size: 0.85rem;
+  color: #555e68;
+  margin: 0;
 }
 
-/* Recent Activities Styles */
-.activities-table {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+/* --- Recent Activities Section --- */
+.recent-activities-section {
+  background-color: #ffffff;
+  border: 1px solid #eaeaea;
+  border-radius: 16px;
+  padding: 1.5rem;
 }
 
-table {
+.activities-table-wrapper {
+  overflow-x: auto;
+}
+
+.activities-table-wrapper table {
   width: 100%;
   border-collapse: collapse;
 }
 
-th, td {
-  padding: 16px;
+.activities-table-wrapper th, 
+.activities-table-wrapper td {
+  padding: 0.75rem 1rem;
   text-align: left;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #f0f0f0;
+  white-space: nowrap;
 }
 
-th {
-  color: #666;
-  font-weight: 500;
-  font-size: 14px;
+.activities-table-wrapper th {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #808080;
+  text-transform: uppercase;
 }
 
-td {
-  color: #1a1a1a;
+.activities-table-wrapper tbody tr:last-child td {
+  border-bottom: none;
 }
 
-.amount {
-  font-weight: 500;
-}
+.amount-positive { color: #34c759; font-weight: 600; }
+.amount-negative { color: #ff3b30; font-weight: 600; }
 
-.amount.negative {
-  color: #dc3545;
-}
-
-.amount.positive {
-  color: #28a745;
-}
-
-.status {
-  padding: 6px 12px;
-  font-size: 14px;
+.status-pill {
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
   display: inline-block;
 }
 
-.status.completed {
-  color: #28a745;
-}
+.status-completed { background-color: #e0f2f1; color: #00796b; }
+.status-failed { background-color: #ffebee; color: #c62828; }
 
-.status.failed {
-  color: #dc3545;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .transfers-payments {
-    padding: 16px;
+/* --- Responsive Design --- */
+@media (max-width: 960px) {
+  .card-display-section {
+    flex-direction: column;
+    align-items: stretch;
   }
-  
   .transfer-grid {
     grid-template-columns: 1fr;
   }
-  
-  .activities-table {
-    overflow-x: auto;
-  }
-  
-  .card-details {
-    flex-direction: column;
-    gap: 16px;
-    text-align: center;
-  }
 }
+

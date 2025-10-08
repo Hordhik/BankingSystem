@@ -1,0 +1,71 @@
+/* src/Dashboard/Payments/components/RecentActivities/RecentActivities.css */
+.activities-container {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 16px;
+  border: 1px solid #eaeaea;
+}
+
+.activities__title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 1.5rem 0;
+}
+
+.activities__table-wrapper {
+  overflow-x: auto; /* For responsiveness */
+}
+
+.activities-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.activities-table th, .activities-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.activities-table th {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #808080;
+  text-transform: uppercase;
+}
+
+.activities-table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+.amount--positive {
+  color: #34c759;
+}
+
+.amount--negative {
+  color: #ff3b30;
+}
+
+.status-pill {
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.status--completed {
+  background-color: #e0f2f1;
+  color: #00796b;
+}
+
+.status--failed {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.status--pending {
+  background-color: #fff3e0;
+  color: #e65100;
+}
