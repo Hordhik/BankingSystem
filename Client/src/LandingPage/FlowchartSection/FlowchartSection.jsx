@@ -33,7 +33,7 @@ export const FlowchartSection = () => {
   ];
 
   return (
-    <section className="flowchart-section">
+    <section  className="flowchart-section">
       <h2 className="flowchart-title">Start Banking in Just 3 Steps.</h2>
       <p className="flowchart-subtitle">
         No long queues. No paperwork. 100% digital onboarding.
