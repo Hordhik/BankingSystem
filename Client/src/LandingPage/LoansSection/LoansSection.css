@@ -1,0 +1,110 @@
+.loans-section {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+}
+
+.loans-container {
+    max-width: 80rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    text-align: center;
+}
+
+.section-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: #111827;
+}
+
+.section-subtitle {
+    margin-top: 1rem;
+    font-size: 1.125rem;
+    color: #4B5563;
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.loans-grid {
+    margin-top: 3rem;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem;
+    text-align: left;
+}
+
+.loan-card {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 1rem;
+    border: 1px solid #F3F4F6;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+.loan-card:hover {
+    transform: translateY(-0.5rem);
+    border: 2px solid #E5E7EB;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.loan-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.loan-description {
+    margin-top: 0.5rem;
+    color: #4B5563;
+}
+
+.features-list {
+    margin-top: 1.5rem;
+    list-style: none;
+    padding: 0;
+}
+
+.features-list li + li {
+    margin-top: 1rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+}
+
+.feature-icon {
+    width: 1rem;
+    height: 1rem;
+    color: #10B981;
+    margin-right: 0.75rem;
+}
+
+.feature-text {
+    color: #374151;
+}
+
+.explore-button-container {
+    margin-top: 4rem;
+}
+
+.explore-button {
+    display: inline-block;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.5rem;
+    padding: 0.75rem 2rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.explore-button:hover {
+    background-color: #F3F4F6;
+}
+

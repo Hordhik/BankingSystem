@@ -1,70 +1,75 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Header.css';
 
-export const Header = ({ isLoggedIn, userName }) => {
+export const Header = () => {
   const navigate = useNavigate();
+  const [active, setActive] = useState('cards-section');
+  const ratiosRef = useRef({});
 
-  const handleLogin = () => {
-    navigate('/login');
+  // map menu labels to section ids present on the landing page
+  const menu = [
+    { label: 'Accounts', id: 'accounts-section' },
+    { label: 'Credit Card', id: 'cards-section' },
+    { label: 'Features', id: 'features-section' },
+    { label: 'Loans', id: 'loans-section' },
+    { label: 'Offers', id: 'offers-section' },
+  ];
+
+  const handleScroll = (id) => {
+    const section = document.getElementById(id);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setActive(id);
+    }
   };
 
-  const handleSignUp = () => {
-    navigate('/signup');
-  };
+  useEffect(() => {
+    // Observe the unique section ids
+    const ids = Array.from(new Set(menu.map((m) => m.id)));
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          ratiosRef.current[entry.target.id] = entry.intersectionRatio;
+        });
+        // pick highest intersection ratio as active
+        const best = ids
+          .map((id) => ({ id, ratio: ratiosRef.current[id] || 0 }))
+          .sort((a, b) => b.ratio - a.ratio)[0];
+        if (best && best.id) setActive(best.id);
+      },
+      { threshold: [0, 0.25, 0.5, 0.75, 1] }
+    );
 
-  const handleLogout = () => {
-    // Add any logout logic here
-    navigate('/login');
-  };
+    ids.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleLogin = () => navigate('/login');
+  const handleSignUp = () => navigate('/signup');
 
   return (
     <div className='header'>
-      {isLoggedIn ? (
-        <>
-          <div className="name">
-            <div className="logo"></div>
-            <div className="id">{userName}</div>
-          </div>
-        </>
-      ) : (
-        <>
-          <div className='fluit_logo'>FLUIT</div>
-        </>
-      )}
-
+      <div className='fluit_logo'>FLUIT</div>
       <div className="menu">
-        {isLoggedIn ? (
-          <>
-            <div className="menu-option active">Accounts</div>
-            <div className="menu-option">Credit Card</div>
-            <div className="menu-option">Transfer Funds</div>
-            <div className="menu-option">Loans</div>
-            <div className="menu-option">Offers</div>
-          </>
-        ) : (
-          <>
-            <div className="menu-option active">Home</div>
-            <div className="menu-option">Cards</div>
-            <div className="menu-option">Transfer Funds</div>
-            <div className="menu-option">Loans</div>
-            <div className="menu-option">Offers</div>
-          </>
-        )}
+        {menu.map((m) => (
+          <div
+            key={m.label}
+            className={`menu-option ${active === m.id ? 'active' : ''}`}
+            onClick={() => handleScroll(m.id)}
+          >
+            {m.label}
+          </div>
+        ))}
       </div>
-
       <div className="logout">
-        {isLoggedIn ? (
-          <>
-            <div className="menu-option">Raise disputes</div>
-            <div className="menu-option logout" onClick={handleLogout}>Log Out</div>
-          </>
-        ) : (
-          <>
-            <div className="menu-option" onClick={handleSignUp}>Sign Up</div>
-            <div className="menu-option logout" onClick={handleLogin}>Log In</div>
-          </>
-        )}
+        <div className="menu-option" onClick={handleSignUp}>Sign Up</div>
+        <div className="menu-option logout" onClick={handleLogin}>Log In</div>
       </div>
     </div>
   );

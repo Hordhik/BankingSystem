@@ -1,13 +1,21 @@
 .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
     height: 90px;
     padding: 16px 120px 26px 120px;
     display: flex;
     width: 100%;
     justify-content: space-between;
     align-items: center;
+    background: #FFF;
     background-blend-mode: multiply;
     backdrop-filter: blur(20px);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    z-index: 1000;
 }
+
 
 .header .name, .header .menu, .header .logout{
     display: flex;
