@@ -13,6 +13,8 @@ import { LoansSection } from './LoansSection/LoansSection.jsx';
 import { OffersSection } from './OffersSection/OffersSection.jsx';
 import TransfersPayments from './TransfersPayments/TransfersPayments.jsx';
 import CardsPage from './CardsPage/CardsPage.jsx';
+import Settings from './Settings/Settings.jsx';
+import SupportTickets from './SupportTicket/SupportTicket.jsx';
 
 export const Dashboard = () => {
   // State to manage active tabs
@@ -44,6 +46,10 @@ export const Dashboard = () => {
         return <TransfersPayments/>;
       case 'Cards':
         return <CardsPage />;
+      case 'Settings':
+        return <Settings/>
+      case "Support Tickets":
+        return <SupportTickets/>
       // You can add cases for other tabs here as you build them
       // For example: case 'Cards': return <CardsComponent />;
       default:
@@ -57,7 +63,7 @@ export const Dashboard = () => {
       <div className="side-bar">
         <div className="profile">
           <img src={profile_img} alt="" />
-          <p>preethi.real@fluit</p>
+          <p>hordhik.manikant@fluit</p>
         </div>
         <div className="essentials-tabs">
           <p>Essentials</p>

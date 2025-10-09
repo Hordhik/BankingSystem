@@ -1,0 +1,232 @@
+/* Reusing the same font and variables for a consistent look */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --text-color-primary: #111827;
+    --text-color-secondary: #374151;
+    --text-color-muted: #6b7280;
+    --border-color: #e5e7eb;
+    --background-color: #ffffff;
+    --background-color-light: #f9fafb;
+    --button-bg-color: #111827;
+    --button-text-color: #ffffff;
+    --status-open-bg: #e0f2fe;
+    --status-open-text: #0284c7;
+    --status-closed-bg: #f3f4f6;
+    --status-closed-text: #4b5563;
+}
+
+.support-tickets-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--background-color);
+}
+
+.main-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-color-primary);
+    margin: 0;
+}
+
+/* Page Header */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.create-ticket-button {
+    background-color: var(--button-bg-color);
+    color: var(--button-text-color);
+    font-size: 0.95rem;
+    font-weight: 600;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.create-ticket-button:hover {
+    opacity: 0.85;
+}
+
+/* Ticket List */
+.tickets-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.ticket-card {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    background-color: #fff;
+}
+
+.ticket-card:hover {
+    border-color: #d1d5db;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+}
+
+.ticket-icon {
+    color: var(--text-color-muted);
+    font-size: 1.5rem;
+}
+
+.ticket-details {
+    flex-grow: 1;
+}
+
+.ticket-id {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-color-muted);
+}
+
+.ticket-subject {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+    margin: 0.25rem 0;
+}
+
+.ticket-date {
+    font-size: 0.85rem;
+    color: var(--text-color-muted);
+    margin: 0;
+}
+
+.ticket-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-open {
+    background-color: var(--status-open-bg);
+    color: var(--status-open-text);
+}
+
+.status-closed {
+    background-color: var(--status-closed-bg);
+    color: var(--status-closed-text);
+}
+
+
+/* Create Ticket Form */
+.create-ticket-form {
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.form-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    position: relative;
+}
+.form-header h2 {
+    font-size: 1.5rem;
+    margin: 0 0 0.5rem 0;
+}
+.form-header p {
+    color: var(--text-color-muted);
+    margin: 0;
+}
+.back-button {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: none;
+    border: none;
+    color: var(--text-color-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-weight: 500;
+}
+
+/* Using same form styles as Settings for consistency */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+.form-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-color-secondary);
+    margin-bottom: 0.5rem;
+}
+.form-group input, 
+.form-group select, 
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 1rem;
+    color: var(--text-color-primary);
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    font-family: 'Inter', sans-serif;
+}
+.form-group input:focus, 
+.form-group select:focus, 
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--text-color-primary);
+    box-shadow: 0 0 0 2px rgba(17, 24, 39, 0.1);
+}
+.form-group textarea {
+    resize: vertical;
+}
+
+.form-actions {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+.save-button {
+    background-color: var(--button-bg-color);
+    color: var(--button-text-color);
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    padding: 0.85rem 2rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+.cancel-button {
+    background-color: #fff;
+    color: var(--text-color-secondary);
+    border: 1px solid var(--border-color);
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.85rem 2rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+.cancel-button:hover {
+    background-color: var(--background-color-light);
+}
