@@ -1,14 +1,15 @@
 import React from 'react';
 import './OffersSection.css';
 
-// A comprehensive icon library for all offer types
 const IconLibrary = {
-  // Pre-approved offer icons
   loan: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>,
   card: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>,
   investment: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>,
   
-  // Exclusive partner offer icons
+<<<<<<< Updated upstream
+=======
+  
+>>>>>>> Stashed changes
   travel: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>,
   dining: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2M7 2v20M17 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/></svg>,
   shopping: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>,
@@ -20,14 +21,20 @@ const IconLibrary = {
 };
 
 export const OffersSection = () => {
-  // Data for the detailed, pre-approved offers
+<<<<<<< Updated upstream
+=======
+  
+>>>>>>> Stashed changes
   const preApprovedOffers = [
     { icon: 'loan', title: 'Pre-Approved Personal Loan', description: 'Get up to ₹5,00,000 instantly with zero paperwork and flexible tenure options.' },
     { icon: 'card', title: 'Upgrade to Zenith Credit Card', description: 'You are eligible for a complimentary upgrade to our premium Zenith card with enhanced rewards.' },
     { icon: 'investment', title: 'Special Rate Fixed Deposit', description: 'Enjoy a special interest rate of 7.5% p.a. on fixed deposits for a limited time.' },
   ];
 
-  // Data for the grid of exclusive partner offers
+<<<<<<< Updated upstream
+=======
+  
+>>>>>>> Stashed changes
   const exclusiveOffers = [
     { icon: 'travel', title: 'Travel Boost', description: 'Earn 5x points on all flight bookings.' },
     { icon: 'dining', title: 'Dining Delights', description: '20% off at partner restaurants.' },
@@ -39,7 +46,10 @@ export const OffersSection = () => {
 
   return (
     <div className="offers-page-container">
-      {/* --- Pre-Approved Offers Section --- */}
+<<<<<<< Updated upstream
+=======
+      
+>>>>>>> Stashed changes
       <section className="pre-approved-section">
         <h2 className="section-title">Pre-Approved For You</h2>
         <p className="section-subtitle">
@@ -62,8 +72,11 @@ export const OffersSection = () => {
           })}
         </div>
       </section>
+<<<<<<< Updated upstream
+=======
 
-      {/* --- Exclusive Partner Offers Section --- */}
+      
+>>>>>>> Stashed changes
       <section className="exclusive-offers-section">
         <h2 className="section-title">Exclusive Partner Offers</h2>
         <div className="exclusive-offers-grid">

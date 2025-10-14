@@ -1,7 +1,6 @@
 import React from 'react';
 import './DebitCardDisplay.css';
 
-// SVG for a generic Visa logo
 const VisaLogoSVG = () => (
   <svg className="debit-card__vendor-logo" viewBox="0 0 100 62" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect width="100" height="62" fill="transparent"/>

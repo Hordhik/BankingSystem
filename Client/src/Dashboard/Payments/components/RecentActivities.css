@@ -1,4 +1,4 @@
-/* src/Dashboard/Payments/components/RecentActivities/RecentActivities.css */
+
 .activities-container {
   background-color: #ffffff;
   padding: 1.5rem;
@@ -13,7 +13,7 @@
 }
 
 .activities__table-wrapper {
-  overflow-x: auto; /* For responsiveness */
+  overflow-x: auto;
 }
 
 .activities-table {

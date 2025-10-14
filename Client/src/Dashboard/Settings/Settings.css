@@ -1,39 +1,25 @@
-/* A modern font, if you don't have it, it will fall back to sans-serif */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-:root {
-    --text-color-primary: #111827;
-    --text-color-secondary: #374151;
-    --text-color-muted: #6b7280;
-    --border-color: #d1d5db;
-    --background-color: #ffffff;
-    --button-bg-color: #111827;
-    --button-text-color: #ffffff;
-}
-
 .account-settings-container {
     max-width: 800px;
     margin: 2rem auto;
     padding: 2rem;
     font-family: 'Inter', sans-serif;
-    background-color: var(--background-color);
+    background-color: #111827;
 }
 
 .main-title {
     font-size: 2rem;
     font-weight: 700;
-    color: var(--text-color-primary);
+    color: #111827;
     margin: 0 0 2rem 0;
 }
 
-/* Settings Navigation Tabs */
 .settings-navigation {
     display: flex;
     gap: 2rem;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid #d1d5db;
     padding-bottom: 1rem;
     margin-bottom: 2rem;
-    flex-wrap: wrap; /* For responsiveness */
+    flex-wrap: wrap; 
 }
 
 .nav-button {
@@ -42,7 +28,7 @@
     gap: 0.5rem;
     font-size: 0.95rem;
     font-weight: 500;
-    color: var(--text-color-muted);
+    color: #6b7280;
     background: none;
     border: none;
     padding: 0.5rem 0;
@@ -52,15 +38,14 @@
 }
 
 .nav-button:hover {
-    color: var(--text-color-primary);
+    color: #111827;
 }
 
 .nav-button.active {
-    color: var(--text-color-primary);
-    border-bottom-color: var(--text-color-primary);
+    color: #111827;
+    border-bottom-color: #111827;
 }
 
-/* Profile Picture Section */
 .profile-picture-section {
     margin-bottom: 2.5rem;
 }
@@ -84,8 +69,8 @@
     right: 0;
     width: 28px;
     height: 28px;
-    background-color: var(--background-color);
-    border: 1px solid var(--border-color);
+    background-color: #ffffff;
+    border: 1px solid #d1d5db;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -94,7 +79,6 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-/* Form Styles */
 .form-row {
     display: flex;
     gap: 1.5rem;
@@ -109,24 +93,24 @@
     display: block;
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--text-color-secondary);
+    color: #374151;
     margin-bottom: 0.5rem;
 }
 
 .form-group input {
     width: 100%;
     padding: 0.75rem 1rem;
-    border: 1px solid var(--border-color);
+    border: 1px solid #d1d5db;
     border-radius: 6px;
     font-size: 1rem;
-    color: var(--text-color-primary);
-    box-sizing: border-box; /* Important for consistent sizing */
+    color: #111827;
+    box-sizing: border-box; 
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .form-group input:focus {
     outline: none;
-    border-color: var(--text-color-primary);
+    border-color: #111827;
     box-shadow: 0 0 0 2px rgba(17, 24, 39, 0.1);
 }
 
@@ -135,8 +119,8 @@
 }
 
 .save-button {
-    background-color: var(--button-bg-color);
-    color: var(--button-text-color);
+    background-color: #111827;
+    color: #ffffff;
     font-size: 1rem;
     font-weight: 600;
     border: none;
@@ -150,7 +134,6 @@
     opacity: 0.85;
 }
 
-/* Section Divider */
 .form-section {
     padding-bottom: 2rem;
     margin-bottom: 2rem;
@@ -164,28 +147,27 @@
 .section-title {
     font-size: 1.25rem;
     font-weight: 600;
-    color: var(--text-color-primary);
+    color: #111827;
     margin-bottom: 0.5rem;
 }
 
 .section-description {
     font-size: 0.9rem;
-    color: var(--text-color-muted);
+    color: #6b7280;
     margin-top: 0;
     margin-bottom: 1.5rem;
 }
 
 .save-button.secondary {
     background-color: #ffffff;
-    color: var(--text-color-secondary);
-    border: 1px solid var(--border-color);
+    color: #374151;
+    border: 1px solid #d1d5db;
 }
 .save-button.secondary:hover {
     background-color: #f9fafb;
     opacity: 1;
 }
 
-/* Notifications Tab Styles */
 .notification-row {
     display: flex;
     justify-content: space-between;
@@ -199,15 +181,14 @@
 .notification-row h4 {
     margin: 0 0 0.25rem 0;
     font-weight: 500;
-    color: var(--text-color-secondary);
+    color: #374151;
 }
 .notification-row p {
     margin: 0;
     font-size: 0.9rem;
-    color: var(--text-color-muted);
+    color: #6b7280;
 }
 
-/* Toggle Switch Component */
 .toggle-switch {
     position: relative;
     display: inline-block;
@@ -250,18 +231,4 @@ input:checked + .slider:before {
 input:disabled + .slider {
     cursor: not-allowed;
     background-color: #e5e7eb;
-}
-
-/* Responsive adjustments for smaller screens */
-@media (max-width: 600px) {
-    .form-row {
-        flex-direction: column;
-        gap: 0;
-    }
-    .main-title {
-        font-size: 1.75rem;
-    }
-    .account-settings-container {
-        padding: 1rem;
-    }
 }

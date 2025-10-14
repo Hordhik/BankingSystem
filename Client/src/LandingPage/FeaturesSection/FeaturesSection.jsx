@@ -1,10 +1,10 @@
-// src/components/FeaturesSection/FeaturesSection.jsx
-
+<<<<<<< Updated upstream
+=======
 import React from 'react';
+>>>>>>> Stashed changes
 import './FeaturesSection.css';
 
 export const FeaturesSection = () => {
-  // An array to hold the data for each feature
   const featuresData = [
     {
       title: 'Instant Transfers',

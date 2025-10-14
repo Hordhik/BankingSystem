@@ -15,10 +15,7 @@ const ForgotPassword = () => {
 
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
-    
-    // Use findUserByEmail from userStore to check if email exists
     const user = findUserByEmail(email);
-    
     if (user) {
       setShowPasswordFields(true);
       setMessage('Please enter your new password');
@@ -31,29 +28,24 @@ const ForgotPassword = () => {
 
   const handlePasswordReset = async (e) => {
     e.preventDefault();
-    
     if (newPassword !== confirmPassword) {
       setMessage('Passwords do not match');
       setIsSuccess(false);
       return;
     }
-
     if (newPassword.length < 6) {
       setMessage('Password must be at least 6 characters long');
       setIsSuccess(false);
       return;
     }
-
     try {
-      // Use updatePassword from userStore to update the password
       updatePassword(email, newPassword);
-      
       setMessage('Password updated successfully! Redirecting to login...');
       setIsSuccess(true);
       setTimeout(() => {
         navigate('/login');
       }, 2000);
-    } catch (error) {
+    } catch (e) {
       setMessage('Failed to update password. Please try again.');
       setIsSuccess(false);
     }

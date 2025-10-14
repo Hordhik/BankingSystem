@@ -1,9 +1,7 @@
-/* src/Dashboard/PortfolioSection/PortfolioSection.css */
-
 .portfolio-section-dashboard {
   padding: 3rem 2rem;
   font-family: "Nunito", sans-serif;
-  border-top: 1px solid #eaeaea; /* Separates it from the section above */
+  border-top: 1px solid #eaeaea; 
   margin-top: 3rem;
 }
 
@@ -16,7 +14,7 @@
 }
 
 .portfolio-table-container {
-  overflow-x: auto; /* Ensures table is responsive */
+  overflow-x: auto; 
 }
 
 .portfolio-table {
@@ -52,16 +50,16 @@
 }
 
 .status-active {
-  background-color: #e0f2f1; /* Light Green */
+  background-color: #e0f2f1; 
   color: #00796b;
 }
 
 .status-growing {
-  background-color: #e3f2fd; /* Light Blue */
+  background-color: #e3f2fd; 
   color: #1565c0;
 }
 
 .status-maturing {
-  background-color: #fff3e0; /* Light Orange */
+  background-color: #fff3e0; 
   color: #e65100;
 }

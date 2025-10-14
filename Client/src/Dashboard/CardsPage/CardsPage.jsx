@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import './CardsPage.css';
 
-// Reusable Visa Logo SVG
 const VisaLogoSVG = () => (
   <svg className="card-vendor-logo" viewBox="0 0 100 62" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect width="100" height="62" fill="transparent"/>
@@ -13,7 +12,10 @@ const VisaLogoSVG = () => (
 const CardsPage = () => {
   const [activeTab, setActiveTab] = useState('details');
 
-  // Data for the new "Apply for Cards" section
+<<<<<<< Updated upstream
+=======
+  
+>>>>>>> Stashed changes
   const availableCards = [
     { title: 'Elevate Credit Card', description: 'Earn cashback and rewards on every spend.' },
     { title: 'Zenith Credit Card', description: 'Unlock premium travel and lifestyle benefits.' },
@@ -73,7 +75,10 @@ const CardsPage = () => {
         </div>
       </div>
 
-      {/* NEW "Apply for More Cards" Section */}
+<<<<<<< Updated upstream
+=======
+      
+>>>>>>> Stashed changes
       <section className="apply-for-cards-section">
         <h3>Explore & Apply for More Cards</h3>
         <div className="apply-cards-grid">
