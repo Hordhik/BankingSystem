@@ -1,7 +1,6 @@
 
 .debit-card-container {
   display: flex;
-  flex-direction: column;
   gap: 1.5rem;
   background-color: #ffffff;
   padding: 1.5rem;
@@ -79,7 +78,6 @@
 
 .card-balance {
   text-align: center;
-  border-top: 1px solid #eaeaea;
   padding-top: 1.5rem;
 }
 

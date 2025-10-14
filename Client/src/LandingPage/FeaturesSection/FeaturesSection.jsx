@@ -1,7 +1,3 @@
-<<<<<<< Updated upstream
-=======
-import React from 'react';
->>>>>>> Stashed changes
 import './FeaturesSection.css';
 
 export const FeaturesSection = () => {

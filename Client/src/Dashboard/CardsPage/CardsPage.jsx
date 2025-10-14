@@ -12,10 +12,7 @@ const VisaLogoSVG = () => (
 const CardsPage = () => {
   const [activeTab, setActiveTab] = useState('details');
 
-<<<<<<< Updated upstream
-=======
   
->>>>>>> Stashed changes
   const availableCards = [
     { title: 'Elevate Credit Card', description: 'Earn cashback and rewards on every spend.' },
     { title: 'Zenith Credit Card', description: 'Unlock premium travel and lifestyle benefits.' },
@@ -75,10 +72,7 @@ const CardsPage = () => {
         </div>
       </div>
 
-<<<<<<< Updated upstream
-=======
       
->>>>>>> Stashed changes
       <section className="apply-for-cards-section">
         <h3>Explore & Apply for More Cards</h3>
         <div className="apply-cards-grid">

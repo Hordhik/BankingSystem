@@ -6,10 +6,7 @@ export const Header = () => {
   const navigate = useNavigate();
   const [active, setActive] = useState('credit-card');
   const ratiosRef = useRef({});
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
   const menu = [
     { label: 'Accounts', id: 'accounts' },
     { label: 'Cards', id: 'credit-card' },

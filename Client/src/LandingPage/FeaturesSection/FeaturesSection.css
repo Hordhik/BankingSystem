@@ -23,12 +23,7 @@
   background-color: #ffffff;
   padding: 2rem;
   border-radius: 16px;
-<<<<<<< Updated upstream
-  display: flex;
-  flex-direction: column;
-=======
   text-align: center;
->>>>>>> Stashed changes
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s, box-shadow 0.2s;
   display: flex;
@@ -52,8 +47,4 @@
   color: #555e68;
   line-height: 1.6;
   margin: 0;
-<<<<<<< Updated upstream
 }
-=======
-}
->>>>>>> Stashed changes

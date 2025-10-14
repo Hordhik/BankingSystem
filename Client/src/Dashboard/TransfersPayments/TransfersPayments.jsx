@@ -1,7 +1,4 @@
-<<<<<<< Updated upstream
-=======
 import React from 'react';
->>>>>>> Stashed changes
 import '/src/Dashboard/TransfersPayments/TransfersPayments.css';
 
 const VisaLogoSVG = () => (
@@ -23,10 +20,7 @@ const Icon = ({ type }) => {
 };
 
 const TransfersPayments = () => {
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
   const transferOptions = [
     { type: 'card', title: 'Transfer via Card Number', description: 'Send money to other cards' },
     { type: 'bank', title: 'Transfer to Other Banks', description: 'NEFT/RTGS/IMPS' },

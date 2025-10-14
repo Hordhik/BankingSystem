@@ -23,7 +23,7 @@ export const DebitCardDisplay = () => {
         <div className="debit-card__footer">
           <div className="debit-card__holder">
             <span className="label">Card Holder</span>
-            <span>Hordhik Mnikat</span>
+            <span>Hordhik Manikant</span>
           </div>
           <VisaLogoSVG />
         </div>
