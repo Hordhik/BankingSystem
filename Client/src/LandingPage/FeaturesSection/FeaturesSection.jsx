@@ -1,10 +1,6 @@
-// src/components/FeaturesSection/FeaturesSection.jsx
-
-import React from 'react';
 import './FeaturesSection.css';
 
 export const FeaturesSection = () => {
-  // An array to hold the data for each feature
   const featuresData = [
     {
       title: 'Instant Transfers',

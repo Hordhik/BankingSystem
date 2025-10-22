@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import '/src/Dashboard/TransfersPayments/TransfersPayments.css';
 
-// This is the SVG for the Visa logo
 const VisaLogoSVG = () => (
   <svg className="card__vendor-logo" viewBox="0 0 100 62" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect width="100" height="62" fill="transparent"/>
@@ -10,7 +9,6 @@ const VisaLogoSVG = () => (
   </svg>
 );
 
-// A small library of professional SVG icons
 const Icon = ({ type }) => {
   const icons = {
     card: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>,
@@ -22,7 +20,7 @@ const Icon = ({ type }) => {
 };
 
 const TransfersPayments = () => {
-  // Data for rendering the UI, making it easy to update
+
   const transferOptions = [
     { type: 'card', title: 'Transfer via Card Number', description: 'Send money to other cards' },
     { type: 'bank', title: 'Transfer to Other Banks', description: 'NEFT/RTGS/IMPS' },
@@ -127,4 +125,3 @@ const TransfersPayments = () => {
 };
 
 export default TransfersPayments;
-

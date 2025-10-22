@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
 import './Settings.css';
-
-// Import icons from Feather Icons
 import { FiUser, FiLock, FiBell, FiEdit2 } from 'react-icons/fi';
 
-// --- PERSONAL INFO TAB ---
 const PersonalInfoTab = () => (
     <div className="settings-form-container">
         <div className="profile-picture-section">
@@ -109,8 +106,6 @@ const PasswordSecurityTab = () => (
     </div>
 );
 
-
-// --- NOTIFICATIONS TAB ---
 const NotificationsTab = () => (
     <div className="settings-form-container">
         <div className="form-section">
@@ -152,8 +147,6 @@ const NotificationsTab = () => (
     </div>
 );
 
-
-// --- MAIN SETTINGS COMPONENT ---
 const Settings = () => {
     const [activeTab, setActiveTab] = useState('personal');
 

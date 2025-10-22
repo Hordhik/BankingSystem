@@ -19,7 +19,6 @@ import SupportTickets from './SupportTicket/SupportTicket.jsx';
 import { clearCurrentUser, getCurrentUser } from '../Components/Auth/userStore';
 
 export const Dashboard = () => {
-  // State to manage active tabs
   const [activeTab, setActiveTab] = useState("Dashboard");
   const navigate = useNavigate();
 
@@ -53,7 +52,6 @@ export const Dashboard = () => {
     { name: "Settings", icon: settings },
   ];
 
-  // Helper function to render the correct content based on the active tab
   const renderContent = () => {
     switch (activeTab) {
       case 'Loans & Investments':
@@ -70,10 +68,7 @@ export const Dashboard = () => {
         return <Settings/>
       case "Support Tickets":
         return <SupportTickets/>
-      // You can add cases for other tabs here as you build them
-      // For example: case 'Cards': return <CardsComponent />;
       default:
-        // A placeholder for tabs that don't have a component yet
         return <div style={{ padding: '2rem' }}>{activeTab} content will be shown here.</div>;
     }
   };
@@ -126,7 +121,6 @@ export const Dashboard = () => {
             </div>
           </div>
         </div>
-        {/* The content will now change based on the selected tab */}
         <div className="content">
           {renderContent()}
         </div>

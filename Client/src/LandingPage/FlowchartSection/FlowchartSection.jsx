@@ -1,9 +1,6 @@
-// src/components/FlowchartSection/FlowchartSection.jsx
-
 import React from 'react';
 import './FlowchartSection.css';
 
-// A reusable SVG arrow icon component
 const ArrowIcon = () => (
   <svg
     className="flowchart-arrow"
@@ -24,7 +21,6 @@ const ArrowIcon = () => (
 );
 
 export const FlowchartSection = () => {
-  // Array of steps to display in the flowchart
   const steps = [
     'Create your account online with just your mobile number and email.',
     'Complete e-KYC in minutes with Aadhaar & PAN — no paperwork needed.',
@@ -44,7 +40,6 @@ export const FlowchartSection = () => {
             <div className="flowchart-step">
               <p>{step}</p>
             </div>
-            {/* Don't render an arrow after the last step */}
             {index < steps.length - 1 && <ArrowIcon />}
           </React.Fragment>
         ))}

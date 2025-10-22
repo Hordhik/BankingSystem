@@ -6,6 +6,7 @@ import { FeaturesSection } from './FeaturesSection/FeaturesSection';
 import { LoansSection } from './LoansSection/LoansSection.jsx';
 import { OffersSection } from './OffersSection/offersSection.jsx';
 import './Landingpage.css';
+import { FileX } from 'lucide-react';
 
 export const Landingpage = () => {
   return (
@@ -25,7 +26,7 @@ export const Landingpage = () => {
         <CardsSection />
       </div>
 
-      <div id="features">
+      <div id="features" style={{display:'flex', flexDirection:'column', alignItems:'center', gap:'100px', padding:'4rem 0'}}>
         <FlowchartSection />
         <FeaturesSection />
       </div>

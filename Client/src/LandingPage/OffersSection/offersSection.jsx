@@ -18,34 +18,32 @@ const offerData = [
 
     return (
         <div id="offers-section" className="offers-section">
-            <div className="offers-container">
-                <h2 className="section-title">
-                    Exclusive Offers Just For You
-                </h2>
-                <p className="section-subtitle">
-                    Unlock savings and rewards with your Fluit cards
-                </p>
+            <h2 className="section-title">
+                Exclusive Offers Just For You
+            </h2>
+            <p className="section-subtitle">
+                Unlock savings and rewards with your Fluit cards
+            </p>
 
-                <div className="offers-grid">
-                    {offerData.map((offer, index) => {
-                        const Icon = offer.icon;
-                        return (
-                            <div key={index} className="offer-card">
-                                <div className="icon-wrapper">
-                                    {Icon && <Icon className="offer-icon" />}
-                                </div>
-                                <h3 className="offer-title">{offer.title}</h3>
-                                <p className="offer-description">{offer.description}</p>
+            <div className="offers-grid">
+                {offerData.map((offer, index) => {
+                    const Icon = offer.icon;
+                    return (
+                        <div key={index} className="offer-card">
+                            <div className="icon-wrapper">
+                                {Icon && <Icon className="offer-icon" />}
                             </div>
-                        );
-                    })}
-                </div>
+                            <h3 className="offer-title">{offer.title}</h3>
+                            <p className="offer-description">{offer.description}</p>
+                        </div>
+                    );
+                })}
+            </div>
 
-                <div className="view-all-container">
-                    <a href="#" className="view-all-button">
-                        View All Offers
-                    </a>
-                </div>
+            <div className="view-all-container">
+                <a href="#" className="view-all-button">
+                    View All Offers
+                </a>
             </div>
         </div>
     );

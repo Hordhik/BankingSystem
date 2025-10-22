@@ -4,11 +4,9 @@ import './Header.css';
 
 export const Header = () => {
   const navigate = useNavigate();
-  // default to the credit card section present on landing page
   const [active, setActive] = useState('credit-card');
   const ratiosRef = useRef({});
 
-  // map menu labels to section ids present in Landingpage.jsx
   const menu = [
     { label: 'Accounts', id: 'accounts' },
     { label: 'Cards', id: 'credit-card' },
@@ -20,7 +18,6 @@ export const Header = () => {
   const handleScroll = (id) => {
     const section = document.getElementById(id);
     if (section) {
-      // account for fixed header so target content is not hidden behind it
       const headerEl = document.querySelector('.header');
       const headerHeight = headerEl ? headerEl.offsetHeight : 90;
       const top = window.scrollY + section.getBoundingClientRect().top - headerHeight - 8;
@@ -30,18 +27,14 @@ export const Header = () => {
   };
 
   useEffect(() => {
-    // Observe the unique section ids from the menu so the active menu highlights
     const ids = Array.from(new Set(menu.map((m) => m.id)));
     const headerEl = document.querySelector('.header');
     const headerHeight = headerEl ? headerEl.offsetHeight : 90;
-    // when observing, use rootMargin so that the top of the section is considered
-    // visible only when it's below the fixed header
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           ratiosRef.current[entry.target.id] = entry.intersectionRatio;
         });
-        // pick highest intersection ratio as active
         const best = ids
           .map((id) => ({ id, ratio: ratiosRef.current[id] || 0 }))
           .sort((a, b) => b.ratio - a.ratio)[0];
@@ -56,7 +49,6 @@ export const Header = () => {
     });
 
     return () => observer.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleLogin = () => navigate('/login');

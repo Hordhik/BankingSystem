@@ -1,18 +1,16 @@
-/* src/Dashboard/Payments/Payments.css */
 .payments-container {
   padding: 1.5rem;
-  font-family: "Nunito", sans-serif; /* Using a consistent font */
 }
 
 .payments-grid {
   display: grid;
-  grid-template-columns: 1.5fr 1fr; /* 60% / 40% split */
+  grid-template-columns: 1.5fr 1fr; 
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
 
 @media (max-width: 1024px) {
   .payments-grid {
-    grid-template-columns: 1fr; /* Stack on smaller screens */
+    grid-template-columns: 1fr; 
   }
 }

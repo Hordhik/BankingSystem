@@ -2,7 +2,6 @@ import React from 'react';
 import '/src/Dashboard/PortfolioSection/PortfolioSection.css';
 
 export const PortfolioSection = () => {
-  // Sample data for the user's portfolio
   const portfolioData = [
     {
       product: 'Personal Loan',

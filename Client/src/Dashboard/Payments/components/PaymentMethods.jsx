@@ -1,7 +1,5 @@
 import React from 'react';
 import './PaymentMethods.css';
-
-// Importing icons with clearer, absolute paths
 import wallet from '/src/assets/icons/wallet.svg';
 import card from '/src/assets/icons/card.svg';
 import transfer from '/src/assets/icons/transfer.svg';

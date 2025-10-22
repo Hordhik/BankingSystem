@@ -1,7 +1,6 @@
 import React from 'react';
 import './RecentActivities.css';
 
-// The component now receives the transaction data as a prop
 export const RecentActivities = ({ transactions }) => {
   
   const getStatusClass = (status) => {
@@ -25,7 +24,7 @@ export const RecentActivities = ({ transactions }) => {
         <table className="activities-table">
           <thead>
             <tr>
-              <th>To</th>
+              <th>To / From</th>
               <th>Type</th>
               <th>Date</th>
               <th>Amount</th>

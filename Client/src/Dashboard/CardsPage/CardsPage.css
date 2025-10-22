@@ -1,11 +1,9 @@
-/* src/Dashboard/CardsPage/CardsPage.css */
-
 .cards-page-container {
   padding: 1.5rem;
   font-family: "Nunito", sans-serif;
   display: flex;
   flex-direction: column;
-  gap: 2.5rem; /* Increased gap for better section separation */
+  gap: 2.5rem;
 }
 
 .cards-page-header {
@@ -104,13 +102,12 @@
   width: auto;
 }
 
-/* Card Management Panel */
 .card-management-panel {
   background-color: #fff;
   border: 1px solid #eaeaea;
   border-radius: 16px;
   padding: 1.5rem;
-  min-height: 100%; /* Make it as tall as the card */
+  min-height: 100%; 
 }
 
 .management-tabs {
@@ -175,7 +172,6 @@
   border-radius: 4px;
 }
 
-/* --- Styles for Apply for More Cards Section --- */
 .apply-for-cards-section {
   background-color: #fff;
   border: 1px solid #eaeaea;
@@ -221,7 +217,7 @@
   color: #555e68;
   line-height: 1.6;
   margin: 0 0 1.5rem 0;
-  flex-grow: 1; /* Pushes the button to the bottom */
+  flex-grow: 1; 
 }
 
 .apply-card-item button {
@@ -233,18 +229,9 @@
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s;
-  align-self: flex-start; /* Aligns button to the left */
+  align-self: flex-start; 
 }
 
 .apply-card-item button:hover {
   background-color: #333;
 }
-
-
-/* Responsive Design */
-@media (max-width: 960px) {
-  .card-display-area {
-    grid-template-columns: 1fr;
-  }
-}
-
