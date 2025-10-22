@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 import profile_img from '/src/assets/profile.svg';
 import dashboard from '/src/assets/icons/dashboard.svg';
@@ -15,10 +16,29 @@ import TransfersPayments from './TransfersPayments/TransfersPayments.jsx';
 import CardsPage from './CardsPage/CardsPage.jsx';
 import Settings from './Settings/Settings.jsx';
 import SupportTickets from './SupportTicket/SupportTicket.jsx';
+import { clearCurrentUser, getCurrentUser } from '../Components/Auth/userStore';
 
 export const Dashboard = () => {
   // State to manage active tabs
   const [activeTab, setActiveTab] = useState("Dashboard");
+  const navigate = useNavigate();
+
+  // if there is no current user, redirect to login
+  useEffect(() => {
+    const current = getCurrentUser();
+    if (!current) {
+      navigate('/login');
+    }
+  }, [navigate]);
+
+  const handleLogout = () => {
+    try {
+      clearCurrentUser();
+    } catch (_) {
+      // ignore storage errors
+    }
+    navigate('/login');
+  };
 
   let essentialsTabs = [
     { name: "Dashboard", icon: dashboard },
@@ -102,7 +122,7 @@ export const Dashboard = () => {
               <p>Change Themes</p>
             </div>
             <div className="log-out">
-              <p>Log Out</p>
+              <p role="button" tabIndex={0} onClick={handleLogout} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleLogout(); }}>Log Out</p>
             </div>
           </div>
         </div>

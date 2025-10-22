@@ -105,6 +105,7 @@ body{
     gap: 8px;
     border-radius: 16px;
     background: #F6F6F6;
+    cursor: pointer;
 }
 
 .main-content .content{
