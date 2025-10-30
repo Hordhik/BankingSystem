@@ -1,22 +1,22 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { clearCurrentUser, getCurrentUser } from '../Components/Auth/userStore.js';
+import CardsPage from './CardsPage/CardsPage.jsx';
 import './Dashboard.css';
-import profile_img from '/src/assets/profile.svg';
-import dashboard from '/src/assets/icons/dashboard.svg';
-import wallet from '/src/assets/icons/wallet.svg';
-import card from '/src/assets/icons/card.svg';
-import loans from '/src/assets/icons/loans.svg';
-import offers from '/src/assets/icons/offers.svg';
-import ticket from '/src/assets/icons/ticket.svg';
-import settings from '/src/assets/icons/settings.svg';
-import Payments from './Payments/Payments.jsx';
 import { LoansSection } from './LoansSection/LoansSection.jsx';
 import { OffersSection } from './OffersSection/OffersSection.jsx';
-import TransfersPayments from './TransfersPayments/TransfersPayments.jsx';
-import CardsPage from './CardsPage/CardsPage.jsx';
+import Payments from './Payments/Payments.jsx';
 import Settings from './Settings/Settings.jsx';
 import SupportTickets from './SupportTicket/SupportTicket.jsx';
-import { clearCurrentUser, getCurrentUser } from '../Components/Auth/userStore';
+import TransfersPayments from './TransfersPayments/TransfersPayments.jsx';
+import card from '/src/assets/icons/card.svg';
+import dashboard from '/src/assets/icons/dashboard.svg';
+import loans from '/src/assets/icons/loans.svg';
+import offers from '/src/assets/icons/offers.svg';
+import settings from '/src/assets/icons/settings.svg';
+import ticket from '/src/assets/icons/ticket.svg';
+import wallet from '/src/assets/icons/wallet.svg';
+import profile_img from '/src/assets/profile.svg';
 
 export const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("Dashboard");
@@ -36,7 +36,7 @@ export const Dashboard = () => {
     } catch (_) {
       // ignore storage errors
     }
-    navigate('/login');
+    navigate('/'); // Redirect to landing page (root route)
   };
 
   let essentialsTabs = [

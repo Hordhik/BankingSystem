@@ -1,44 +1,65 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { requestLoginOTP, verifyLoginOTP } from '../../Components/Auth/userStore.js'
 import emailIcon from '../assets/email.png'
 import passwordIcon from '../assets/password.png'
 import personIcon from '../assets/person.png'
-import { setCurrentUser, validateCredentials } from '../Auth/userStore'
 import './loginPage.css'
 
 const LoginPage = () => {
-  const navigate = useNavigate()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
+  const navigate = useNavigate()
+  const [step, setStep] = useState(1) 
+  const [email, setEmail] = useState('')
+  const [otp, setOtp] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = async (event) => {
-    event.preventDefault()
-    setErrorMessage('')
+  const handleRequestOtp = async (event) => {
+    event.preventDefault()
+    setErrorMessage('')
+    setLoading(true)
 
-    if (!email || !password) {
-      setErrorMessage('Please enter both email and password.')
-      return
+    try {
+      await requestLoginOTP(email)
+      setStep(2) // Move to the next step
+    } catch (err) {
+      setErrorMessage(err.message)
     }
-    const ok = validateCredentials(email, password)
-    if (!ok){
-      setErrorMessage('Invalid email or password.')
-      return
-    }
-    setCurrentUser(email)
-    navigate('/dashboard')
+    setLoading(false)
   }
 
-  return (
-    <div className="login-page">
-      <div className="login-card">
-        <div className="login-card__header">
-          <img src={personIcon} alt="User" className="login-card__avatar" />
-          <h1 className="login-card__title">Welcome Back</h1>
-          <p className="login-card__subtitle">Login to your banking account</p>
-        </div>
+  const handleVerifyOtp = async (event) => {
+    event.preventDefault()
+    setErrorMessage('')
+    setLoading(true)
+    
+    try {
+      await verifyLoginOTP(email, otp)
+      navigate('/dashboard') // Success! Go to dashboard
+    } catch (err) {
+      setErrorMessage(err.message)
+    }
+    setLoading(false)
+  }
 
-        <form className="login-form" onSubmit={handleSubmit}>
+return (
+  <div className="login-page">
+    <div className="login-card">
+      <div className="login-card__header">
+        <img src={personIcon} alt="User" className="login-card__avatar" />
+        <h1 className="login-card__title">
+          {step === 1 ? 'Login' : 'Enter OTP'}
+        </h1>
+        <p className="login-card__subtitle">
+          {step === 1 
+            ? 'We\'ll send a code to your email' 
+            : `Enter the code sent to ${email}`}
+        </p>
+      </div>
+
+      {/* --- STEP 1: EMAIL FORM --- */}
+      {step === 1 && (
+        <form className="login-form" onSubmit={handleRequestOtp}>
           <div className="input-group">
             <img src={emailIcon} alt="Email" className="input-group__icon" />
             <input
@@ -51,13 +72,26 @@ const LoginPage = () => {
             />
           </div>
 
+          {errorMessage && (
+            <div className="form-error" role="alert">{errorMessage}</div>
+          )}
+
+          <button type="submit" className="login-button" disabled={loading}>
+            {loading ? 'Sending...' : 'Send OTP'}
+          </button>
+        </form>
+      )}
+
+      {/* --- STEP 2: OTP FORM --- */}
+      {step === 2 && (
+        <form className="login-form" onSubmit={handleVerifyOtp}>
           <div className="input-group">
-            <img src={passwordIcon} alt="Password" className="input-group__icon" />
+            <img src={passwordIcon} alt="OTP" className="input-group__icon" />
             <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              type="text"
+              placeholder="6-Digit OTP"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
               className="input-group__control"
               required
             />
@@ -67,19 +101,18 @@ const LoginPage = () => {
             <div className="form-error" role="alert">{errorMessage}</div>
           )}
 
-          <button type="submit" className="login-button">Login</button>
+          <button type="submit" className="login-button" disabled={loading}>
+            {loading ? 'Verifying...' : 'Login'}
+          </button>
         </form>
+      )}
 
-        <div className="login-footer" style={{ justifyContent: 'space-between' }}>
-          <a className="login-link" href="/forgot-password">Forgot password?</a>
-          <a className="login-link" href="/signup">Create account</a>
-        </div>
-      </div>
-    </div>
-  )
+      <div className="login-footer" style={{ justifyContent: 'center' }}>
+        <Link className="login-link" to="/signup">Create account</Link>
+      </div>
+    </div>
+  </div>
+)
 }
 
 export default LoginPage;
-
-
-

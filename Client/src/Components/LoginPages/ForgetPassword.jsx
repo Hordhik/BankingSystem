@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import emailIcon from '../assets/email.png';
 import passwordIcon from '../assets/password.png';
-import { findUserByEmail, updatePassword } from '../Auth/userStore';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
