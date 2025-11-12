@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import emailIcon from '../assets/email.png'
 import passwordIcon from '../assets/password.png'
 import personIcon from '../assets/person.png'
-import { createUser } from '../Auth/userStore'
 import './loginPage.css'
 
 const SignUpPage = () => {
@@ -15,58 +14,12 @@ const SignUpPage = () => {
   const [ifsc, setIfsc] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
+  // No validation or storage for now; UI only
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    setErrorMessage('')
-
-    if (!fullName || !username || !email || !accountNumber || !ifsc || !password || !confirm){
-      setErrorMessage('Please fill in all fields.')
-      return
-    }
-    const emailRegex = /.+@.+\..+/
-    if (!emailRegex.test(email)){
-      setErrorMessage('Please enter a valid email address.')
-      return
-    }
-    const usernameRegex = /^[a-zA-Z0-9_\.\-]{3,20}$/
-    if (!usernameRegex.test(username)){
-      setErrorMessage('Username must be 3-20 characters; letters, numbers, dot, dash or underscore only.')
-      return
-    }
-    const acctRegex = /^\d{10,18}$/
-    if (!acctRegex.test(accountNumber)){
-      setErrorMessage('Account Number should be 10-18 digits.')
-      return
-    }
-    const ifscRegex = /^[A-Z]{4}0[0-9A-Z]{6}$/
-    if (!ifscRegex.test(String(ifsc).toUpperCase())){
-      setErrorMessage('IFSC should match pattern: 4 letters + 0 + 6 alphanumerics (e.g., HDFC0123456).')
-      return
-    }
-    if (password.length < 6){
-      setErrorMessage('Password must be at least 6 characters.')
-      return
-    }
-    if (password !== confirm){
-      setErrorMessage('Passwords do not match.')
-      return
-    }
-
-    try{
-      createUser({
-        fullName: fullName.trim(),
-        username: username.trim(),
-        email: email.trim().toLowerCase(),
-        accountNumber: accountNumber.trim(),
-        ifscCode: String(ifsc).toUpperCase(),
-        password
-      })
-      navigate('/login')
-    }catch(err){
-      setErrorMessage(err?.message || 'Sign up failed')
-    }
+    // For now, just navigate to login without validation/persistence
+    navigate('/login')
   }
 
   return (
@@ -87,7 +40,6 @@ const SignUpPage = () => {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               className="input-group__control"
-              required
             />
           </div>
 
@@ -99,7 +51,6 @@ const SignUpPage = () => {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="input-group__control"
-              required
             />
           </div>
 
@@ -111,7 +62,6 @@ const SignUpPage = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="input-group__control"
-              required
             />
           </div>
 
@@ -123,9 +73,7 @@ const SignUpPage = () => {
               value={accountNumber}
               onChange={(e) => setAccountNumber(e.target.value)}
               className="input-group__control"
-              required
               inputMode="numeric"
-              pattern="\\d{10,18}"
             />
           </div>
 
@@ -137,7 +85,6 @@ const SignUpPage = () => {
               value={ifsc}
               onChange={(e) => setIfsc(e.target.value)}
               className="input-group__control"
-              required
               style={{ textTransform: 'uppercase' }}
             />
           </div>
@@ -150,7 +97,6 @@ const SignUpPage = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="input-group__control"
-              required
             />
           </div>
 
@@ -162,13 +108,8 @@ const SignUpPage = () => {
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               className="input-group__control"
-              required
             />
           </div>
-
-          {errorMessage && (
-            <div className="form-error" role="alert">{errorMessage}</div>
-          )}
 
           <button type="submit" className="login-button">Create Account</button>
         </form>

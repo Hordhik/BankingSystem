@@ -1,31 +1,18 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import emailIcon from '../assets/email.png'
 import passwordIcon from '../assets/password.png'
 import personIcon from '../assets/person.png'
-import { setCurrentUser, validateCredentials } from '../Auth/userStore'
 import './loginPage.css'
 
 const LoginPage = () => {
   const navigate = useNavigate()
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
+  const [errorMessage] = useState('')
 
   const handleSubmit = async (event) => {
     event.preventDefault()
-    setErrorMessage('')
-
-    if (!email || !password) {
-      setErrorMessage('Please enter both email and password.')
-      return
-    }
-    const ok = validateCredentials(email, password)
-    if (!ok){
-      setErrorMessage('Invalid email or password.')
-      return
-    }
-    setCurrentUser(email)
+    // No validation or auth calls for now; just navigate
     navigate('/dashboard')
   }
 
@@ -40,14 +27,13 @@ const LoginPage = () => {
 
         <form className="login-form" onSubmit={handleSubmit}>
           <div className="input-group">
-            <img src={emailIcon} alt="Email" className="input-group__icon" />
+            <img src={personIcon} alt="Username" className="input-group__icon" />
             <input
-              type="email"
-              placeholder="Email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               className="input-group__control"
-              required
             />
           </div>
 
@@ -59,7 +45,6 @@ const LoginPage = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="input-group__control"
-              required
             />
           </div>
 

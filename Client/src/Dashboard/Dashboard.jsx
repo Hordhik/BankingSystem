@@ -16,26 +16,15 @@ import TransfersPayments from './TransfersPayments/TransfersPayments.jsx';
 import CardsPage from './CardsPage/CardsPage.jsx';
 import Settings from './Settings/Settings.jsx';
 import SupportTickets from './SupportTicket/SupportTicket.jsx';
-import { clearCurrentUser, getCurrentUser } from '../Components/Auth/userStore';
+// Auth-free mode: no userStore for now
 
 export const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("Dashboard");
   const navigate = useNavigate();
 
-  // if there is no current user, redirect to login
-  useEffect(() => {
-    const current = getCurrentUser();
-    if (!current) {
-      navigate('/login');
-    }
-  }, [navigate]);
+  // Auth-free mode: don't redirect; dashboard is publicly accessible for now
 
   const handleLogout = () => {
-    try {
-      clearCurrentUser();
-    } catch (_) {
-      // ignore storage errors
-    }
     navigate('/login');
   };
 
