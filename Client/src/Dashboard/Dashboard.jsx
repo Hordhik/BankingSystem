@@ -67,7 +67,10 @@ export const Dashboard = () => {
       <div className="side-bar">
         <div className="profile">
           <img src={profile_img} alt="" />
-          <p>hordhik.manikant@fluit</p>
+          <div className="user-details">
+            <p>hordhik manikant</p>
+            <p>Account number</p>
+          </div>
         </div>
         <div className="essentials-tabs">
           <p>Essentials</p>
@@ -98,9 +101,6 @@ export const Dashboard = () => {
       </div>
       <div className="main-content">
         <div className="top-bar">
-          <div className="kyc">
-            <p>Complete KYC in 12 days</p>
-          </div>
           <div className="others">
             <div className="theme">
               <p>Change Themes</p>

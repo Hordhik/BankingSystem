@@ -60,6 +60,15 @@ body{
     background: #FFF;
 }
 
+.profile .user-details{
+    display: flex;
+    flex-direction: column;
+    font-family: Inter;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: normal;
+}
+
 .main-content{
     width: 78%;
     display: flex;
@@ -70,7 +79,7 @@ body{
     display: flex;
     height: 54px;
     padding: 14px 18px;
-    justify-content: space-between;
+    justify-content: end;
     align-items: center;
     border-bottom: 1px solid #EAEAEA;
     background: #FFF;
