@@ -1,6 +1,5 @@
 package com.bankingapp.Server.model;
 
-import com.bankingapp.Server.model.enums.SupportTicketStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,10 +28,8 @@ public class SupportTicket {
 	@Column(length = 2000)
 	private String description;
 
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	@Builder.Default
-	private SupportTicketStatus status = SupportTicketStatus.OPEN;
+	@Column(nullable = false, length = 20)
+	private String status;
 
 	@Column(nullable = false, updatable = false)
 	private Instant createdAt;
@@ -40,5 +37,6 @@ public class SupportTicket {
 	@PrePersist
 	public void prePersist() {
 		if (createdAt == null) createdAt = Instant.now();
+		if (status == null) status = "OPEN";
 	}
 }

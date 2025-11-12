@@ -1,6 +1,5 @@
 package com.bankingapp.Server.model;
 
-import com.bankingapp.Server.model.enums.LoanStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -38,8 +37,11 @@ public class Loan {
 
 	private LocalDate endDate;
 
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	@Builder.Default
-	private LoanStatus status = LoanStatus.PENDING;
+	@Column(nullable = false, length = 20)
+	private String status;
+
+	@PrePersist
+	public void prePersist() {
+		if (status == null) status = "PENDING";
+	}
 }

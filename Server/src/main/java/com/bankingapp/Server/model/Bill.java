@@ -1,6 +1,5 @@
 package com.bankingapp.Server.model;
 
-import com.bankingapp.Server.model.enums.BillStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,8 +31,11 @@ public class Bill {
 	@Column(nullable = false)
 	private LocalDate dueDate;
 
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	@Builder.Default
-	private BillStatus status = BillStatus.DUE;
+	@Column(nullable = false, length = 20)
+	private String status;
+
+	@PrePersist
+	public void prePersist() {
+		if (status == null) status = "DUE";
+	}
 }

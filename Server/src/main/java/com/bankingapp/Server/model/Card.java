@@ -1,6 +1,5 @@
 package com.bankingapp.Server.model;
 
-import com.bankingapp.Server.model.enums.CardType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,9 +27,8 @@ public class Card {
 	@Column(nullable = false, unique = true, length = 20)
 	private String cardNumber;
 
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	private CardType type;
+	@Column(nullable = false, length = 20)
+	private String type;
 
 	@Column(nullable = false, length = 4)
 	private String cvv;

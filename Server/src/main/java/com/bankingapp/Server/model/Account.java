@@ -1,6 +1,5 @@
 package com.bankingapp.Server.model;
 
-import com.bankingapp.Server.model.enums.AccountType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,9 +27,8 @@ public class Account {
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	private AccountType accountType;
+	@Column(nullable = false, length = 20)
+	private String accountType;
 
 	@Column(nullable = false, unique = true, length = 24)
 	private String accountNumber;

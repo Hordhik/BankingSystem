@@ -1,7 +1,5 @@
 package com.bankingapp.Server.model;
 
-import com.bankingapp.Server.model.enums.TransactionStatus;
-import com.bankingapp.Server.model.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,19 +23,16 @@ public class Transaction {
 	@JoinColumn(name = "account_id", nullable = false)
 	private Account account;
 
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	private TransactionType type;
+	@Column(nullable = false, length = 20)
+	private String type;
 
 	@Column(nullable = false, precision = 18, scale = 2)
 	private BigDecimal amount;
 
 	private String description;
 
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	@Builder.Default
-	private TransactionStatus status = TransactionStatus.PENDING;
+	@Column(nullable = false, length = 20)
+	private String status;
 
 	@Column(nullable = false)
 	private Instant date;
@@ -45,5 +40,6 @@ public class Transaction {
 	@PrePersist
 	public void prePersist() {
 		if (date == null) date = Instant.now();
+		if (status == null) status = "PENDING";
 	}
 }
