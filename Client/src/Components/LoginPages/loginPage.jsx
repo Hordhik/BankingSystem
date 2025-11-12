@@ -1,14 +1,14 @@
 // Client/src/pages/LoginPage.jsx
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import API from '../../api' // keep this path if your src/api.js is at src/api.js
 import passwordIcon from '../assets/password.png'
 import personIcon from '../assets/person.png'
 import './loginPage.css'
-import API from '../../api'   // <-- import API
 
 const LoginPage = () => {
   const navigate = useNavigate()
-  const [email, setEmail] = useState('')            // changed to email
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [loading, setLoading] = useState(false)
@@ -18,27 +18,44 @@ const LoginPage = () => {
     setErrorMessage('')
 
     if (!email || !password) {
-      setErrorMessage('Please fill email and password.')
+      setErrorMessage('Email and password are required.')
       return
     }
 
     setLoading(true)
     try {
-      const res = await API.post('/auth/login', { email, password })
-      // backend returns token, fullname, email
-      const token = res.token || res.data?.token
-      const fullname = res.fullname || res.data?.fullname
-      const emailResp = res.email || res.data?.email
+      const payload = {
+        email: email.trim().toLowerCase(), // normalize
+        password
+      }
 
+      const res = await API.post('/auth/login', payload)
+      const data = res?.data ?? res
+
+      // token should be in data.token (adjust if backend differs)
+      const token = data?.token
+      if (!token) {
+        throw new Error('No token received from server')
+      }
+
+      // persist token + user info
       localStorage.setItem('token', token)
-      if (fullname) localStorage.setItem('fullname', fullname)
-      if (emailResp) localStorage.setItem('email', emailResp)
+      if (data?.fullname) localStorage.setItem('fullname', data.fullname)
+      if (data?.email) localStorage.setItem('email', data.email)
 
+      // set default Authorization header for future API calls
+      API.defaults.headers.common['Authorization'] = `Bearer ${token}`
+
+      // navigate to dashboard
       navigate('/dashboard')
     } catch (err) {
-      console.error(err)
-      const msg = err?.response?.data?.message || err?.message || 'Login failed'
-      setErrorMessage(msg)
+      console.error('Login error:', err)
+      const msg =
+        err?.response?.data?.message ||
+        err?.response?.data ||
+        err?.message ||
+        'Login failed'
+      setErrorMessage(typeof msg === 'string' ? msg : JSON.stringify(msg))
     } finally {
       setLoading(false)
     }
@@ -57,9 +74,8 @@ const LoginPage = () => {
           <div className="input-group">
             <img src={personIcon} alt="Email" className="input-group__icon" />
             <input
-              name="email"
               type="email"
-              placeholder="Email"
+              placeholder="Email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="input-group__control"
@@ -70,7 +86,6 @@ const LoginPage = () => {
           <div className="input-group">
             <img src={passwordIcon} alt="Password" className="input-group__icon" />
             <input
-              name="password"
               type="password"
               placeholder="Password"
               value={password}
@@ -81,11 +96,13 @@ const LoginPage = () => {
           </div>
 
           {errorMessage && (
-            <div className="form-error" role="alert" style={{ color: 'red', marginBottom: 8 }}>{errorMessage}</div>
+            <div className="form-error" role="alert" style={{ color: 'red', marginBottom: 8 }}>
+              {errorMessage}
+            </div>
           )}
 
           <button type="submit" className="login-button" disabled={loading}>
-            {loading ? 'Signing in...' : 'Login'}
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 
@@ -98,4 +115,4 @@ const LoginPage = () => {
   )
 }
 
-export default LoginPage;
+export default LoginPage

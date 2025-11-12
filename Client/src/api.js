@@ -1,17 +1,34 @@
-import axios from "axios";
+// Client/src/api.js
+import axios from 'axios'
 
+const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:6060/api'
+
+// create axios instance
 const API = axios.create({
-  baseURL: "http://localhost:6060/api",
-  timeout: 10000,
-});
-
-API.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token) config.headers.Authorization = `Bearer ${token}`;
-    return config;
+  baseURL,
+  headers: {
+    'Content-Type': 'application/json'
   },
-  (error) => Promise.reject(error)
-);
+  timeout: 10000
+})
 
-export default API;
+// helper: set token into default header and localStorage
+export function setAuthToken(token) {
+  if (token) {
+    API.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    try { localStorage.setItem('token', token) } catch (e) { /* ignore */ }
+  } else {
+    delete API.defaults.headers.common['Authorization']
+    try { localStorage.removeItem('token') } catch (e) { /* ignore */ }
+  }
+}
+
+// attach token from localStorage automatically (on import)
+try {
+  const stored = localStorage.getItem('token')
+  if (stored) API.defaults.headers.common['Authorization'] = `Bearer ${stored}`
+} catch (e) {
+  // localStorage not available in some environments — ignore
+}
+
+export default API
