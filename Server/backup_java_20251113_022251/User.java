@@ -1,36 +1,28 @@
 ﻿package com.bankingapp.Server.model;
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 @Entity
 @Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
-    @Column(name = "fullname", nullable=false)
+    private Long id;
+    @Column(nullable=false)
     private String fullname;
-    @Column(name = "email", nullable=false, unique=true)
+    @Column(nullable=false, unique=true)
     private String email;
-    @Column(name = "password", nullable=false)
+    @Column(nullable=false)
     private String password;
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
     public User() {}
     public User(String fullname, String email, String password) {
         this.fullname = fullname;
         this.email = email;
         this.password = password;
-        this.createdAt = LocalDateTime.now();
     }
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
+    public Long getId() { return id; }
     public String getFullname() { return fullname; }
     public void setFullname(String fullname) { this.fullname = fullname; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

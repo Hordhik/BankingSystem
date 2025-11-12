@@ -1,9 +1,11 @@
+// Client/src/pages/SignUpPage.jsx
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import emailIcon from '../assets/email.png'
 import passwordIcon from '../assets/password.png'
 import personIcon from '../assets/person.png'
 import './loginPage.css'
+import API from '../../api'   // <-- import API
 
 const SignUpPage = () => {
   const navigate = useNavigate()
@@ -14,12 +16,48 @@ const SignUpPage = () => {
   const [ifsc, setIfsc] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
-  // No validation or storage for now; UI only
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // For now, just navigate to login without validation/persistence
-    navigate('/login')
+    setError('')
+
+    // Basic client-side validation
+    if (!fullName || !email || !password) {
+      setError('Full name, email and password are required.')
+      return
+    }
+    if (password !== confirm) {
+      setError('Passwords do not match.')
+      return
+    }
+
+    setLoading(true)
+    try {
+      // Only send the fields the backend expects (fullname, email, password)
+      const payload = {
+        fullname: fullName,
+        email: email,
+        password: password,
+      }
+
+      const res = await API.post('/auth/register', payload)
+      // response format from your backend: { token, fullname, email }
+      localStorage.setItem('token', res.token || res.data?.token)
+      localStorage.setItem('fullname', res.fullname || res.data?.fullname)
+      localStorage.setItem('email', res.email || res.data?.email)
+
+      // Redirect to dashboard
+      navigate('/dashboard')
+    } catch (err) {
+      console.error(err)
+      // friendly message: try to read backend message
+      const msg = err?.response?.data?.message || err?.message || 'Registration failed'
+      setError(msg)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -40,6 +78,7 @@ const SignUpPage = () => {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               className="input-group__control"
+              required
             />
           </div>
 
@@ -47,7 +86,7 @@ const SignUpPage = () => {
             <img src={personIcon} alt="Username" className="input-group__icon" />
             <input
               type="text"
-              placeholder="Username"
+              placeholder="Username (optional)"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="input-group__control"
@@ -62,6 +101,7 @@ const SignUpPage = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="input-group__control"
+              required
             />
           </div>
 
@@ -69,7 +109,7 @@ const SignUpPage = () => {
             <img src={personIcon} alt="Account Number" className="input-group__icon" />
             <input
               type="text"
-              placeholder="Account Number"
+              placeholder="Account Number (optional)"
               value={accountNumber}
               onChange={(e) => setAccountNumber(e.target.value)}
               className="input-group__control"
@@ -81,7 +121,7 @@ const SignUpPage = () => {
             <img src={personIcon} alt="IFSC Code" className="input-group__icon" />
             <input
               type="text"
-              placeholder="IFSC Code"
+              placeholder="IFSC Code (optional)"
               value={ifsc}
               onChange={(e) => setIfsc(e.target.value)}
               className="input-group__control"
@@ -97,6 +137,7 @@ const SignUpPage = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="input-group__control"
+              required
             />
           </div>
 
@@ -108,10 +149,15 @@ const SignUpPage = () => {
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               className="input-group__control"
+              required
             />
           </div>
 
-          <button type="submit" className="login-button">Create Account</button>
+          {error && <div className="form-error" role="alert" style={{ color: 'red', marginBottom: 8 }}>{error}</div>}
+
+          <button type="submit" className="login-button" disabled={loading}>
+            {loading ? 'Creating...' : 'Create Account'}
+          </button>
         </form>
 
         <div className="login-footer" style={{ justifyContent: 'space-between' }}>
@@ -124,6 +170,3 @@ const SignUpPage = () => {
 }
 
 export default SignUpPage;
-
-
-
