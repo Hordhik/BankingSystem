@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import '/src/Dashboard/Transactions/Transactions.css';
-import jsPDF from 'jspdf';
+import {jsPDF} from 'jspdf';
 
 // Card image removed per request
 
