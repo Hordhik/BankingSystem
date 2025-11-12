@@ -1,0 +1,61 @@
+# ---- Root Git Ignore for BankingSystem ----
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node/Frontend (Vite/React)
+node_modules/
+dist/
+dist-ssr/
+.vite/
+.parcel-cache/
+coverage/
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment files
+.env
+.env.*
+*.local
+
+# Java/Maven/Spring Boot
+target/
+build/
+.mvn/wrapper/maven-wrapper.jar
+**/surefire-reports/
+**/jacoco.exec
+
+# Spring config (keep secrets out of Git)
+**/application.properties
+**/application-*.properties
+**/application.yml
+**/application-*.yml
+
+# IDE/editor
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.classpath
+.project
+.settings/
+.factorypath
+.apt_generated
+.springBeans
+.sts4-cache
+
+# Misc build outputs
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# Docker/Compose local artifacts
+*.pid

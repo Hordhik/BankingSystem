@@ -1,0 +1,44 @@
+## Root .gitattributes
+# Normalize line endings to LF in repo; Git will checkout platform-native by core.autocrlf if configured
+* text=auto eol=lf
+
+# Scripts and wrappers
+/Server/mvnw text eol=lf
+*.sh text eol=lf
+*.bash text eol=lf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Common source types
+*.java text diff=java eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+*.html text eol=lf
+*.xml text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.properties text eol=lf
+*.sql text eol=lf
+
+# Bundles/locks
+package-lock.json text eol=lf
+pnpm-lock.yaml text eol=lf
+yarn.lock text eol=lf -diff
+
+# Binary assets
+*.jar binary
+*.zip binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
