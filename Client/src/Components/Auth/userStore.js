@@ -19,13 +19,26 @@ export function findUserByEmail(email){
   return users.find(u => u.email.toLowerCase() === String(email).toLowerCase()) || null
 }
 
-export function createUser({email, password, fullName}){
+export function createUser({ email, password, fullName, username, accountNumber, ifscCode }){
   const users = getUsers()
-  const exists = users.some(u => u.email.toLowerCase() === String(email).toLowerCase())
-  if (exists){
+  const emailExists = users.some(u => (u.email || '').toLowerCase() === String(email).toLowerCase())
+  if (emailExists){
     throw new Error('An account with this email already exists')
   }
-  const newUser = { email, password, fullName }
+  if (username){
+    const usernameExists = users.some(u => (u.username || '').toLowerCase() === String(username).toLowerCase())
+    if (usernameExists){
+      throw new Error('Username already taken')
+    }
+  }
+  if (accountNumber){
+    const acctExists = users.some(u => (u.accountNumber || '') === String(accountNumber))
+    if (acctExists){
+      throw new Error('Account number already in use')
+    }
+  }
+  const createdAt = new Date().toISOString()
+  const newUser = { email, password, fullName, username, accountNumber, ifscCode, createdAt }
   users.push(newUser)
   saveUsers(users)
   return newUser

@@ -9,7 +9,10 @@ import './loginPage.css'
 const SignUpPage = () => {
   const navigate = useNavigate()
   const [fullName, setFullName] = useState('')
+  const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
+  const [accountNumber, setAccountNumber] = useState('')
+  const [ifsc, setIfsc] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
@@ -18,13 +21,28 @@ const SignUpPage = () => {
     e.preventDefault()
     setErrorMessage('')
 
-    if (!fullName || !email || !password || !confirm){
+    if (!fullName || !username || !email || !accountNumber || !ifsc || !password || !confirm){
       setErrorMessage('Please fill in all fields.')
       return
     }
     const emailRegex = /.+@.+\..+/
     if (!emailRegex.test(email)){
       setErrorMessage('Please enter a valid email address.')
+      return
+    }
+    const usernameRegex = /^[a-zA-Z0-9_\.\-]{3,20}$/
+    if (!usernameRegex.test(username)){
+      setErrorMessage('Username must be 3-20 characters; letters, numbers, dot, dash or underscore only.')
+      return
+    }
+    const acctRegex = /^\d{10,18}$/
+    if (!acctRegex.test(accountNumber)){
+      setErrorMessage('Account Number should be 10-18 digits.')
+      return
+    }
+    const ifscRegex = /^[A-Z]{4}0[0-9A-Z]{6}$/
+    if (!ifscRegex.test(String(ifsc).toUpperCase())){
+      setErrorMessage('IFSC should match pattern: 4 letters + 0 + 6 alphanumerics (e.g., HDFC0123456).')
       return
     }
     if (password.length < 6){
@@ -37,7 +55,14 @@ const SignUpPage = () => {
     }
 
     try{
-      createUser({ email, password, fullName })
+      createUser({
+        fullName: fullName.trim(),
+        username: username.trim(),
+        email: email.trim().toLowerCase(),
+        accountNumber: accountNumber.trim(),
+        ifscCode: String(ifsc).toUpperCase(),
+        password
+      })
       navigate('/login')
     }catch(err){
       setErrorMessage(err?.message || 'Sign up failed')
@@ -67,6 +92,18 @@ const SignUpPage = () => {
           </div>
 
           <div className="input-group">
+            <img src={personIcon} alt="Username" className="input-group__icon" />
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="input-group__control"
+              required
+            />
+          </div>
+
+          <div className="input-group">
             <img src={emailIcon} alt="Email" className="input-group__icon" />
             <input
               type="email"
@@ -75,6 +112,33 @@ const SignUpPage = () => {
               onChange={(e) => setEmail(e.target.value)}
               className="input-group__control"
               required
+            />
+          </div>
+
+          <div className="input-group">
+            <img src={personIcon} alt="Account Number" className="input-group__icon" />
+            <input
+              type="text"
+              placeholder="Account Number"
+              value={accountNumber}
+              onChange={(e) => setAccountNumber(e.target.value)}
+              className="input-group__control"
+              required
+              inputMode="numeric"
+              pattern="\\d{10,18}"
+            />
+          </div>
+
+          <div className="input-group">
+            <img src={personIcon} alt="IFSC Code" className="input-group__icon" />
+            <input
+              type="text"
+              placeholder="IFSC Code"
+              value={ifsc}
+              onChange={(e) => setIfsc(e.target.value)}
+              className="input-group__control"
+              required
+              style={{ textTransform: 'uppercase' }}
             />
           </div>
 
