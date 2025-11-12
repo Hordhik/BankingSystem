@@ -1,4 +1,4 @@
-package com.bankingapp.Server.dto;
+﻿package com.bankingapp.Server.dto;
 public class RegisterRequest {
     private String fullname;
     private String email;

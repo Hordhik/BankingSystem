@@ -1,19 +1,47 @@
+// Client/src/pages/LoginPage.jsx
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import passwordIcon from '../assets/password.png'
 import personIcon from '../assets/person.png'
 import './loginPage.css'
+import API from '../../api'   // <-- import API
 
 const LoginPage = () => {
   const navigate = useNavigate()
-  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')            // changed to email
   const [password, setPassword] = useState('')
-  const [errorMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (event) => {
     event.preventDefault()
-    // No validation or auth calls for now; just navigate
-    navigate('/dashboard')
+    setErrorMessage('')
+
+    if (!email || !password) {
+      setErrorMessage('Please fill email and password.')
+      return
+    }
+
+    setLoading(true)
+    try {
+      const res = await API.post('/auth/login', { email, password })
+      // backend returns token, fullname, email
+      const token = res.token || res.data?.token
+      const fullname = res.fullname || res.data?.fullname
+      const emailResp = res.email || res.data?.email
+
+      localStorage.setItem('token', token)
+      if (fullname) localStorage.setItem('fullname', fullname)
+      if (emailResp) localStorage.setItem('email', emailResp)
+
+      navigate('/dashboard')
+    } catch (err) {
+      console.error(err)
+      const msg = err?.response?.data?.message || err?.message || 'Login failed'
+      setErrorMessage(msg)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -27,32 +55,38 @@ const LoginPage = () => {
 
         <form className="login-form" onSubmit={handleSubmit}>
           <div className="input-group">
-            <img src={personIcon} alt="Username" className="input-group__icon" />
+            <img src={personIcon} alt="Email" className="input-group__icon" />
             <input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              name="email"
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="input-group__control"
+              required
             />
           </div>
 
           <div className="input-group">
             <img src={passwordIcon} alt="Password" className="input-group__icon" />
             <input
+              name="password"
               type="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="input-group__control"
+              required
             />
           </div>
 
           {errorMessage && (
-            <div className="form-error" role="alert">{errorMessage}</div>
+            <div className="form-error" role="alert" style={{ color: 'red', marginBottom: 8 }}>{errorMessage}</div>
           )}
 
-          <button type="submit" className="login-button">Login</button>
+          <button type="submit" className="login-button" disabled={loading}>
+            {loading ? 'Signing in...' : 'Login'}
+          </button>
         </form>
 
         <div className="login-footer" style={{ justifyContent: 'space-between' }}>
@@ -65,6 +99,3 @@ const LoginPage = () => {
 }
 
 export default LoginPage;
-
-
-
