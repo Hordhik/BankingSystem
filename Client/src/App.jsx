@@ -6,6 +6,7 @@ import LoginPage from './Components/LoginPages/loginPage';
 import SignUpPage from './Components/LoginPages/SignupPage';
 import { Dashboard } from './Dashboard/Dashboard';
 import { Landingpage } from './LandingPage/Landingpage';
+import PaymentPage from './Dashboard/Payments/PaymentPage.jsx';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/payment/:type?" element={<PaymentPage />} />
       </Routes>
     </Router>
   );

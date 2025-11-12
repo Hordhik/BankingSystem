@@ -1,5 +1,6 @@
 import React from 'react';
 import './RechargeAndBills.css';
+import { useNavigate } from 'react-router-dom';
 
 const Icon = ({ type }) => {
   const icons = {
@@ -12,6 +13,8 @@ const Icon = ({ type }) => {
 };
 
 export const RechargeAndBills = () => {
+  const navigate = useNavigate();
+
   const billOptions = [
     { type: 'mobile', name: 'Mobile' },
     { type: 'dth', name: 'DTH' },
@@ -27,7 +30,11 @@ export const RechargeAndBills = () => {
       </div>
       <div className="recharge-bills__grid">
         {billOptions.map((option) => (
-          <div className="bill-option" key={option.name}>
+          <div
+            className="bill-option"
+            key={option.name}
+            onClick={() => navigate(`/payment/${option.type}`)} // ✅ lowercase type
+          >
             <div className="bill-option__icon">
               <Icon type={option.type} />
             </div>
@@ -38,4 +45,3 @@ export const RechargeAndBills = () => {
     </div>
   );
 };
-
