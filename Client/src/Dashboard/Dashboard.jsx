@@ -12,7 +12,7 @@ import settings from '/src/assets/icons/settings.svg';
 import Payments from './Payments/Payments.jsx';
 import { LoansSection } from './LoansSection/LoansSection.jsx';
 import { OffersSection } from './OffersSection/OffersSection.jsx';
-import TransfersPayments from './TransfersPayments/TransfersPayments.jsx';
+import Transactions from './Transactions/Transactions.jsx';
 import CardsPage from './CardsPage/CardsPage.jsx';
 import Settings from './Settings/Settings.jsx';
 import SupportTickets from './SupportTicket/SupportTicket.jsx';
@@ -30,7 +30,7 @@ export const Dashboard = () => {
 
   let essentialsTabs = [
     { name: "Dashboard", icon: dashboard },
-    { name: "Transfers & Payments", icon: wallet },
+  { name: "Transactions", icon: wallet },
     { name: "Cards", icon: card },
     { name: "Loans & Investments", icon: loans },
     { name: "Pre-Approved Offers", icon: offers },
@@ -49,8 +49,8 @@ export const Dashboard = () => {
         return <OffersSection />;
       case 'Dashboard':
         return <Payments/>;
-      case 'Transfers & Payments':
-        return <TransfersPayments/>;
+      case 'Transactions':
+        return <Transactions/>;
       case 'Cards':
         return <CardsPage />;
       case 'Settings':

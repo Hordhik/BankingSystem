@@ -53,7 +53,7 @@ This project is built with a modern frontend stack:
 |   |-- /OffersSection/
 |   |-- /Payments/
 |   |-- /PortfolioSection/
-|   |-- /TransfersPayments/
+|   |-- /Transactions/
 |   |-- Dashboard.jsx
 |   `-- Dashboard.css
 |
