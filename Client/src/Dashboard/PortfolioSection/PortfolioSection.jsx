@@ -1,7 +1,8 @@
 import React from 'react';
 import '/src/Dashboard/PortfolioSection/PortfolioSection.css';
 
-export const PortfolioSection = () => {
+export const PortfolioSection = ({ portfolioItems = [] }) => {
+  // existing portfolio data (default)
   const portfolioData = [
     {
       product: 'Personal Loan',
@@ -26,6 +27,17 @@ export const PortfolioSection = () => {
     },
   ];
 
+  // combine default + new portfolio items
+  const combinedData = [
+    ...portfolioData,
+    ...portfolioItems.map(item => ({
+      product: item.productName,
+      amount: `₹${item.amount}`,
+      status: item.status,
+      next_action: item.nextPayment,
+    })),
+  ];
+
   return (
     <div className="portfolio-section-dashboard">
       <h3 className="portfolio-title-dashboard">My Portfolio</h3>
@@ -40,12 +52,12 @@ export const PortfolioSection = () => {
             </tr>
           </thead>
           <tbody>
-            {portfolioData.map((item, index) => (
+            {combinedData.map((item, index) => (
               <tr key={index}>
                 <td>{item.product}</td>
                 <td>{item.amount}</td>
                 <td>
-                  <span className={`status-pill status-${item.status.toLowerCase()}`}>
+                  <span className={`status-pill status-${item.status.toLowerCase().replace(' ', '-')}`}>
                     {item.status}
                   </span>
                 </td>
@@ -58,4 +70,3 @@ export const PortfolioSection = () => {
     </div>
   );
 };
-
