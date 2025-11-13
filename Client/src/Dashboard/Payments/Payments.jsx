@@ -1,9 +1,14 @@
 import React from 'react';
 import './Payments.css';
-import { DebitCardDisplay } from './components/DebitCardDisplay.jsx';
 import { PaymentMethods } from './components/PaymentMethods.jsx';
 import { RecentActivities } from './components/RecentActivities.jsx';
 import {RechargeAndBills} from './components/RechargeAndBills.jsx';
+import transferIcon from '/src/assets/icons/transfer.svg';
+import cardIcon from '/src/assets/icons/card.svg';
+import loansIcon from '/src/assets/icons/loans.svg';
+import offersIcon from '/src/assets/icons/offers.svg';
+import { useNavigate } from 'react-router-dom';
+import { DebitCardDisplay } from './components/DebitCardDisplay.jsx';
 
 const transactionsData = [
     { id: 1, to: 'Eswar Reddy', type: 'Online Payment', date: 'October, 03', amount: '- ₹5000.00', status: 'Failed' },
@@ -15,17 +20,66 @@ const transactionsData = [
 ];
 
 function Payments() {
+  const navigate = useNavigate();
+
+  const quickTiles = [
+    { label: 'Transfer / Pay', icon: transferIcon, action: () => navigate('/payment') },
+    { label: 'Cards', icon: cardIcon, action: () => navigate('/dashboard') },
+    { label: 'Loans & Investments', icon: loansIcon, action: () => navigate('/dashboard') },
+    { label: 'Pre-Approved Offers', icon: offersIcon, action: () => navigate('/dashboard') },
+  ];
+
   return (
     <div className='payments-container'>
-      <div className="payments-grid">
-        <div className="payments-grid__main">
+      <h1 className="dash-greeting">Welcome back, Hordhik <span className="wave">👋</span></h1>
+
+      {/* Top overview: balance + hero card */}
+      <section className="dash-top-grid">
+        <div className="balance-panel">
+          <h3>Total Balance</h3>
+          <div className="big-amount">₹72,450.00</div>
+          <div className="mini-cards">
+            <div className="mini">
+              <div className="mini-title">Savings Account</div>
+              <div className="mini-value">₹45,000,00</div>
+            </div>
+            <div className="mini">
+              <div className="mini-title">Credit Card</div>
+              <div className="mini-value">1,200 Due</div>
+            </div>
+            <div className="mini">
+              <div className="mini-title">Loans</div>
+              <div className="mini-value">₹2,50,000,00</div>
+            </div>
+            {/* Caption under the Savings tile (first column only) */}
+            <div className="mini-caption">Hordhik Manikant</div>
+          </div>
+        </div>
+
+        <div className="top-card-wrapper">
           <DebitCardDisplay />
-          <RechargeAndBills />
         </div>
-        <div className="payments-grid__sidebar">
-          <PaymentMethods />
-        </div>
-      </div>
+      </section>
+
+      {/* Quick actions row */}
+      <section className="quick-grid">
+        {quickTiles.map(t => (
+          <button key={t.label} className="quick-tile" onClick={t.action}>
+            <img src={t.icon} alt="" />
+            <span>{t.label}</span>
+          </button>
+        ))}
+      </section>
+
+      {/* Payment Methods above, then Recharge & Bills */}
+      <section className="dash-section">
+        <PaymentMethods />
+      </section>
+      <section className="dash-section">
+        <RechargeAndBills />
+      </section>
+
+      {/* Recent Activities table */}
       <div className="payments-activities">
         <RecentActivities transactions={transactionsData} />
       </div>

@@ -87,6 +87,12 @@
 .bill-details .field-grid { display:grid; grid-template-columns: 1fr 1fr; gap:0.75rem; }
 .bill-details .form-field label { display:block; margin-bottom:0.35rem; }
 
+/* QR payment box */
+.qr-box { display:flex; align-items:center; gap:12px; background:#f9fafb; border:1px dashed #e5e7eb; border-radius:10px; padding:10px 12px; }
+.qr-inner { background:#fff; padding:8px; border-radius:8px; border:1px solid #e5e7eb; display:flex; align-items:center; justify-content:center; }
+.qr-meta { display:flex; flex-direction:column; gap:2px; color:#374151; font-size:0.85rem; }
+.qr-ref { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size:0.8rem; color:#6b7280; }
+
 .card-details-row { display:grid; grid-template-columns: 1fr 1fr; gap:0.75rem; }
 
 .card-details-row input {
@@ -133,3 +139,10 @@
 @media (max-width: 1100px) {
   .payment-3col { grid-template-columns: 1fr; }
 }
+
+/* Success overlay */
+.success-overlay { position: fixed; inset: 0; background: rgba(17, 24, 39, 0.55); backdrop-filter: blur(2px); display:flex; align-items:center; justify-content:center; z-index: 9999; }
+.success-modal { background: #10b981; color:#fff; padding: 20px 24px; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display:flex; flex-direction:column; align-items:center; gap:10px; min-width: 260px; }
+.success-check { width:68px; height:68px; border-radius:50%; background: rgba(255,255,255,0.18); display:flex; align-items:center; justify-content:center; animation: pop 380ms ease-out; }
+.success-text { font-weight: 800; letter-spacing: 0.2px; }
+@keyframes pop { 0% { transform: scale(0.7); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }

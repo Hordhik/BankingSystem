@@ -28,14 +28,6 @@ export const DebitCardDisplay = () => {
           <VisaLogoSVG />
         </div>
       </div>
-      <div className="card-balance">
-        <h3 className="card-balance__title">Card Balance</h3>
-        <p className="card-balance__amount">₹39,800.02</p>
-        <div className="card-balance__actions">
-          <button>History</button>
-          <button>Transfer</button>
-        </div>
-      </div>
     </div>
   );
 };

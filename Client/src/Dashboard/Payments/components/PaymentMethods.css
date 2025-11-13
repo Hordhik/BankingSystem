@@ -23,7 +23,7 @@
   background-color: #f9f9f9;
   border: 1px solid #f0f0f0;
   border-radius: 12px;
-  padding: 1.5rem 1rem;
+  padding: 1.1rem 1rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -33,15 +33,9 @@
   height: 100%;
 }
 
-.method-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
-}
+.method-card:hover { background:#f3f4f6; border-color:#e2e8f0; }
 
-.method-card img {
-  width: 32px;
-  height: 32px;
-}
+.method-card .method-icon { display:flex; align-items:center; justify-content:center; width:32px; height:32px; color:#111827; }
 
 .method-card p {
   font-size: 0.9rem;

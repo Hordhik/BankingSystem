@@ -1,16 +1,7 @@
 import React from 'react';
 import './RechargeAndBills.css';
 import { useNavigate } from 'react-router-dom';
-
-const Icon = ({ type }) => {
-  const icons = {
-    mobile: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>,
-    dth: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>,
-    electricity: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>,
-    gas: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 16.5a2.5 2.5 0 1 1-3 0V3M8.5 16.5a2.5 2.5 0 1 0 3 0V3M14.5 3h-5a2.5 2.5 0 0 0 0 5h5a2.5 2.5 0 0 1 0 5h-5a2.5 2.5 0 0 0 0 5h5"/></svg>,
-  };
-  return icons[type] || null;
-};
+import { Smartphone, SatelliteDish, Zap, Flame, Wifi, Droplets, ShieldCheck, GraduationCap } from 'lucide-react';
 
 export const RechargeAndBills = () => {
   const navigate = useNavigate();
@@ -20,6 +11,10 @@ export const RechargeAndBills = () => {
     { type: 'dth', name: 'DTH' },
     { type: 'electricity', name: 'Electricity' },
     { type: 'gas', name: 'Piped Gas' },
+    { type: 'broadband', name: 'Broadband' },
+    { type: 'water', name: 'Water' },
+    { type: 'insurance', name: 'Insurance' },
+    { type: 'education', name: 'Education' },
   ];
 
   return (
@@ -36,7 +31,14 @@ export const RechargeAndBills = () => {
             onClick={() => navigate(`/payment/${option.type}`)} // ✅ lowercase type
           >
             <div className="bill-option__icon">
-              <Icon type={option.type} />
+              {option.type === 'mobile' && <Smartphone size={22} />}
+              {option.type === 'dth' && <SatelliteDish size={22} />}
+              {option.type === 'electricity' && <Zap size={22} />}
+              {option.type === 'gas' && <Flame size={22} />}
+              {option.type === 'broadband' && <Wifi size={22} />}
+              {option.type === 'water' && <Droplets size={22} />}
+              {option.type === 'insurance' && <ShieldCheck size={22} />}
+              {option.type === 'education' && <GraduationCap size={22} />}
             </div>
             <p>{option.name}</p>
           </div>

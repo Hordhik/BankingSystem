@@ -1,20 +1,18 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './PaymentMethods.css';
-import wallet from '/src/assets/icons/wallet.svg';
-import card from '/src/assets/icons/card.svg';
-import transfer from '/src/assets/icons/transfer.svg';
-import ticket from '/src/assets/icons/ticket.svg';
-import { useNavigate } from 'react-router-dom';
+import { CreditCard, Landmark, ArrowLeftRight, Smartphone, Wallet, QrCode } from 'lucide-react';
 
 export const PaymentMethods = () => {
   const navigate = useNavigate();
 
   const methods = [
-    { icon: wallet, text: 'Transfer via Card Number', route: 'card' },
-    { icon: card, text: 'Transfer to Other Banks', route: 'banks' },
-    { icon: transfer, text: 'Self Transfer', route: 'self' },
-    { icon: ticket, text: 'Transfer via Mobile / UPI ID', route: 'upi' },
+    { icon: <CreditCard size={22} />, text: 'Transfer via Card Number', route: 'card' },
+    { icon: <Landmark size={22} />, text: 'Transfer to Other Banks', route: 'banks' },
+    { icon: <ArrowLeftRight size={22} />, text: 'Self Transfer', route: 'self' },
+    { icon: <Smartphone size={22} />, text: 'Transfer via Mobile / UPI ID', route: 'upi' },
+  { icon: <QrCode size={22} />, text: 'Scan & Pay (QR / UPI)', route: 'upi' },
+  { icon: <Wallet size={22} />, text: 'Wallets', route: 'wallet' },
   ];
 
   return (
@@ -27,7 +25,7 @@ export const PaymentMethods = () => {
             key={index}
             onClick={() => navigate(`/payment/${method.route}`)} // ✅ lowercase route
           >
-            <img src={method.icon} alt="" />
+            <div className="method-icon">{method.icon}</div>
             <p>{method.text}</p>
           </div>
         ))}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import QRCode from 'react-qr-code';
 import { useParams, Link } from 'react-router-dom';
 import './PaymentPage.css';
 import cardIcon from '/src/assets/icons/card.svg';
@@ -9,7 +10,7 @@ import dashboardIcon from '/src/assets/icons/dashboard.svg';
 export default function PaymentPage() {
   const { type } = useParams();
   const [selectedPayment, setSelectedPayment] = useState('card');
-  const billTypeKeys = ['mobile','dth','electricity','gas'];
+  const billTypeKeys = ['mobile','dth','electricity','gas','broadband','water','insurance','education'];
   const [billType, setBillType] = useState('');
   const [selectedBank, setSelectedBank] = useState('');
   const [paymentDetails, setPaymentDetails] = useState({
@@ -28,12 +29,16 @@ export default function PaymentPage() {
     mobileNumber: '',
     state: '',
   });
+  const [qrRef, setQrRef] = useState('');
+  const [qrValue, setQrValue] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const paymentTypes = [
     { key: 'card', label: 'Card' },
     { key: 'banks', label: 'Bank Transfer' },
     { key: 'self', label: 'Self Transfer' },
     { key: 'upi', label: 'UPI' },
+    { key: 'wallet', label: 'Wallet' },
   ];
 
   const bankList = ['HDFC Bank', 'ICICI Bank', 'SBI', 'Axis Bank', 'Kotak Bank'];
@@ -50,6 +55,16 @@ export default function PaymentPage() {
       setBillType(key);
     }
   }, [type]);
+
+  // Generate a fresh QR value when UPI/QR is selected or amount changes
+  useEffect(() => {
+    if (selectedPayment !== 'upi') return;
+    const ref = `UPI-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}`;
+    setQrRef(ref);
+    const amt = amount || 0;
+    const payload = `upi://pay?pa=demo@bank&pn=Demo%20Merchant&am=${amt}&tn=${encodeURIComponent(ref)}`;
+    setQrValue(payload);
+  }, [selectedPayment, paymentDetails.amount, billType]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -68,7 +83,8 @@ export default function PaymentPage() {
 
   const handlePay = (e) => {
     if (e) e.preventDefault();
-    alert(`Processing ${selectedPayment} payment of ₹${amount.toFixed(2)}...`);
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 1800);
   };
 
   return (
@@ -93,6 +109,7 @@ export default function PaymentPage() {
                     p.key === 'card' ? cardIcon :
                     p.key === 'banks' ? transferIcon :
                     p.key === 'upi' ? walletIcon :
+                    p.key === 'wallet' ? walletIcon :
                     dashboardIcon
                   }
                   alt={p.label}
@@ -218,6 +235,114 @@ export default function PaymentPage() {
                     </div>
                   </div>
                 )}
+
+                {billType === 'broadband' && (
+                  <div className="field-grid">
+                    <div className="form-field">
+                      <label>Customer ID</label>
+                      <input
+                        type="text"
+                        name="customerId"
+                        placeholder="Broadband Customer ID"
+                        value={billDetails.customerId}
+                        onChange={(e)=>setBillDetails(prev=>({...prev, customerId: e.target.value}))}
+                        required
+                      />
+                    </div>
+                    <div className="form-field">
+                      <label>Provider</label>
+                      <input
+                        type="text"
+                        name="provider"
+                        placeholder="e.g., Airtel, JioFiber"
+                        value={billDetails.provider}
+                        onChange={(e)=>setBillDetails(prev=>({...prev, provider: e.target.value}))}
+                        required
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {billType === 'water' && (
+                  <div className="field-grid">
+                    <div className="form-field">
+                      <label>Consumer Number</label>
+                      <input
+                        type="text"
+                        name="consumerNumber"
+                        placeholder="Water Consumer Number"
+                        value={billDetails.consumerNumber}
+                        onChange={(e)=>setBillDetails(prev=>({...prev, consumerNumber: e.target.value}))}
+                        required
+                      />
+                    </div>
+                    <div className="form-field">
+                      <label>Board / City</label>
+                      <input
+                        type="text"
+                        name="state"
+                        placeholder="e.g., HMWS&SB"
+                        value={billDetails.state}
+                        onChange={(e)=>setBillDetails(prev=>({...prev, state: e.target.value}))}
+                        required
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {billType === 'insurance' && (
+                  <div className="field-grid">
+                    <div className="form-field">
+                      <label>Policy Number</label>
+                      <input
+                        type="text"
+                        name="customerId"
+                        placeholder="Policy Number"
+                        value={billDetails.customerId}
+                        onChange={(e)=>setBillDetails(prev=>({...prev, customerId: e.target.value}))}
+                        required
+                      />
+                    </div>
+                    <div className="form-field">
+                      <label>Provider</label>
+                      <input
+                        type="text"
+                        name="provider"
+                        placeholder="e.g., LIC, HDFC Life"
+                        value={billDetails.provider}
+                        onChange={(e)=>setBillDetails(prev=>({...prev, provider: e.target.value}))}
+                        required
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {billType === 'education' && (
+                  <div className="field-grid">
+                    <div className="form-field">
+                      <label>Student ID</label>
+                      <input
+                        type="text"
+                        name="customerId"
+                        placeholder="Student ID"
+                        value={billDetails.customerId}
+                        onChange={(e)=>setBillDetails(prev=>({...prev, customerId: e.target.value}))}
+                        required
+                      />
+                    </div>
+                    <div className="form-field">
+                      <label>Institute</label>
+                      <input
+                        type="text"
+                        name="provider"
+                        placeholder="Institute / University"
+                        value={billDetails.provider}
+                        onChange={(e)=>setBillDetails(prev=>({...prev, provider: e.target.value}))}
+                        required
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -285,12 +410,27 @@ export default function PaymentPage() {
 
             {selectedPayment !== 'card' && (
               <>
-                <h3>Receiver Details</h3>
-                <label>Receiver Account / UPI</label>
+                <h3>{selectedPayment === 'wallet' ? 'Wallet Details' : 'Receiver Details'}</h3>
+                {selectedPayment === 'upi' && (
+                  <div className="qr-box">
+                    <div className="qr-inner">
+                      <QRCode value={qrValue || 'upi://pay?pa=demo@bank'} size={140} />
+                    </div>
+                    <div className="qr-meta">
+                      <span>Scan to pay</span>
+                      <span className="qr-ref">Ref: {qrRef || '—'}</span>
+                    </div>
+                  </div>
+                )}
+                <label>{selectedPayment === 'wallet' ? 'Wallet ID / Mobile' : 'Receiver Account / UPI'}</label>
                 <input
                   type="text"
                   name="receiverAccount"
-                  placeholder={selectedPayment === 'upi' ? 'name@bank' : 'Enter account number'}
+                  placeholder={
+                    selectedPayment === 'upi' ? 'name@bank' :
+                    selectedPayment === 'wallet' ? 'wallet id or mobile number' :
+                    'Enter account number'
+                  }
                   value={paymentDetails.receiverAccount}
                   onChange={handleInputChange}
                   required
@@ -326,10 +466,22 @@ export default function PaymentPage() {
           <div className="summary-row"><span>Convenience Fee</span><span>₹{convenienceFee.toFixed(2)}</span></div>
           <div className="summary-row"><span>Taxes (18%)</span><span>₹{taxes.toFixed(2)}</span></div>
           <div className="summary-total"><span>Total</span><span>₹{total.toFixed(2)}</span></div>
-          <button className="pay-btn summary-btn" onClick={handlePay} disabled={!amount}>Pay Now</button>
+          <button className="pay-btn summary-btn" onClick={handlePay} disabled={!amount}>{selectedPayment === 'wallet' ? 'Add Money' : 'Pay Now'}</button>
           <p className="summary-note">Fees are illustrative. No real payments are processed.</p>
         </aside>
       </div>
+      {showSuccess && (
+        <div className="success-overlay">
+          <div className="success-modal">
+            <div className="success-check">
+              <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </div>
+            <div className="success-text">Payment Successful</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

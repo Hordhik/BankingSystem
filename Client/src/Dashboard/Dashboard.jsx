@@ -30,8 +30,8 @@ export const Dashboard = () => {
 
   let essentialsTabs = [
     { name: "Dashboard", icon: dashboard },
-  { name: "Transactions", icon: wallet },
     { name: "Cards", icon: card },
+    { name: "Transactions", icon: wallet },
     { name: "Loans & Investments", icon: loans },
     { name: "Pre-Approved Offers", icon: offers },
   ];
