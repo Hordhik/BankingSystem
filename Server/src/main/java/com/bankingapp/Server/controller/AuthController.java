@@ -12,8 +12,15 @@ public class AuthController {
     private final AuthService authService;
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest req) {
+        // quick debug log - will print request fields to console
+        System.out.println("REGISTER REQUEST -> fullname: " + req.getFullname()
+                + " | email: " + req.getEmail()
+                + " | username: " + req.getUsername()
+                + " | accountNumber: " + req.getAccountNumber()
+                + " | ifsc: " + req.getIfsc());
         return ResponseEntity.ok(authService.register(req));
     }
+
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest req) {
         return ResponseEntity.ok(authService.login(req));

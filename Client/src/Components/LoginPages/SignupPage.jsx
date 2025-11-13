@@ -1,11 +1,11 @@
 // Client/src/pages/SignUpPage.jsx
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import API from '../../api' // <-- keep this path if your api.js is at src/api.js
 import emailIcon from '../assets/email.png'
 import passwordIcon from '../assets/password.png'
 import personIcon from '../assets/person.png'
 import './loginPage.css'
-import API from '../../api'   // <-- import API
 
 const SignUpPage = () => {
   const navigate = useNavigate()
@@ -35,26 +35,34 @@ const SignUpPage = () => {
 
     setLoading(true)
     try {
-      // Only send the fields the backend expects (fullname, email, password)
+      // Normalize email and prepare payload (match your RegisterRequest DTO)
+      const normalizedEmail = email.trim().toLowerCase()
       const payload = {
         fullname: fullName,
-        email: email,
+        email: normalizedEmail,
         password: password,
+        username: username || null,
+        accountNumber: accountNumber || null,
+        ifsc: ifsc || null
       }
 
       const res = await API.post('/auth/register', payload)
-      // response format from your backend: { token, fullname, email }
-      localStorage.setItem('token', res.token || res.data?.token)
-      localStorage.setItem('fullname', res.fullname || res.data?.fullname)
-      localStorage.setItem('email', res.email || res.data?.email)
+      // axios responses store data in res.data
+      const data = res?.data ?? res
+
+      // Safely store token and user info
+      const token = data?.token
+      if (token) localStorage.setItem('token', token)
+      if (data?.fullname) localStorage.setItem('fullname', data.fullname)
+      if (data?.email) localStorage.setItem('email', data.email)
 
       // Redirect to dashboard
       navigate('/dashboard')
     } catch (err) {
-      console.error(err)
-      // friendly message: try to read backend message
-      const msg = err?.response?.data?.message || err?.message || 'Registration failed'
-      setError(msg)
+      console.error('Registration error:', err)
+      // Prefer backend message, fallback to generic
+      const msg = err?.response?.data?.message || err?.response?.data || err?.message || 'Registration failed'
+      setError(typeof msg === 'string' ? msg : JSON.stringify(msg))
     } finally {
       setLoading(false)
     }
@@ -86,7 +94,7 @@ const SignUpPage = () => {
             <img src={personIcon} alt="Username" className="input-group__icon" />
             <input
               type="text"
-              placeholder="Username (optional)"
+              placeholder="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="input-group__control"
@@ -109,7 +117,7 @@ const SignUpPage = () => {
             <img src={personIcon} alt="Account Number" className="input-group__icon" />
             <input
               type="text"
-              placeholder="Account Number (optional)"
+              placeholder="Account Number"
               value={accountNumber}
               onChange={(e) => setAccountNumber(e.target.value)}
               className="input-group__control"
@@ -121,7 +129,7 @@ const SignUpPage = () => {
             <img src={personIcon} alt="IFSC Code" className="input-group__icon" />
             <input
               type="text"
-              placeholder="IFSC Code (optional)"
+              placeholder="IFSC Code"
               value={ifsc}
               onChange={(e) => setIfsc(e.target.value)}
               className="input-group__control"
@@ -169,4 +177,4 @@ const SignUpPage = () => {
   )
 }
 
-export default SignUpPage;
+export default SignUpPage
