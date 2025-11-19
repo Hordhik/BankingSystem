@@ -10,28 +10,22 @@ public class User {
     private Long userId;
     @Column(name = "fullname", nullable = false)
     private String fullname;
+    @Column(name = "username", unique = true)         // added
+    private String username;
+    @Column(name = "account_number")                  // added
+    private String accountNumber;
+    @Column(name = "ifsc_code")                       // added
+    private String ifscCode;
     @Column(name = "email", nullable = false, unique = true)
     private String email;
     @Column(name = "password", nullable = false)
     private String password;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-    @Column(name = "username")
-    private String username;
-    @Column(name = "account_number")
-    private String accountNumber;
-    @Column(name = "ifsc_code")
-    private String ifscCode;
     public User() {}
-    public User(String fullname,
-                String email,
-                String password,
-                String username,
-                String accountNumber,
-                String ifscCode) {
+    // constructor including the new fields
+    public User(String fullname, String username, String accountNumber, String ifscCode, String email, String password) {
         this.fullname = fullname;
-        this.email = email;
-        this.password = password;
         this.username = username;
         this.accountNumber = accountNumber;
         this.ifscCode = ifscCode;
@@ -47,10 +41,4 @@ public class User {
     public void setPassword(String password) { this.password = password; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
-    public String getAccountNumber() { return accountNumber; }
-    public void setAccountNumber(String accountNumber) { this.accountNumber = accountNumber; }
-    public String getIfscCode() { return ifscCode; }
-    public void setIfscCode(String ifscCode) { this.ifscCode = ifscCode; }
 }
