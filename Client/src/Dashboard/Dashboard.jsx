@@ -50,15 +50,15 @@ export const Dashboard = () => {
       case 'Pre-Approved Offers':
         return <OffersSection />;
       case 'Dashboard':
-        return <Payments/>;
+        return <Payments />;
       case 'Transactions':
-        return <Transactions/>;
+        return <Transactions />;
       case 'Cards':
         return <CardsPage />;
       case 'Settings':
-        return <Settings/>
+        return <Settings />
       case "Support Tickets":
-        return <SupportTickets/>
+        return <SupportTickets />
       default:
         return <div style={{ padding: '2rem' }}>{activeTab} content will be shown here.</div>;
     }
@@ -70,14 +70,14 @@ export const Dashboard = () => {
         <div className="profile">
           <img src={profile_img} alt="" />
           <div className="user-details">
-            <p>hordhik manikant</p>
-            <p>Account number</p>
+            <p>{localStorage.getItem('fullname') || 'User'}</p>
+            <p>{localStorage.getItem('accountNumber') || 'Account number'}</p>
           </div>
         </div>
         <div className="essentials-tabs">
           <p>Essentials</p>
           {essentialsTabs.map((tab) => (
-            <div 
+            <div
               key={tab.name}
               className={`tab ${activeTab === tab.name ? 'active' : ''}`}
               onClick={() => setActiveTab(tab.name)}
@@ -90,7 +90,7 @@ export const Dashboard = () => {
         <div className="operationals-tabs">
           <p>Operationals</p>
           {operationalsTabs.map((tab) => (
-            <div 
+            <div
               key={tab.name}
               className={`tab ${activeTab === tab.name ? 'active' : ''}`}
               onClick={() => setActiveTab(tab.name)}

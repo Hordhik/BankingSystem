@@ -88,9 +88,15 @@ public class TransactionService {
         saveTransaction(to, "TRANSFER_RECEIVED", amount, from.getId());
     }
 
-    public List<TransactionResponse> getTransactionsForAccount(Long accountId) {
+    public List<TransactionResponse> getTransactionsForAccount(Long accountId, String userEmail) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+        
+        // Verify that the account belongs to the authenticated user
+        if (!account.getUser().getEmail().equals(userEmail)) {
+            throw new IllegalArgumentException("Unauthorized: You can only view transactions for your own accounts");
+        }
+        
         return transactionRepository.findByAccountOrderByCreatedAtDesc(account)
                 .stream()
                 .map(t -> TransactionResponse.builder()

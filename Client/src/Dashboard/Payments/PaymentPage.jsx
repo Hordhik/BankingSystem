@@ -6,11 +6,12 @@ import cardIcon from '/src/assets/icons/card.svg';
 import transferIcon from '/src/assets/icons/transfer.svg';
 import walletIcon from '/src/assets/icons/wallet.svg';
 import dashboardIcon from '/src/assets/icons/dashboard.svg';
+import { transfer, getAccounts } from '../../services/bankApi';
 
 export default function PaymentPage() {
   const { type } = useParams();
   const [selectedPayment, setSelectedPayment] = useState('card');
-  const billTypeKeys = ['mobile','dth','electricity','gas','broadband','water','insurance','education'];
+  const billTypeKeys = ['mobile', 'dth', 'electricity', 'gas', 'broadband', 'water', 'insurance', 'education'];
   const [billType, setBillType] = useState('');
   const [selectedBank, setSelectedBank] = useState('');
   const [paymentDetails, setPaymentDetails] = useState({
@@ -31,6 +32,7 @@ export default function PaymentPage() {
   });
   const [qrRef, setQrRef] = useState('');
   const [qrValue, setQrValue] = useState('');
+  const [accounts, setAccounts] = useState([]);
   const [showSuccess, setShowSuccess] = useState(false);
 
   const paymentTypes = [
@@ -59,12 +61,24 @@ export default function PaymentPage() {
   // Generate a fresh QR value when UPI/QR is selected or amount changes
   useEffect(() => {
     if (selectedPayment !== 'upi') return;
-    const ref = `UPI-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}`;
+    const ref = `UPI-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
     setQrRef(ref);
     const amt = amount || 0;
     const payload = `upi://pay?pa=demo@bank&pn=Demo%20Merchant&am=${amt}&tn=${encodeURIComponent(ref)}`;
     setQrValue(payload);
   }, [selectedPayment, paymentDetails.amount, billType]);
+
+  // Fetch accounts when Bank Transfer is selected
+  useEffect(() => {
+    if (selectedPayment === 'banks') {
+      getAccounts().then(data => {
+        const myAccountId = localStorage.getItem('primaryAccountId');
+        // Filter out current user's account
+        const filtered = data.filter(acc => acc.id.toString() !== myAccountId);
+        setAccounts(filtered);
+      }).catch(err => console.error('Failed to fetch accounts:', err));
+    }
+  }, [selectedPayment]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -81,10 +95,28 @@ export default function PaymentPage() {
   const taxes = amount ? +(convenienceFee * 0.18).toFixed(2) : 0; // 18% GST on fee
   const total = +(amount + convenienceFee + taxes).toFixed(2);
 
-  const handlePay = (e) => {
+  const handlePay = async (e) => {
     if (e) e.preventDefault();
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 1800);
+
+    if (selectedPayment === 'banks') {
+      try {
+        const fromId = localStorage.getItem('primaryAccountId');
+        if (!fromId) {
+          alert("Account ID not found. Please login again.");
+          return;
+        }
+        await transfer(fromId, paymentDetails.receiverAccount, amount);
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 1800);
+      } catch (err) {
+        console.error("Transfer failed", err);
+        alert("Transfer failed: " + (err.message || "Unknown error"));
+      }
+    } else {
+      // Mock for other types
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 1800);
+    }
   };
 
   return (
@@ -96,7 +128,7 @@ export default function PaymentPage() {
         <section className="panel methods">
           <h2 className="panel-title">Select Payment Method</h2>
           <div className="methods-grid">
-            {(billType ? paymentTypes.filter((p)=>p.key !== 'self') : paymentTypes).map((p) => (
+            {(billType ? paymentTypes.filter((p) => p.key !== 'self') : paymentTypes).map((p) => (
               <button
                 type="button"
                 key={p.key}
@@ -107,10 +139,10 @@ export default function PaymentPage() {
                   className="method-icon-img"
                   src={
                     p.key === 'card' ? cardIcon :
-                    p.key === 'banks' ? transferIcon :
-                    p.key === 'upi' ? walletIcon :
-                    p.key === 'wallet' ? walletIcon :
-                    dashboardIcon
+                      p.key === 'banks' ? transferIcon :
+                        p.key === 'upi' ? walletIcon :
+                          p.key === 'wallet' ? walletIcon :
+                            dashboardIcon
                   }
                   alt={p.label}
                 />
@@ -137,7 +169,7 @@ export default function PaymentPage() {
                         name="mobileNumber"
                         placeholder="10-digit mobile number"
                         value={billDetails.mobileNumber}
-                        onChange={(e)=>setBillDetails(prev=>({...prev, mobileNumber: e.target.value}))}
+                        onChange={(e) => setBillDetails(prev => ({ ...prev, mobileNumber: e.target.value }))}
                         required
                       />
                     </div>
@@ -148,7 +180,7 @@ export default function PaymentPage() {
                         name="operator"
                         placeholder="e.g., Airtel, Jio"
                         value={billDetails.operator}
-                        onChange={(e)=>setBillDetails(prev=>({...prev, operator: e.target.value}))}
+                        onChange={(e) => setBillDetails(prev => ({ ...prev, operator: e.target.value }))}
                         required
                       />
                     </div>
@@ -164,7 +196,7 @@ export default function PaymentPage() {
                         name="customerId"
                         placeholder="DTH Customer ID"
                         value={billDetails.customerId}
-                        onChange={(e)=>setBillDetails(prev=>({...prev, customerId: e.target.value}))}
+                        onChange={(e) => setBillDetails(prev => ({ ...prev, customerId: e.target.value }))}
                         required
                       />
                     </div>
@@ -175,7 +207,7 @@ export default function PaymentPage() {
                         name="provider"
                         placeholder="e.g., Tata Play, Airtel DTH"
                         value={billDetails.provider}
-                        onChange={(e)=>setBillDetails(prev=>({...prev, provider: e.target.value}))}
+                        onChange={(e) => setBillDetails(prev => ({ ...prev, provider: e.target.value }))}
                         required
                       />
                     </div>
@@ -191,7 +223,7 @@ export default function PaymentPage() {
                         name="consumerNumber"
                         placeholder="Electricity Consumer Number"
                         value={billDetails.consumerNumber}
-                        onChange={(e)=>setBillDetails(prev=>({...prev, consumerNumber: e.target.value}))}
+                        onChange={(e) => setBillDetails(prev => ({ ...prev, consumerNumber: e.target.value }))}
                         required
                       />
                     </div>
@@ -202,7 +234,7 @@ export default function PaymentPage() {
                         name="state"
                         placeholder="e.g., TSSPDCL"
                         value={billDetails.state}
-                        onChange={(e)=>setBillDetails(prev=>({...prev, state: e.target.value}))}
+                        onChange={(e) => setBillDetails(prev => ({ ...prev, state: e.target.value }))}
                         required
                       />
                     </div>
@@ -218,7 +250,7 @@ export default function PaymentPage() {
                         name="customerId"
                         placeholder="Gas Customer ID"
                         value={billDetails.customerId}
-                        onChange={(e)=>setBillDetails(prev=>({...prev, customerId: e.target.value}))}
+                        onChange={(e) => setBillDetails(prev => ({ ...prev, customerId: e.target.value }))}
                         required
                       />
                     </div>
@@ -229,7 +261,7 @@ export default function PaymentPage() {
                         name="provider"
                         placeholder="e.g., Adani, IGL"
                         value={billDetails.provider}
-                        onChange={(e)=>setBillDetails(prev=>({...prev, provider: e.target.value}))}
+                        onChange={(e) => setBillDetails(prev => ({ ...prev, provider: e.target.value }))}
                         required
                       />
                     </div>
@@ -245,7 +277,7 @@ export default function PaymentPage() {
                         name="customerId"
                         placeholder="Broadband Customer ID"
                         value={billDetails.customerId}
-                        onChange={(e)=>setBillDetails(prev=>({...prev, customerId: e.target.value}))}
+                        onChange={(e) => setBillDetails(prev => ({ ...prev, customerId: e.target.value }))}
                         required
                       />
                     </div>
@@ -256,7 +288,7 @@ export default function PaymentPage() {
                         name="provider"
                         placeholder="e.g., Airtel, JioFiber"
                         value={billDetails.provider}
-                        onChange={(e)=>setBillDetails(prev=>({...prev, provider: e.target.value}))}
+                        onChange={(e) => setBillDetails(prev => ({ ...prev, provider: e.target.value }))}
                         required
                       />
                     </div>
@@ -272,7 +304,7 @@ export default function PaymentPage() {
                         name="consumerNumber"
                         placeholder="Water Consumer Number"
                         value={billDetails.consumerNumber}
-                        onChange={(e)=>setBillDetails(prev=>({...prev, consumerNumber: e.target.value}))}
+                        onChange={(e) => setBillDetails(prev => ({ ...prev, consumerNumber: e.target.value }))}
                         required
                       />
                     </div>
@@ -283,7 +315,7 @@ export default function PaymentPage() {
                         name="state"
                         placeholder="e.g., HMWS&SB"
                         value={billDetails.state}
-                        onChange={(e)=>setBillDetails(prev=>({...prev, state: e.target.value}))}
+                        onChange={(e) => setBillDetails(prev => ({ ...prev, state: e.target.value }))}
                         required
                       />
                     </div>
@@ -299,7 +331,7 @@ export default function PaymentPage() {
                         name="customerId"
                         placeholder="Policy Number"
                         value={billDetails.customerId}
-                        onChange={(e)=>setBillDetails(prev=>({...prev, customerId: e.target.value}))}
+                        onChange={(e) => setBillDetails(prev => ({ ...prev, customerId: e.target.value }))}
                         required
                       />
                     </div>
@@ -310,7 +342,7 @@ export default function PaymentPage() {
                         name="provider"
                         placeholder="e.g., LIC, HDFC Life"
                         value={billDetails.provider}
-                        onChange={(e)=>setBillDetails(prev=>({...prev, provider: e.target.value}))}
+                        onChange={(e) => setBillDetails(prev => ({ ...prev, provider: e.target.value }))}
                         required
                       />
                     </div>
@@ -326,7 +358,7 @@ export default function PaymentPage() {
                         name="customerId"
                         placeholder="Student ID"
                         value={billDetails.customerId}
-                        onChange={(e)=>setBillDetails(prev=>({...prev, customerId: e.target.value}))}
+                        onChange={(e) => setBillDetails(prev => ({ ...prev, customerId: e.target.value }))}
                         required
                       />
                     </div>
@@ -337,7 +369,7 @@ export default function PaymentPage() {
                         name="provider"
                         placeholder="Institute / University"
                         value={billDetails.provider}
-                        onChange={(e)=>setBillDetails(prev=>({...prev, provider: e.target.value}))}
+                        onChange={(e) => setBillDetails(prev => ({ ...prev, provider: e.target.value }))}
                         required
                       />
                     </div>
@@ -422,19 +454,40 @@ export default function PaymentPage() {
                     </div>
                   </div>
                 )}
-                <label>{selectedPayment === 'wallet' ? 'Wallet ID / Mobile' : 'Receiver Account / UPI'}</label>
-                <input
-                  type="text"
-                  name="receiverAccount"
-                  placeholder={
-                    selectedPayment === 'upi' ? 'name@bank' :
-                    selectedPayment === 'wallet' ? 'wallet id or mobile number' :
-                    'Enter account number'
-                  }
-                  value={paymentDetails.receiverAccount}
-                  onChange={handleInputChange}
-                  required
-                />
+                {selectedPayment === 'banks' ? (
+                  <>
+                    <label>Select Receiver Account</label>
+                    <select
+                      name="receiverAccount"
+                      value={paymentDetails.receiverAccount}
+                      onChange={handleInputChange}
+                      required
+                    >
+                      <option value="">Choose Account</option>
+                      {accounts.map(acc => (
+                        <option key={acc.id} value={acc.id}>
+                          {acc.ownerName} - Account #{acc.id} ({acc.accountNumber})
+                        </option>
+                      ))}
+                    </select>
+                  </>
+                ) : (
+                  <>
+                    <label>{selectedPayment === 'wallet' ? 'Wallet ID / Mobile' : 'Receiver Account / UPI'}</label>
+                    <input
+                      type="text"
+                      name="receiverAccount"
+                      placeholder={
+                        selectedPayment === 'upi' ? 'name@bank' :
+                          selectedPayment === 'wallet' ? 'wallet id or mobile number' :
+                            'Enter account number'
+                      }
+                      value={paymentDetails.receiverAccount}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </>
+                )}
 
                 {selectedPayment === 'banks' && (
                   <>
@@ -475,7 +528,7 @@ export default function PaymentPage() {
           <div className="success-modal">
             <div className="success-check">
               <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 6L9 17l-5-5"/>
+                <path d="M20 6L9 17l-5-5" />
               </svg>
             </div>
             <div className="success-text">Payment Successful</div>

@@ -42,6 +42,10 @@ const LoginPage = () => {
       localStorage.setItem('token', token)
       if (data?.fullname) localStorage.setItem('fullname', data.fullname)
       if (data?.email) localStorage.setItem('email', data.email)
+      if (data?.primaryAccountId) localStorage.setItem('primaryAccountId', data.primaryAccountId)
+      if (data?.accountNumber) localStorage.setItem('accountNumber', data.accountNumber)
+      if (data?.username) localStorage.setItem('username', data.username)
+      if (data?.primaryAccountBalance) localStorage.setItem('primaryAccountBalance', data.primaryAccountBalance)
 
       // set default Authorization header for future API calls
       API.defaults.headers.common['Authorization'] = `Bearer ${token}`

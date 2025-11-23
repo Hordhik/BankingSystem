@@ -2,7 +2,7 @@ import React from 'react';
 import './Payments.css';
 import { PaymentMethods } from './components/PaymentMethods.jsx';
 import { RecentActivities } from './components/RecentActivities.jsx';
-import {RechargeAndBills} from './components/RechargeAndBills.jsx';
+import { RechargeAndBills } from './components/RechargeAndBills.jsx';
 import transferIcon from '/src/assets/icons/transfer.svg';
 import cardIcon from '/src/assets/icons/card.svg';
 import loansIcon from '/src/assets/icons/loans.svg';
@@ -11,12 +11,12 @@ import { useNavigate } from 'react-router-dom';
 import { DebitCardDisplay } from './components/DebitCardDisplay.jsx';
 
 const transactionsData = [
-    { id: 1, to: 'Eswar Reddy', type: 'Online Payment', date: 'October, 03', amount: '- ₹5000.00', status: 'Failed' },
-    { id: 2, to: 'Eswar Reddy', type: 'Online Payment', date: 'October, 03', amount: '+ ₹50000.00', status: 'Completed' },
-    { id: 3, to: 'Eswar Reddy', type: 'EMI', date: 'October, 03', amount: '+ ₹2378.00', status: 'Completed' },
-    { id: 4, to: 'Eswar Reddy', type: 'Merchant', date: 'September, 29', amount: '- ₹3000.00', status: 'Success' },
-    { id: 5, to: 'Eswar Reddy', type: 'Electric Bill', date: 'September, 25', amount: '+ ₹2584.43', status: 'Pending' },
-    { id: 6, to: 'Eswar Reddy', type: 'Insurance', date: 'September, 25', amount: '- ₹10000.00', status: 'Completed' },
+  { id: 1, to: 'Eswar Reddy', type: 'Online Payment', date: 'October, 03', amount: '- ₹5000.00', status: 'Failed' },
+  { id: 2, to: 'Eswar Reddy', type: 'Online Payment', date: 'October, 03', amount: '+ ₹50000.00', status: 'Completed' },
+  { id: 3, to: 'Eswar Reddy', type: 'EMI', date: 'October, 03', amount: '+ ₹2378.00', status: 'Completed' },
+  { id: 4, to: 'Eswar Reddy', type: 'Merchant', date: 'September, 29', amount: '- ₹3000.00', status: 'Success' },
+  { id: 5, to: 'Eswar Reddy', type: 'Electric Bill', date: 'September, 25', amount: '+ ₹2584.43', status: 'Pending' },
+  { id: 6, to: 'Eswar Reddy', type: 'Insurance', date: 'September, 25', amount: '- ₹10000.00', status: 'Completed' },
 ];
 
 function Payments() {
@@ -31,17 +31,17 @@ function Payments() {
 
   return (
     <div className='payments-container'>
-      <h1 className="dash-greeting">Welcome back, Hordhik <span className="wave">👋</span></h1>
+      <h1 className="dash-greeting">Welcome back, {localStorage.getItem('fullname')?.split(' ')[0] || 'User'} <span className="wave">👋</span></h1>
 
       {/* Top overview: balance + hero card */}
       <section className="dash-top-grid">
         <div className="balance-panel">
           <h3>Total Balance</h3>
-          <div className="big-amount">₹72,450.00</div>
+          <div className="big-amount">₹{parseFloat(localStorage.getItem('primaryAccountBalance') || '0').toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
           <div className="mini-cards">
             <div className="mini">
               <div className="mini-title">Savings Account</div>
-              <div className="mini-value">₹45,000,00</div>
+              <div className="mini-value">₹{parseFloat(localStorage.getItem('primaryAccountBalance') || '0').toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
             </div>
             <div className="mini">
               <div className="mini-title">Credit Card</div>
@@ -52,7 +52,7 @@ function Payments() {
               <div className="mini-value">₹2,50,000,00</div>
             </div>
             {/* Caption under the Savings tile (first column only) */}
-            <div className="mini-caption">Hordhik Manikant</div>
+            <div className="mini-caption">{localStorage.getItem('fullname') || 'User'}</div>
           </div>
         </div>
 

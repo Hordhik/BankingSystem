@@ -8,7 +8,7 @@ import { getHistory } from '../../services/bankApi'; // <-- adjust path if neede
 const Icon = ({ type }) => {
   const icons = {
     card: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>,
-    bank: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>,
+    bank: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" /></svg>,
     self: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>,
     upi: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>,
   };
@@ -25,7 +25,7 @@ const Transactions = () => {
   // ===== replaced static data with live data =====
   const [transactions, setTransactions] = useState([]);
   const [loadingTx, setLoadingTx] = useState(false);
-  const accountId = 1; // <-- TEMP: hardcoded account id for testing. Replace with logged-in user's account id later.
+  const accountId = localStorage.getItem('primaryAccountId'); // Get logged-in user's account ID
 
   useEffect(() => {
     let mounted = true;
@@ -34,11 +34,11 @@ const Transactions = () => {
       try {
         const data = await getHistory(accountId); // expects TransactionResponse[] from backend
         const mapped = (data || []).map(t => {
-          // normalize amount to UI string like "+ ₹123.00" or "- ₹123.00"
+          // Determine if transaction is incoming or outgoing based on TYPE
+          const isIncoming = t.type === 'TRANSFER_RECEIVED' || t.type === 'DEPOSIT';
           const num = Number(t.amount);
-          const amountStr = Number.isFinite(num)
-            ? (num >= 0 ? `+ ₹${num.toFixed(2)}` : `- ₹${Math.abs(num).toFixed(2)}`)
-            : (String(t.amount).startsWith('-') ? `- ₹${String(t.amount).replace(/[^0-9.]/g,'')}` : `+ ₹${String(t.amount)}`);
+          const absAmount = Math.abs(num).toFixed(2);
+          const amountStr = isIncoming ? `+ ₹${absAmount}` : `- ₹${absAmount}`;
 
           return {
             id: t.id,
@@ -81,7 +81,7 @@ const Transactions = () => {
       if (to) {
         // include entire 'to' day
         const toEnd = new Date(to);
-        toEnd.setHours(23,59,59,999);
+        toEnd.setHours(23, 59, 59, 999);
         if (d > toEnd) return false;
       }
       return true;
@@ -137,7 +137,7 @@ const Transactions = () => {
       default: return '';
     }
   };
-  
+
   return (
     <div className="transactions-page">
       <div className="transactions-left">
@@ -146,27 +146,27 @@ const Transactions = () => {
           <div className="toolbar">
             <div className="filter-chips">
               {[
-                { key:'all', label:'All' },
-                { key:'bank', label:'Bank Transfer' },
-                { key:'card', label:'Card' },
-                { key:'self', label:'Self Transfer' },
-                { key:'upi',  label:'UPI' },
-                { key:'bills',label:'Bills' },
-              ].map(({key,label}) => (
+                { key: 'all', label: 'All' },
+                { key: 'bank', label: 'Bank Transfer' },
+                { key: 'card', label: 'Card' },
+                { key: 'self', label: 'Self Transfer' },
+                { key: 'upi', label: 'UPI' },
+                { key: 'bills', label: 'Bills' },
+              ].map(({ key, label }) => (
                 <button key={key} className={`chip ${filter === key ? 'active' : ''}`} onClick={() => setFilter(key)}>
                   {label}
                 </button>
               ))}
             </div>
             <div className="export-wrap">
-              <button className="chip export" onClick={() => setExportOpen(v=>!v)}>Export ▾</button>
+              <button className="chip export" onClick={() => setExportOpen(v => !v)}>Export ▾</button>
               {exportOpen && (
                 <div className="export-dropdown">
                   <label>From
-                    <input type="date" value={fromDate} onChange={e=>setFromDate(e.target.value)} />
+                    <input type="date" value={fromDate} onChange={e => setFromDate(e.target.value)} />
                   </label>
                   <label>To
-                    <input type="date" value={toDate} onChange={e=>setToDate(e.target.value)} />
+                    <input type="date" value={toDate} onChange={e => setToDate(e.target.value)} />
                   </label>
                   <button className="btn-primary" onClick={generatePdf}>Export PDF</button>
                 </div>
@@ -175,7 +175,7 @@ const Transactions = () => {
           </div>
         </div>
         <div className="transactions-table-card">
-          {loadingTx && <div style={{padding:12}}>Loading transactions…</div>}
+          {loadingTx && <div style={{ padding: 12 }}>Loading transactions…</div>}
           <table>
             <thead>
               <tr>
@@ -209,9 +209,9 @@ const Transactions = () => {
           <h3 className="section-title">Expenses by Category</h3>
           <DonutChart />
           <ul className="legend">
-            <li><span className="dot bills"/> Bills</li>
-            <li><span className="dot recharge"/> Recharge</li>
-            <li><span className="dot other"/> Other</li>
+            <li><span className="dot bills" /> Bills</li>
+            <li><span className="dot recharge" /> Recharge</li>
+            <li><span className="dot other" /> Other</li>
           </ul>
         </div>
       </div>
@@ -222,10 +222,10 @@ const Transactions = () => {
 export default Transactions;
 
 // Simple inline bar chart without external libs
-const monthLabels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const sampleSpends = [12000, 18500, 15400, 20100, 9800, 17600, 22000, 24500, 19900, 26800, 23100, 18800];
 
-function SpendingChart({ data = sampleSpends, labels = monthLabels }){
+function SpendingChart({ data = sampleSpends, labels = monthLabels }) {
   const max = Math.max(...data, 1);
   return (
     <div className="spend-chart">
@@ -239,7 +239,7 @@ function SpendingChart({ data = sampleSpends, labels = monthLabels }){
   );
 }
 
-function DonutChart(){
+function DonutChart() {
   return (
     <div className="donut-wrapper">
       <svg viewBox="0 0 42 42" className="donut">

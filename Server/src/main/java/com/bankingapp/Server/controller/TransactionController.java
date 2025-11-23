@@ -37,6 +37,12 @@ public class TransactionController {
 
     @GetMapping("/account/{id}/history")
     public ResponseEntity<List<TransactionResponse>> history(@PathVariable("id") Long accountId) {
-        return ResponseEntity.ok(transactionService.getTransactionsForAccount(accountId));
+        // Get authenticated user's email from SecurityContext
+        String userEmail = org.springframework.security.core.context.SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+        
+        return ResponseEntity.ok(transactionService.getTransactionsForAccount(accountId, userEmail));
     }
 }
