@@ -15,6 +15,9 @@ import PaymentPage from './Dashboard/Payments/PaymentPage.jsx';
 // Protected Route Component
 import ProtectedRoute from './Components/ProtectedRoute';
 
+// Admin
+import Admin from './Admin/Admin.jsx';
+
 function App() {
   return (
     <Router>
@@ -25,6 +28,9 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+
+        {/* ADMIN ROUTES */}
+        <Route path="/admin" element={<Admin />} />
 
         {/* PROTECTED ROUTES */}
         <Route element={<ProtectedRoute />}>
