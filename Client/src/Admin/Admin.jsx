@@ -8,6 +8,7 @@ import settings from '/src/assets/icons/settings.svg';
 import reports from '/src/assets/icons/loans.svg';
 import analytics from '/src/assets/icons/offers.svg';
 import { useNavigate } from 'react-router-dom';
+import { clearCurrentUser } from '../Components/Auth/userStore';
 import UserManagement from './components/UserManagement.jsx';
 import TransactionManagement from './components/TransactionManagement.jsx';
 import AdminDashboard from './components/AdminDashboard.jsx';
@@ -20,6 +21,7 @@ export const Admin = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    clearCurrentUser();
     navigate('/login');
   };
 

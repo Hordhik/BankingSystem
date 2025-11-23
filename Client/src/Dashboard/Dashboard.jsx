@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { clearCurrentUser } from '../Components/Auth/userStore';
 import './Dashboard.css';
 import profile_img from '/src/assets/profile.svg';
 import dashboard from '/src/assets/icons/dashboard.svg';
@@ -25,6 +26,7 @@ export const Dashboard = () => {
   // Auth-free mode: don't redirect; dashboard is publicly accessible for now
 
   const handleLogout = () => {
+    clearCurrentUser();
     navigate('/login');
   };
 

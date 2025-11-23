@@ -75,6 +75,9 @@ export function getCurrentUser(){
 
 export function clearCurrentUser(){
   localStorage.removeItem(CURRENT_USER_KEY)
+  localStorage.removeItem('token')
+  localStorage.removeItem('fullname')
+  localStorage.removeItem('email')
 }
 
 
