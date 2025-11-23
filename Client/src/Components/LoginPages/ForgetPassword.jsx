@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import emailIcon from '../assets/email.png';
 import passwordIcon from '../assets/password.png';
 import './loginPage.css';
-import API from '../../api'; // try backend endpoints if available
+import API from '../../services/api'; // try backend endpoints if available
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');

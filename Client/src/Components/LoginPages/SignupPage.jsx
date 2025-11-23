@@ -1,7 +1,7 @@
 // Client/src/pages/SignUpPage.jsx
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import API from '../../api' // <-- keep this path if your api.js is at src/api.js
+import API from '../../services/api' // <-- keep this path if your api.js is at src/api.js
 import emailIcon from '../assets/email.png'
 import passwordIcon from '../assets/password.png'
 import personIcon from '../assets/person.png'

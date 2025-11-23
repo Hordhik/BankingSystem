@@ -1,7 +1,7 @@
 // Client/src/pages/LoginPage.jsx
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import API from '../../api' // keep this path if your src/api.js is at src/api.js
+import API from '../../services/api' // keep this path if your src/api.js is at src/api.js
 import passwordIcon from '../assets/password.png'
 import personIcon from '../assets/person.png'
 import './loginPage.css'

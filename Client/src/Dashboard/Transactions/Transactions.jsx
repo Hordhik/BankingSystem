@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import '/src/Dashboard/Transactions/Transactions.css';
-import {jsPDF} from 'jspdf';
+import { jsPDF } from 'jspdf';
+import { getHistory } from '../../services/bankApi'; // <-- adjust path if needed
 
 // Card image removed per request
 
@@ -21,13 +22,47 @@ const Transactions = () => {
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
 
-  const [transactions] = useState([
-    { id: 1, to: 'Eswar Reddy', type: 'Online Payment', dateISO: '2025-10-03', amount: '- ₹5,000.00', status: 'Failed', channel: 'bank' },
-    { id: 2, to: 'Eswar Reddy', type: 'Online Payment', dateISO: '2025-10-03', amount: '+ ₹50,000.00', status: 'Completed', channel: 'card' },
-    { id: 3, to: 'Eswar Reddy', type: 'EMI',            dateISO: '2025-10-03', amount: '- ₹2,378.00', status: 'Completed', channel: 'bank' },
-    { id: 4, to: 'Power Board',  type: 'Electric Bill',  dateISO: '2025-10-03', amount: '- ₹2,584.43', status: 'Pending', channel: 'upi' },
-    { id: 5, to: 'Recharge',     type: 'Mobile Recharge',dateISO: '2025-10-02', amount: '- ₹399.00',   status: 'Completed', channel: 'self' },
-  ]);
+  // ===== replaced static data with live data =====
+  const [transactions, setTransactions] = useState([]);
+  const [loadingTx, setLoadingTx] = useState(false);
+  const accountId = 1; // <-- TEMP: hardcoded account id for testing. Replace with logged-in user's account id later.
+
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      setLoadingTx(true);
+      try {
+        const data = await getHistory(accountId); // expects TransactionResponse[] from backend
+        const mapped = (data || []).map(t => {
+          // normalize amount to UI string like "+ ₹123.00" or "- ₹123.00"
+          const num = Number(t.amount);
+          const amountStr = Number.isFinite(num)
+            ? (num >= 0 ? `+ ₹${num.toFixed(2)}` : `- ₹${Math.abs(num).toFixed(2)}`)
+            : (String(t.amount).startsWith('-') ? `- ₹${String(t.amount).replace(/[^0-9.]/g,'')}` : `+ ₹${String(t.amount)}`);
+
+          return {
+            id: t.id,
+            to: t.counterpartyAccountId ? `Account ${t.counterpartyAccountId}` : 'Self / External',
+            type: t.type,
+            dateISO: t.createdAt,
+            amount: amountStr,
+            status: 'Completed', // backend doesn't currently provide status in DTO — change if available
+            channel: 'bank'
+          };
+        });
+        if (mounted) setTransactions(mapped);
+      } catch (err) {
+        console.error("Failed to fetch transactions:", err);
+        if (mounted) setTransactions([]);
+      } finally {
+        if (mounted) setLoadingTx(false);
+      }
+    };
+
+    load();
+    return () => { mounted = false; };
+  }, [accountId]);
+  // ==============================================
 
   const displayDate = (iso) => new Date(iso).toLocaleDateString('en-GB', { month: 'short', day: '2-digit' });
 
@@ -140,6 +175,7 @@ const Transactions = () => {
           </div>
         </div>
         <div className="transactions-table-card">
+          {loadingTx && <div style={{padding:12}}>Loading transactions…</div>}
           <table>
             <thead>
               <tr>

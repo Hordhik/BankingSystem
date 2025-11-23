@@ -2,7 +2,8 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
-import { setAuthToken } from './api'   // <<< add this import
+import { setAuthToken } from '../../Client/src/services/api'   // <<< add this import
+
 
 // If you want to proactively set token from localStorage on app start:
 try {
