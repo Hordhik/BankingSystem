@@ -20,8 +20,14 @@ import SupportTickets from './SupportTicket/SupportTicket.jsx';
 // Auth-free mode: no userStore for now
 
 export const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState("Dashboard");
+  const [activeTab, setActiveTab] = useState(() => {
+    return localStorage.getItem('activeTab') || "Dashboard";
+  });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    localStorage.setItem('activeTab', activeTab);
+  }, [activeTab]);
 
   // Auth-free mode: don't redirect; dashboard is publicly accessible for now
 
