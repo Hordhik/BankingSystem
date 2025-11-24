@@ -40,6 +40,7 @@ const LoginPage = () => {
 
       // persist token + user info
       localStorage.setItem('token', token)
+      if (data?.userId) localStorage.setItem('userId', data.userId)
       if (data?.fullname) localStorage.setItem('fullname', data.fullname)
       if (data?.email) localStorage.setItem('email', data.email)
       if (data?.primaryAccountId) localStorage.setItem('primaryAccountId', data.primaryAccountId)

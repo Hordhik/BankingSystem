@@ -1,13 +1,56 @@
 import React, { useState } from 'react';
 import './Settings.css';
 import { FiUser, FiLock, FiBell, FiEdit2 } from 'react-icons/fi';
+import { updateUser } from '../../services/bankApi';
 
 const PersonalInfoTab = () => {
-    const fullname = localStorage.getItem('fullname') || '';
-    const [firstName, lastName] = fullname.split(' ');
-    const email = localStorage.getItem('email') || '';
-    const username = localStorage.getItem('username') || '';
-    const accountNumber = localStorage.getItem('accountNumber') || '';
+    const [formData, setFormData] = useState({
+        firstName: localStorage.getItem('fullname')?.split(' ')[0] || '',
+        lastName: localStorage.getItem('fullname')?.split(' ')[1] || '',
+        email: localStorage.getItem('email') || '',
+        username: localStorage.getItem('username') || '',
+        accountNumber: localStorage.getItem('accountNumber') || ''
+    });
+    const [loading, setLoading] = useState(false);
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.id]: e.target.value });
+    };
+
+    const handleSave = async () => {
+        setLoading(true);
+        try {
+            const userId = localStorage.getItem('userId');
+            if (!userId) {
+                alert('User ID not found. Please login again.');
+                return;
+            }
+            const fullname = `${formData.firstName} ${formData.lastName}`;
+            const response = await updateUser(userId, {
+                fullname,
+                email: formData.email,
+                username: formData.username
+            });
+            
+            if (response && response.token) {
+                localStorage.setItem('token', response.token);
+                localStorage.setItem('fullname', response.fullname);
+                localStorage.setItem('email', response.email);
+                localStorage.setItem('username', response.username);
+            } else {
+                localStorage.setItem('fullname', fullname);
+                localStorage.setItem('email', formData.email);
+                localStorage.setItem('username', formData.username);
+            }
+            
+            alert('Profile updated successfully!');
+        } catch (error) {
+            console.error(error);
+            alert('Failed to update profile');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
     <div className="settings-form-container">
@@ -27,33 +70,33 @@ const PersonalInfoTab = () => {
         <div className="form-row">
             <div className="form-group">
                 <label htmlFor="firstName">First name</label>
-                <input type="text" id="firstName" defaultValue={firstName} readOnly />
+                <input type="text" id="firstName" value={formData.firstName} onChange={handleChange} />
             </div>
             <div className="form-group">
                 <label htmlFor="lastName">Last name</label>
-                <input type="text" id="lastName" defaultValue={lastName} readOnly />
+                <input type="text" id="lastName" value={formData.lastName} onChange={handleChange} />
             </div>
         </div>
 
         <div className="form-group">
             <label htmlFor="email">Email</label>
-            <input type="email" id="email" defaultValue={email} readOnly />
+            <input type="email" id="email" value={formData.email} onChange={handleChange} />
         </div>
 
         <div className="form-group">
             <label htmlFor="username">Username</label>
-            <input type="text" id="username" defaultValue={username} readOnly />
+            <input type="text" id="username" value={formData.username} onChange={handleChange} />
         </div>
 
         <div className="form-group">
             <label htmlFor="accountNumber">Account Number</label>
-            <input type="text" id="accountNumber" defaultValue={accountNumber} readOnly />
+            <input type="text" id="accountNumber" value={formData.accountNumber} readOnly disabled style={{ backgroundColor: '#f3f4f6', cursor: 'not-allowed' }} />
         </div>
         
-        {/* Address fields removed as they are not in AuthResponse yet */}
-
         <div className="form-actions">
-            <button className="save-button" disabled>Save changes (Read Only)</button>
+            <button className="save-button" onClick={handleSave} disabled={loading}>
+                {loading ? 'Saving...' : 'Save changes'}
+            </button>
         </div>
     </div>
     );

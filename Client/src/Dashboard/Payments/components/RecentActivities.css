@@ -22,16 +22,30 @@
 }
 
 .activities-table th, .activities-table td {
-  padding: 0.75rem 1rem;
+  padding: 1rem;
   text-align: left;
   border-bottom: 1px solid #f0f0f0;
+  vertical-align: middle;
+}
+
+/* Align Amount column (4th column) to the right */
+.activities-table th:nth-child(4),
+.activities-table td:nth-child(4) {
+  text-align: right;
+}
+
+/* Align Status column (5th column) to the center */
+.activities-table th:nth-child(5),
+.activities-table td:nth-child(5) {
+  text-align: center;
 }
 
 .activities-table th {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: #808080;
   text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .activities-table tbody tr:hover {

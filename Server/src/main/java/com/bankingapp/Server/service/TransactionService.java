@@ -26,6 +26,7 @@ public class TransactionService {
                 .type(type)
                 .amount(amount)
                 .counterpartyAccountId(counterpartyAccountId)
+                .transactionId("TXN" + java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase())
                 .createdAt(LocalDateTime.now())        // use LocalDateTime everywhere
                 .build();
         transactionRepository.save(tx);
@@ -99,14 +100,25 @@ public class TransactionService {
         
         return transactionRepository.findByAccountOrderByCreatedAtDesc(account)
                 .stream()
-                .map(t -> TransactionResponse.builder()
+                .map(t -> {
+                    String counterpartyName = "Unknown";
+                    if (t.getCounterpartyAccountId() != null) {
+                        counterpartyName = accountRepository.findById(t.getCounterpartyAccountId())
+                                .map(acc -> acc.getUser().getFullname())
+                                .orElse("Unknown");
+                    }
+                    
+                    return TransactionResponse.builder()
                         .id(t.getId())
                         .type(t.getType())
                         .amount(t.getAmount())
                         .accountId(t.getAccount().getId())
                         .counterpartyAccountId(t.getCounterpartyAccountId())
+                        .counterpartyName(counterpartyName)
+                        .transactionId(t.getTransactionId())
                         .createdAt(t.getCreatedAt())   // LocalDateTime field
-                        .build())
+                        .build();
+                })
                 .collect(Collectors.toList());
     }
 }

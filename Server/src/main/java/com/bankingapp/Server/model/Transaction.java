@@ -32,6 +32,9 @@ public class Transaction {
     @Column(name = "counterparty_account_id")
     private Long counterpartyAccountId;
 
+    @Column(name = "transaction_id", unique = true)
+    private String transactionId;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 }

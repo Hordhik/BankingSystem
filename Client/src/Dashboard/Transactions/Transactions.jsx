@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import '/src/Dashboard/Transactions/Transactions.css';
 import { jsPDF } from 'jspdf';
 import { getHistory } from '../../services/bankApi'; // <-- adjust path if needed
@@ -21,6 +21,21 @@ const Transactions = () => {
   const [exportOpen, setExportOpen] = useState(false);
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
+  const [selectedTx, setSelectedTx] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const exportRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (exportRef.current && !exportRef.current.contains(event.target)) {
+        setExportOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [exportRef]);
 
   // ===== replaced static data with live data =====
   const [transactions, setTransactions] = useState([]);
@@ -42,7 +57,8 @@ const Transactions = () => {
 
           return {
             id: t.id,
-            to: t.counterpartyAccountId ? `Account ${t.counterpartyAccountId}` : 'Self / External',
+            transactionId: t.transactionId || `TXN${t.id}`, // Fallback if backend doesn't send it yet
+            to: t.counterpartyName || (t.counterpartyAccountId ? `Account ${t.counterpartyAccountId}` : 'Self / External'),
             type: t.type,
             dateISO: t.createdAt,
             amount: amountStr,
@@ -68,6 +84,8 @@ const Transactions = () => {
 
   const filteredByChip = useMemo(() => {
     if (filter === 'all') return transactions;
+    if (filter === 'credited') return transactions.filter(tx => tx.amount.startsWith('+'));
+    if (filter === 'debited') return transactions.filter(tx => tx.amount.startsWith('-'));
     if (filter === 'bills') return transactions.filter(tx => tx.type.toLowerCase().includes('bill'));
     return transactions.filter(tx => tx.channel === filter);
   }, [transactions, filter]);
@@ -75,6 +93,8 @@ const Transactions = () => {
   const filtered = useMemo(() => {
     const from = fromDate ? new Date(fromDate) : null;
     const to = toDate ? new Date(toDate) : null;
+    const query = searchQuery.toLowerCase();
+    
     return filteredByChip.filter(tx => {
       const d = new Date(tx.dateISO);
       if (from && d < from) return false;
@@ -84,11 +104,12 @@ const Transactions = () => {
         toEnd.setHours(23, 59, 59, 999);
         if (d > toEnd) return false;
       }
+      if (query && !tx.transactionId.toLowerCase().includes(query)) return false;
       return true;
     });
-  }, [filteredByChip, fromDate, toDate]);
+  }, [filteredByChip, fromDate, toDate, searchQuery]);
 
-  const generatePdf = () => {
+  const generatePdf = (txList = filtered) => {
     const doc = new jsPDF();
     doc.setFontSize(14);
     doc.text('Transaction History', 14, 16);
@@ -98,36 +119,65 @@ const Transactions = () => {
 
     // Table headers
     const startY = 30;
-    const colX = [14, 74, 124, 156, 180]; // To, Type, Date, Amount, Status
-    doc.setFontSize(9);
-    doc.text('TO', colX[0], startY);
-    doc.text('TYPE', colX[1], startY);
-    doc.text('DATE', colX[2], startY);
-    doc.text('AMOUNT', colX[3], startY);
-    doc.text('STATUS', colX[4], startY);
+    const colX = [14, 50, 90, 130, 160, 185]; // ID, To, Type, Date, Amount, Status
+    doc.setFontSize(8);
+    doc.text('TXN ID', colX[0], startY);
+    doc.text('TO / FROM', colX[1], startY);
+    doc.text('TYPE', colX[2], startY);
+    doc.text('DATE', colX[3], startY);
+    doc.text('AMOUNT', colX[4], startY);
+    doc.text('STATUS', colX[5], startY);
 
     let y = startY + 6;
     const lineHeight = 6;
     const maxY = 280;
-    filtered.forEach((tx, idx) => {
+    txList.forEach((tx, idx) => {
       if (y > maxY) {
         doc.addPage();
         y = 20;
       }
       const date = displayDate(tx.dateISO);
       // Simple truncation for long strings
-      const toText = (tx.to || '').slice(0, 24);
-      const typeText = (tx.type || '').slice(0, 24);
-      doc.text(toText, colX[0], y);
-      doc.text(typeText, colX[1], y);
-      doc.text(date, colX[2], y);
-      doc.text(tx.amount, colX[3], y);
-      doc.text(tx.status, colX[4], y);
+      const idText = (tx.transactionId || '').slice(0, 12);
+      const toText = (tx.to || '').slice(0, 18);
+      const typeText = (tx.type || '').slice(0, 18);
+      
+      doc.text(idText, colX[0], y);
+      doc.text(toText, colX[1], y);
+      doc.text(typeText, colX[2], y);
+      doc.text(date, colX[3], y);
+      doc.text(tx.amount, colX[4], y);
+      doc.text(tx.status, colX[5], y);
       y += lineHeight;
     });
 
     doc.save('transactions.pdf');
     setExportOpen(false);
+  };
+
+  const downloadReceipt = (tx) => {
+    const doc = new jsPDF();
+    doc.setFontSize(18);
+    doc.text('Transaction Receipt', 105, 20, { align: 'center' });
+    
+    doc.setFontSize(12);
+    doc.text(`Transaction ID: ${tx.transactionId}`, 20, 40);
+    doc.text(`Date: ${new Date(tx.dateISO).toLocaleString()}`, 20, 50);
+    doc.text(`Status: ${tx.status}`, 20, 60);
+    
+    doc.line(20, 65, 190, 65);
+    
+    const isIncoming = tx.amount.startsWith('+');
+    doc.text(`Type: ${tx.type}`, 20, 80);
+    doc.text(`${isIncoming ? 'Received From' : 'Paid To'}: ${tx.to}`, 20, 90);
+    
+    doc.setFontSize(16);
+    doc.text(`Amount: ${tx.amount}`, 20, 110);
+    
+    doc.setFontSize(10);
+    doc.text('Thank you for banking with us.', 105, 140, { align: 'center' });
+    
+    doc.save(`Receipt_${tx.transactionId}.pdf`);
   };
 
   const getStatusClass = (status) => {
@@ -147,6 +197,8 @@ const Transactions = () => {
             <div className="filter-chips">
               {[
                 { key: 'all', label: 'All' },
+                { key: 'credited', label: 'Credited' },
+                { key: 'debited', label: 'Debited' },
                 { key: 'bank', label: 'Bank Transfer' },
                 { key: 'card', label: 'Card' },
                 { key: 'self', label: 'Self Transfer' },
@@ -158,7 +210,7 @@ const Transactions = () => {
                 </button>
               ))}
             </div>
-            <div className="export-wrap">
+            <div className="export-wrap" ref={exportRef}>
               <button className="chip export" onClick={() => setExportOpen(v => !v)}>Export ▾</button>
               {exportOpen && (
                 <div className="export-dropdown">
@@ -168,9 +220,18 @@ const Transactions = () => {
                   <label>To
                     <input type="date" value={toDate} onChange={e => setToDate(e.target.value)} />
                   </label>
-                  <button className="btn-primary" onClick={generatePdf}>Export PDF</button>
+                  <button className="btn-primary" onClick={() => generatePdf(filtered)}>Export PDF</button>
                 </div>
               )}
+            </div>
+            <div className="search-bar-container">
+               <input 
+                 type="text" 
+                 placeholder="Search by Transaction ID..." 
+                 value={searchQuery}
+                 onChange={(e) => setSearchQuery(e.target.value)}
+                 className="search-input"
+               />
             </div>
           </div>
         </div>
@@ -179,7 +240,7 @@ const Transactions = () => {
           <table>
             <thead>
               <tr>
-                <th>TO</th>
+                <th>TO / FROM</th>
                 <th>TYPE</th>
                 <th>DATE</th>
                 <th>AMOUNT</th>
@@ -188,7 +249,7 @@ const Transactions = () => {
             </thead>
             <tbody>
               {filtered.map(tx => (
-                <tr key={tx.id}>
+                <tr key={tx.id} onClick={() => setSelectedTx(tx)} style={{ cursor: 'pointer' }}>
                   <td>{tx.to}</td>
                   <td>{tx.type}</td>
                   <td>{displayDate(tx.dateISO)}</td>
@@ -215,6 +276,58 @@ const Transactions = () => {
           </ul>
         </div>
       </div>
+
+      {/* Transaction Details Modal */}
+      {selectedTx && (
+        <div className="modal-overlay" onClick={() => setSelectedTx(null)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Transaction Details</h3>
+              <button className="close-btn" onClick={() => setSelectedTx(null)}>×</button>
+            </div>
+            <div className="modal-body">
+              <div className="detail-row">
+                <span className="label">Transaction ID</span>
+                <span className="value">{selectedTx.transactionId}</span>
+              </div>
+              <div className="detail-row">
+                <span className="label">Date</span>
+                <span className="value">{new Date(selectedTx.dateISO).toLocaleString()}</span>
+              </div>
+              <div className="detail-row">
+                <span className="label">Type</span>
+                <span className="value">{selectedTx.type}</span>
+              </div>
+              <div className="detail-row">
+                <span className="label">From</span>
+                <span className="value">
+                  {selectedTx.amount.startsWith('+') ? selectedTx.to : (localStorage.getItem('fullname') || 'My Account')}
+                </span>
+              </div>
+              <div className="detail-row">
+                <span className="label">To</span>
+                <span className="value">
+                  {selectedTx.amount.startsWith('+') ? (localStorage.getItem('fullname') || 'My Account') : selectedTx.to}
+                </span>
+              </div>
+              <div className="detail-row">
+                <span className="label">Amount</span>
+                <span className={`value ${selectedTx.amount.startsWith('+') ? 'amount-positive' : 'amount-negative'}`}>
+                  {selectedTx.amount}
+                </span>
+              </div>
+              <div className="detail-row">
+                <span className="label">Status</span>
+                <span className={`status-pill ${getStatusClass(selectedTx.status)}`}>{selectedTx.status}</span>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn-secondary" onClick={() => downloadReceipt(selectedTx)}>Download Receipt</button>
+              <button className="btn-primary" onClick={() => setSelectedTx(null)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

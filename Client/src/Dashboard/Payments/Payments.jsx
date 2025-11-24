@@ -33,14 +33,18 @@ function Payments() {
           const history = await getHistory(accountId);
           
           // Map backend transaction format to UI format
-          const mappedTransactions = history.map(txn => ({
-            id: txn.id,
-            to: txn.type === 'TRANSFER' ? `Account ${txn.counterpartyAccountId || 'Unknown'}` : txn.type,
-            type: txn.type, // DEPOSIT, WITHDRAWAL, TRANSFER
-            date: new Date(txn.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric' }),
-            amount: (txn.type === 'DEPOSIT' ? '+ ' : '- ') + '₹' + parseFloat(txn.amount).toFixed(2),
-            status: 'Completed' // Assuming all returned are completed for now
-          }));
+          const mappedTransactions = history.map(txn => {
+            const isIncoming = txn.type === 'DEPOSIT' || txn.type === 'TRANSFER_RECEIVED';
+            const absAmount = Math.abs(parseFloat(txn.amount)).toFixed(2);
+            return {
+              id: txn.id,
+              to: txn.counterpartyName || (txn.type === 'TRANSFER' ? `Account ${txn.counterpartyAccountId || 'Unknown'}` : txn.type),
+              type: txn.type, // DEPOSIT, WITHDRAWAL, TRANSFER
+              date: new Date(txn.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric' }),
+              amount: (isIncoming ? '+ ' : '- ') + '₹' + absAmount,
+              status: 'Completed' // Assuming all returned are completed for now
+            };
+          });
           setTransactions(mappedTransactions);
 
           // Fetch latest balance

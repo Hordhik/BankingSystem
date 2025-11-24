@@ -42,4 +42,15 @@ export const getHistory = (accountId) =>
 export const getAccounts = () =>
   request("/accounts", "GET");
 
+// User Controller Endpoints
+export const updateUser = (userId, userData) =>
+  request(`/users/${userId}`, "PUT", userData);
+
+// Auth Controller Endpoints
+export const login = (email, password) =>
+  request("/auth/login", "POST", { email, password });
+
+export const register = (fullname, email, password, username, accountNumber, ifsc) =>
+  request("/auth/register", "POST", { fullname, email, password, username, accountNumber, ifsc });
+
 

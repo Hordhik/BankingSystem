@@ -53,12 +53,16 @@ public class AuthService {
         accountRepository.save(account); // persist primary account
 
         String token = jwtUtil.generateToken(user.getEmail());
-        return new AuthResponse(token, user.getFullname(), user.getEmail(), user.getUsername(), user.getAccountNumber(), account.getId(), account.getBalance());
+        return new AuthResponse(token, user.getUserId(), user.getFullname(), user.getEmail(), user.getUsername(), user.getAccountNumber(), account.getId(), account.getBalance());
     }
 
     public AuthResponse login(LoginRequest req) {
-        User user = userRepository.findByEmail(req.getEmail())
+        String email = req.getEmail().trim();
+        // Try exact match first, then ignore case
+        User user = userRepository.findByEmail(email)
+                .or(() -> userRepository.findByEmailIgnoreCase(email))
                 .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+        
         if (!encoder.matches(req.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid credentials");
         }
@@ -76,7 +80,7 @@ public class AuthService {
                         .build();
                 return accountRepository.save(created);
             });
-        return new AuthResponse(token, user.getFullname(), user.getEmail(), user.getUsername(), user.getAccountNumber(), account.getId(), account.getBalance());
+        return new AuthResponse(token, user.getUserId(), user.getFullname(), user.getEmail(), user.getUsername(), user.getAccountNumber(), account.getId(), account.getBalance());
     }
 
     private boolean isBlank(String s){ return s == null || s.trim().isEmpty(); }

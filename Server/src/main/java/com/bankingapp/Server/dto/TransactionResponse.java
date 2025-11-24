@@ -14,5 +14,7 @@ public class TransactionResponse {
     private BigDecimal amount;
     private Long accountId;
     private Long counterpartyAccountId;
+    private String counterpartyName;
+    private String transactionId;
     private LocalDateTime createdAt;
 }
