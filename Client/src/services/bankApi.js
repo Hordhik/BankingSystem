@@ -1,8 +1,8 @@
 // src/services/bankApi.js
-const BASE_URL = "http://localhost:6060/api/transactions";
+const API_ROOT = "http://localhost:6060/api";
 
-async function api(path, method = "GET", body = null) {
-  const url = `${BASE_URL}${path}`;
+async function request(endpoint, method = "GET", body = null) {
+  const url = `${API_ROOT}${endpoint}`;
   const token = localStorage.getItem("token");
   const headers = { "Content-Type": "application/json" };
   if (token) {
@@ -15,6 +15,7 @@ async function api(path, method = "GET", body = null) {
   const text = await res.text();
   const contentType = res.headers.get("content-type") || "";
   const data = contentType.includes("application/json") ? JSON.parse(text || "{}") : text;
+  
   if (!res.ok) {
     const err = new Error(data?.message || res.statusText || "API error");
     err.status = res.status;
@@ -24,23 +25,21 @@ async function api(path, method = "GET", body = null) {
   return data;
 }
 
+// Transaction Controller Endpoints
 export const deposit = (accountId, amount) =>
-  api("/deposit", "POST", { accountId, amount });
+  request("/transactions/deposit", "POST", { accountId, amount });
 
 export const withdraw = (accountId, amount) =>
-  api("/withdraw", "POST", { accountId, amount });
+  request("/transactions/withdraw", "POST", { accountId, amount });
 
 export const transfer = (fromAccountId, toAccountId, amount) =>
-  api("/transfer", "POST", { fromAccountId, toAccountId, amount });
+  request("/transactions/transfer", "POST", { fromAccountId, toAccountId, amount });
 
 export const getHistory = (accountId) =>
-  api(`/account/${accountId}/history`, "GET");
+  request(`/transactions/account/${accountId}/history`, "GET");
 
+// Account Controller Endpoints
 export const getAccounts = () =>
-  fetch("http://localhost:6060/api/accounts", {
-    headers: {
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-      "Content-Type": "application/json"
-    }
-  }).then(res => res.json());
+  request("/accounts", "GET");
+
 

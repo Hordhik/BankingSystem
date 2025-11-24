@@ -2,7 +2,14 @@ import React, { useState } from 'react';
 import './Settings.css';
 import { FiUser, FiLock, FiBell, FiEdit2 } from 'react-icons/fi';
 
-const PersonalInfoTab = () => (
+const PersonalInfoTab = () => {
+    const fullname = localStorage.getItem('fullname') || '';
+    const [firstName, lastName] = fullname.split(' ');
+    const email = localStorage.getItem('email') || '';
+    const username = localStorage.getItem('username') || '';
+    const accountNumber = localStorage.getItem('accountNumber') || '';
+
+    return (
     <div className="settings-form-container">
         <div className="profile-picture-section">
             <div className="profile-picture-wrapper">
@@ -20,56 +27,37 @@ const PersonalInfoTab = () => (
         <div className="form-row">
             <div className="form-group">
                 <label htmlFor="firstName">First name</label>
-                <input type="text" id="firstName" placeholder="firstName" />
+                <input type="text" id="firstName" defaultValue={firstName} readOnly />
             </div>
             <div className="form-group">
                 <label htmlFor="lastName">Last name</label>
-                <input type="text" id="lastName" placeholder="lastName" />
+                <input type="text" id="lastName" defaultValue={lastName} readOnly />
             </div>
         </div>
 
         <div className="form-group">
             <label htmlFor="email">Email</label>
-            <input type="email" id="email" placeholder="email@gmail.com" />
+            <input type="email" id="email" defaultValue={email} readOnly />
         </div>
 
         <div className="form-group">
-            <label htmlFor="phoneNumber">Phone number</label>
-            <input type="tel" id="phoneNumber" placeholder="+91 " />
+            <label htmlFor="username">Username</label>
+            <input type="text" id="username" defaultValue={username} readOnly />
         </div>
 
         <div className="form-group">
-            <label htmlFor="streetAddress">Street Address</label>
-            <input type="text" id="streetAddress" placeholder="Address" />
+            <label htmlFor="accountNumber">Account Number</label>
+            <input type="text" id="accountNumber" defaultValue={accountNumber} readOnly />
         </div>
         
-        <div className="form-row">
-            <div className="form-group">
-                <label htmlFor="zipCode">Pincode</label>
-                <input type="text" id="Pincode" placeholder="Pincode"  />
-            </div>
-            <div className="form-group">
-                <label htmlFor="city">City</label>
-                <input type="text" id="city" placeholder="City" />
-            </div>
-        </div>
-        
-        <div className="form-row">
-             <div className="form-group">
-                <label htmlFor="state">State</label>
-                <input type="text" id="state" placeholder="State" />
-            </div>
-            <div className="form-group">
-                <label htmlFor="country">Country</label>
-                <input type="text" id="country" placeholder="Country" />
-            </div>
-        </div>
+        {/* Address fields removed as they are not in AuthResponse yet */}
 
         <div className="form-actions">
-            <button className="save-button">Save changes</button>
+            <button className="save-button" disabled>Save changes (Read Only)</button>
         </div>
     </div>
-);
+    );
+};
 
 
 // --- PASSWORD & SECURITY TAB ---

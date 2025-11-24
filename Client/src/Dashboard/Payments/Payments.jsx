@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './Payments.css';
 import { PaymentMethods } from './components/PaymentMethods.jsx';
 import { RecentActivities } from './components/RecentActivities.jsx';
@@ -9,18 +9,13 @@ import loansIcon from '/src/assets/icons/loans.svg';
 import offersIcon from '/src/assets/icons/offers.svg';
 import { useNavigate } from 'react-router-dom';
 import { DebitCardDisplay } from './components/DebitCardDisplay.jsx';
-
-const transactionsData = [
-  { id: 1, to: 'Eswar Reddy', type: 'Online Payment', date: 'October, 03', amount: '- ₹5000.00', status: 'Failed' },
-  { id: 2, to: 'Eswar Reddy', type: 'Online Payment', date: 'October, 03', amount: '+ ₹50000.00', status: 'Completed' },
-  { id: 3, to: 'Eswar Reddy', type: 'EMI', date: 'October, 03', amount: '+ ₹2378.00', status: 'Completed' },
-  { id: 4, to: 'Eswar Reddy', type: 'Merchant', date: 'September, 29', amount: '- ₹3000.00', status: 'Success' },
-  { id: 5, to: 'Eswar Reddy', type: 'Electric Bill', date: 'September, 25', amount: '+ ₹2584.43', status: 'Pending' },
-  { id: 6, to: 'Eswar Reddy', type: 'Insurance', date: 'September, 25', amount: '- ₹10000.00', status: 'Completed' },
-];
+import { getHistory, getAccounts } from '../../services/bankApi';
 
 function Payments() {
   const navigate = useNavigate();
+  const [balance, setBalance] = useState(parseFloat(localStorage.getItem('primaryAccountBalance') || '0'));
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const quickTiles = [
     { label: 'Transfer / Pay', icon: transferIcon, action: () => navigate('/payment') },
@@ -28,6 +23,45 @@ function Payments() {
     { label: 'Loans & Investments', icon: loansIcon, action: () => navigate('/dashboard') },
     { label: 'Pre-Approved Offers', icon: offersIcon, action: () => navigate('/dashboard') },
   ];
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const accountId = localStorage.getItem('primaryAccountId');
+        if (accountId) {
+          // Fetch Transactions
+          const history = await getHistory(accountId);
+          
+          // Map backend transaction format to UI format
+          const mappedTransactions = history.map(txn => ({
+            id: txn.id,
+            to: txn.type === 'TRANSFER' ? `Account ${txn.counterpartyAccountId || 'Unknown'}` : txn.type,
+            type: txn.type, // DEPOSIT, WITHDRAWAL, TRANSFER
+            date: new Date(txn.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric' }),
+            amount: (txn.type === 'DEPOSIT' ? '+ ' : '- ') + '₹' + parseFloat(txn.amount).toFixed(2),
+            status: 'Completed' // Assuming all returned are completed for now
+          }));
+          setTransactions(mappedTransactions);
+
+          // Fetch latest balance
+          const accounts = await getAccounts();
+          // AccountController returns all accounts, so we find ours
+          const myAccount = accounts.find(a => a.id.toString() === accountId.toString());
+          if (myAccount) {
+            setBalance(myAccount.balance);
+            // Update localStorage to keep it fresh
+            localStorage.setItem('primaryAccountBalance', myAccount.balance);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch dashboard data", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className='payments-container'>
@@ -37,11 +71,11 @@ function Payments() {
       <section className="dash-top-grid">
         <div className="balance-panel">
           <h3>Total Balance</h3>
-          <div className="big-amount">₹{parseFloat(localStorage.getItem('primaryAccountBalance') || '0').toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+          <div className="big-amount">₹{balance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
           <div className="mini-cards">
             <div className="mini">
               <div className="mini-title">Savings Account</div>
-              <div className="mini-value">₹{parseFloat(localStorage.getItem('primaryAccountBalance') || '0').toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+              <div className="mini-value">₹{balance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
             </div>
             <div className="mini">
               <div className="mini-title">Credit Card</div>
@@ -81,7 +115,7 @@ function Payments() {
 
       {/* Recent Activities table */}
       <div className="payments-activities">
-        <RecentActivities transactions={transactionsData} />
+        <RecentActivities transactions={transactions} />
       </div>
     </div>
   );
