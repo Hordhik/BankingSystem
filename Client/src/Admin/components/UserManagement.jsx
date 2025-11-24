@@ -1,14 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getAllUsers } from '../../services/adminApi';
 import './UserManagement.css';
 
 const UserManagement = () => {
-  const [users, setUsers] = useState([
-    { id: 1, name: 'John Doe', email: 'john@example.com', accountNumber: '1234567890', status: 'Active', joinDate: '2024-01-15' },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com', accountNumber: '0987654321', status: 'Active', joinDate: '2024-02-20' },
-    { id: 3, name: 'Mike Johnson', email: 'mike@example.com', accountNumber: '5555666677', status: 'Inactive', joinDate: '2024-03-10' },
-    { id: 4, name: 'Sarah Williams', email: 'sarah@example.com', accountNumber: '1111222233', status: 'Active', joinDate: '2024-04-05' },
-    { id: 5, name: 'Robert Brown', email: 'robert@example.com', accountNumber: '9999888877', status: 'Suspended', joinDate: '2024-05-12' },
-  ]);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const data = await getAllUsers();
+        // Map backend user data to frontend structure if needed
+        // Backend User: { userId, fullname, email, accountNumber, ... }
+        // Frontend User: { id, name, email, accountNumber, status, joinDate }
+        const formattedUsers = data.map(u => ({
+          id: u.userId,
+          name: u.fullname,
+          email: u.email,
+          accountNumber: u.accountNumber,
+          status: 'Active', // Defaulting to Active as backend doesn't have status yet
+          joinDate: new Date(u.createdAt).toLocaleDateString()
+        }));
+        setUsers(formattedUsers);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
@@ -17,7 +39,7 @@ const UserManagement = () => {
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          user.email.toLowerCase().includes(searchTerm.toLowerCase());
+      user.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'All' || user.status === filterStatus;
     return matchesSearch && matchesStatus;
   });
@@ -112,7 +134,7 @@ const UserManagement = () => {
                 <input
                   type="text"
                   value={selectedUser.name}
-                  onChange={(e) => setSelectedUser({...selectedUser, name: e.target.value})}
+                  onChange={(e) => setSelectedUser({ ...selectedUser, name: e.target.value })}
                 />
               </div>
               <div className="form-group">
@@ -120,12 +142,12 @@ const UserManagement = () => {
                 <input
                   type="email"
                   value={selectedUser.email}
-                  onChange={(e) => setSelectedUser({...selectedUser, email: e.target.value})}
+                  onChange={(e) => setSelectedUser({ ...selectedUser, email: e.target.value })}
                 />
               </div>
               <div className="form-group">
                 <label>Status</label>
-                <select value={selectedUser.status} onChange={(e) => setSelectedUser({...selectedUser, status: e.target.value})}>
+                <select value={selectedUser.status} onChange={(e) => setSelectedUser({ ...selectedUser, status: e.target.value })}>
                   <option>Active</option>
                   <option>Inactive</option>
                   <option>Suspended</option>

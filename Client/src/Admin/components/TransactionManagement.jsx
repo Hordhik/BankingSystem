@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Download, Eye, Ban, CheckCircle, XCircle, Clock } from 'lucide-react';
-import { getTransactions } from '../../services/transactionApi';
+import { getAllTransactions } from '../../services/adminApi';
 import './TransactionManagement.css';
 
 const TransactionManagement = () => {
@@ -13,7 +13,7 @@ const TransactionManagement = () => {
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const data = await getTransactions();
+        const data = await getAllTransactions();
         setTransactions(data);
       } catch (error) {
         console.error("Error fetching transactions:", error);
@@ -27,7 +27,7 @@ const TransactionManagement = () => {
 
   const filteredTransactions = transactions.filter(txn => {
     const matchesSearch = txn.from.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          txn.to.toLowerCase().includes(searchTerm.toLowerCase());
+      txn.to.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'All' || txn.status === filterStatus;
     const matchesType = filterType === 'All' || txn.type === filterType;
     return matchesSearch && matchesStatus && matchesType;
@@ -35,7 +35,7 @@ const TransactionManagement = () => {
 
   const handleBlockTransaction = (id) => {
     // In a real app, this would call an API
-    setTransactions(transactions.map(t => 
+    setTransactions(transactions.map(t =>
       t.id === id ? { ...t, status: 'Failed' } : t
     ));
   };
@@ -88,7 +88,7 @@ const TransactionManagement = () => {
             className="search-input"
           />
         </div>
-        
+
         <div className="filters-wrapper">
           <div className="filter-group">
             <Filter size={16} className="filter-icon" />
@@ -152,8 +152,8 @@ const TransactionManagement = () => {
                     <Eye size={16} />
                   </button>
                   {txn.status === 'Pending' && (
-                    <button 
-                      className="action-btn block" 
+                    <button
+                      className="action-btn block"
                       title="Block Transaction"
                       onClick={() => handleBlockTransaction(txn.id)}
                     >

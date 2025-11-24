@@ -15,8 +15,12 @@ const ActivityTable = ({ activities }) => {
         activities.map((activity) => (
           <div key={activity.id} className="table-row">
             <div className="col-type">{activity.type}</div>
-            <div className="col-user">{activity.user}</div>
-            <div className="col-time">{activity.time}</div>
+            <div className="col-user">
+              {activity.type.includes('TRANSFER') && activity.to !== '-'
+                ? `${activity.from} → ${activity.to}`
+                : activity.from}
+            </div>
+            <div className="col-time">{activity.date}</div>
             <div className="col-status">
               <span className={`status-badge ${activity.status}`}>
                 {activity.status.charAt(0).toUpperCase() + activity.status.slice(1)}
@@ -38,8 +42,9 @@ ActivityTable.propTypes = {
     PropTypes.shape({
       id: PropTypes.number.isRequired,
       type: PropTypes.string.isRequired,
-      user: PropTypes.string.isRequired,
-      time: PropTypes.string.isRequired,
+      from: PropTypes.string.isRequired,
+      to: PropTypes.string.isRequired,
+      date: PropTypes.string.isRequired,
       status: PropTypes.string.isRequired,
     })
   ).isRequired,

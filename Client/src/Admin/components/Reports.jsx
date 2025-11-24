@@ -1,19 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getDashboardStats, getMonthlyReports } from '../../services/adminApi';
 import './Reports.css';
 
 const Reports = () => {
   const [reportType, setReportType] = useState('monthly');
-  
-  const reportData = {
-    monthly: [
-      { month: 'January', transactions: 1240, users: 150, revenue: '₹45,60,000' },
-      { month: 'February', transactions: 1560, users: 180, revenue: '₹52,40,000' },
-      { month: 'March', transactions: 1890, users: 220, revenue: '₹61,20,000' },
-      { month: 'April', transactions: 2100, users: 280, revenue: '₹68,50,000' },
-      { month: 'May', transactions: 1950, users: 260, revenue: '₹63,40,000' },
-      { month: 'June', transactions: 2340, users: 310, revenue: '₹76,30,000' },
-    ]
+  const [stats, setStats] = useState([]);
+  const [monthlyData, setMonthlyData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [statsData, reportsData] = await Promise.all([
+          getDashboardStats(),
+          getMonthlyReports()
+        ]);
+        setStats(statsData);
+        setMonthlyData(reportsData);
+      } catch (error) {
+        console.error("Error fetching report data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Helper to get value safely from stats array
+  const getStatValue = (label) => {
+    const stat = stats.find(s => s.label === label);
+    return stat ? stat.value : '0';
   };
+
+  const getStatChange = (label) => {
+    const stat = stats.find(s => s.label === label);
+    return stat ? stat.change : '-';
+  };
+
+  if (loading) {
+    return <div className="loading-state">Loading reports...</div>;
+  }
 
   return (
     <div className="reports">
@@ -32,23 +59,23 @@ const Reports = () => {
       <div className="report-summary">
         <div className="summary-card">
           <h3>Total Transactions</h3>
-          <p className="value">11,080</p>
-          <p className="trend">↑ 12% from last period</p>
+          <p className="value">{getStatValue('Active Transactions')}</p>
+          <p className="trend">{getStatChange('Active Transactions')} from last period</p>
         </div>
         <div className="summary-card">
           <h3>Total Users</h3>
-          <p className="value">1,400</p>
-          <p className="trend">↑ 8% from last period</p>
+          <p className="value">{getStatValue('Total Users')}</p>
+          <p className="trend">{getStatChange('Total Users')} from last period</p>
         </div>
         <div className="summary-card">
           <h3>Total Revenue</h3>
-          <p className="value">₹3,67,40,000</p>
-          <p className="trend">↑ 15% from last period</p>
+          <p className="value">{getStatValue('Total Revenue')}</p>
+          <p className="trend">{getStatChange('Total Revenue')} from last period</p>
         </div>
         <div className="summary-card">
           <h3>Avg Transaction Value</h3>
-          <p className="value">₹33,120</p>
-          <p className="trend">↑ 3% from last period</p>
+          <p className="value">{getStatValue('Avg Transaction Value')}</p>
+          <p className="trend">{getStatChange('Avg Transaction Value')} from last period</p>
         </div>
       </div>
 
@@ -65,18 +92,30 @@ const Reports = () => {
             </tr>
           </thead>
           <tbody>
-            {reportData.monthly.map((row, idx) => (
-              <tr key={idx}>
-                <td>{row.month}</td>
-                <td>{row.transactions}</td>
-                <td>{row.users}</td>
-                <td>{row.revenue}</td>
-                <td>₹{Math.round(parseInt(row.revenue.replace(/[₹,]/g, '')) / row.transactions).toLocaleString('en-IN')}</td>
-                <td>
-                  <button className="btn-view-detail">View</button>
-                </td>
+            {monthlyData.length > 0 ? (
+              monthlyData.map((row, idx) => {
+                // Calculate Avg Value for the row if not present
+                const revenueVal = parseFloat(row.revenue.replace(/[₹,]/g, ''));
+                const avgVal = row.transactions > 0 ? Math.round(revenueVal / row.transactions) : 0;
+
+                return (
+                  <tr key={idx}>
+                    <td>{row.month}</td>
+                    <td>{row.transactions}</td>
+                    <td>{row.users}</td>
+                    <td>{row.revenue}</td>
+                    <td>₹{avgVal.toLocaleString('en-IN')}</td>
+                    <td>
+                      <button className="btn-view-detail">View</button>
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan="6" style={{ textAlign: 'center' }}>No data available</td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>

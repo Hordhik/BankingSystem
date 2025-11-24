@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Users, CreditCard, DollarSign, Activity } from 'lucide-react';
-import { getDashboardStats, getRecentActivities } from '../../services/adminApi';
+import { getDashboardStats, getRecentActivities, getQuickStats } from '../../services/adminApi';
 import StatCard from './StatCard';
 import ActivityTable from './ActivityTable';
 import './AdminDashboard.css';
@@ -8,17 +8,24 @@ import './AdminDashboard.css';
 const AdminDashboard = () => {
   const [stats, setStats] = useState([]);
   const [activities, setActivities] = useState([]);
+  const [quickStats, setQuickStats] = useState({
+    todaysTransactions: '₹0',
+    newUsersToday: 0,
+    serverResponseTime: '-'
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [statsData, activitiesData] = await Promise.all([
+        const [statsData, activitiesData, quickStatsData] = await Promise.all([
           getDashboardStats(),
-          getRecentActivities()
+          getRecentActivities(),
+          getQuickStats()
         ]);
         setStats(statsData);
         setActivities(activitiesData);
+        setQuickStats(quickStatsData);
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       } finally {
@@ -46,11 +53,11 @@ const AdminDashboard = () => {
   return (
     <div className="admin-dashboard">
       <h1>Admin Dashboard Overview</h1>
-      
+
       {/* Stats Grid */}
       <section className="stats-grid">
         {stats.map((stat, index) => (
-          <StatCard 
+          <StatCard
             key={index}
             label={stat.label}
             value={stat.value}
@@ -71,17 +78,17 @@ const AdminDashboard = () => {
       <section className="quick-stats">
         <div className="quick-stat-box">
           <h3>Today's Transactions</h3>
-          <p className="value">₹2,34,56,000</p>
-          <p className="sub-text">+12% from yesterday</p>
+          <p className="value">{quickStats.todaysTransactions}</p>
+          <p className="sub-text">Real-time data</p>
         </div>
         <div className="quick-stat-box">
           <h3>New Users Today</h3>
-          <p className="value">156</p>
-          <p className="sub-text">+8% from yesterday</p>
+          <p className="value">{quickStats.newUsersToday}</p>
+          <p className="sub-text">Real-time data</p>
         </div>
         <div className="quick-stat-box">
           <h3>Server Response Time</h3>
-          <p className="value">45ms</p>
+          <p className="value">{quickStats.serverResponseTime}</p>
           <p className="sub-text">Optimal performance</p>
         </div>
       </section>
