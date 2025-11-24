@@ -1,42 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getAnalytics } from '../../services/adminApi';
 import './Analytics.css';
 
 const Analytics = () => {
   const [timeRange, setTimeRange] = useState('week');
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState({
+    topMetrics: [],
+    transactionTrends: [],
+    userGrowth: [],
+    topTransactionTypes: [],
+    detailedStats: {}
+  });
 
-  const analyticsData = {
-    transactions: [
-      { day: 'Mon', amount: 45000, count: 120 },
-      { day: 'Tue', amount: 52000, count: 145 },
-      { day: 'Wed', amount: 48000, count: 132 },
-      { day: 'Thu', amount: 61000, count: 168 },
-      { day: 'Fri', amount: 73000, count: 195 },
-      { day: 'Sat', amount: 68000, count: 178 },
-      { day: 'Sun', amount: 55000, count: 151 },
-    ],
-    userGrowth: [
-      { day: 'Mon', users: 45 },
-      { day: 'Tue', users: 52 },
-      { day: 'Wed', users: 38 },
-      { day: 'Thu', users: 65 },
-      { day: 'Fri', users: 72 },
-      { day: 'Sat', users: 58 },
-      { day: 'Sun', users: 48 },
-    ],
-    topTransactionTypes: [
-      { type: 'Online Payment', percentage: 45, amount: '₹50,40,000' },
-      { type: 'Transfers', percentage: 30, amount: '₹33,60,000' },
-      { type: 'Recharges', percentage: 15, amount: '₹16,80,000' },
-      { type: 'Bill Payments', percentage: 10, amount: '₹11,20,000' },
-    ],
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const analyticsData = await getAnalytics();
+        setData(analyticsData);
+      } catch (error) {
+        console.error("Error fetching analytics data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const topMetrics = [
-    { label: 'Peak Hour', value: '3:00 PM', subtext: 'Highest activity' },
-    { label: 'Busiest Day', value: 'Friday', subtext: 'Most transactions' },
-    { label: 'Avg Txn Size', value: '₹33,120', subtext: 'Average amount' },
-    { label: 'Success Rate', value: '99.2%', subtext: 'Transaction success' },
-  ];
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <div className="loading-state">Loading analytics...</div>;
+  }
+
+  const { topMetrics, transactionTrends, userGrowth, topTransactionTypes, detailedStats } = data;
+
+  // Find max values for scaling charts
+  const maxTxnAmount = Math.max(...transactionTrends.map(d => d.amount), 1);
+  const maxUsers = Math.max(...userGrowth.map(d => d.users), 1);
 
   return (
     <div className="analytics">
@@ -65,12 +65,12 @@ const Analytics = () => {
       <div className="charts-grid">
         {/* Transaction Trends */}
         <div className="chart-card">
-          <h3>Transaction Trends</h3>
+          <h3>Transaction Trends (Last 7 Days)</h3>
           <div className="chart-placeholder">
             <div className="mini-chart">
-              {analyticsData.transactions.map((data, idx) => (
+              {transactionTrends.map((data, idx) => (
                 <div key={idx} className="bar-container">
-                  <div className="bar" style={{ height: `${(data.amount / 73000) * 100}%` }}></div>
+                  <div className="bar" style={{ height: `${(data.amount / maxTxnAmount) * 100}%` }}></div>
                   <span className="bar-label">{data.day}</span>
                 </div>
               ))}
@@ -81,12 +81,12 @@ const Analytics = () => {
 
         {/* User Growth */}
         <div className="chart-card">
-          <h3>User Growth</h3>
+          <h3>User Growth (Last 7 Days)</h3>
           <div className="chart-placeholder">
             <div className="mini-chart line-chart">
-              {analyticsData.userGrowth.map((data, idx) => (
+              {userGrowth.map((data, idx) => (
                 <div key={idx} className="point-container">
-                  <div className="point" style={{ height: `${(data.users / 72) * 100}%` }}></div>
+                  <div className="point" style={{ height: `${(data.users / maxUsers) * 100}%` }}></div>
                   <span className="point-label">{data.day}</span>
                 </div>
               ))}
@@ -100,7 +100,7 @@ const Analytics = () => {
       <div className="distribution-card">
         <h3>Transaction Types Distribution</h3>
         <div className="distribution-list">
-          {analyticsData.topTransactionTypes.map((item, idx) => (
+          {topTransactionTypes.map((item, idx) => (
             <div key={idx} className="distribution-item">
               <div className="distribution-info">
                 <p className="distribution-type">{item.type}</p>
@@ -119,22 +119,22 @@ const Analytics = () => {
       <div className="detailed-stats">
         <div className="stat-box">
           <h4>Hourly Average</h4>
-          <p className="stat-big">₹18,540</p>
+          <p className="stat-big">{detailedStats.hourlyAvg}</p>
           <p className="stat-small">Per hour transaction value</p>
         </div>
         <div className="stat-box">
           <h4>Daily Average</h4>
-          <p className="stat-big">₹4,45,000</p>
+          <p className="stat-big">{detailedStats.dailyAvg}</p>
           <p className="stat-small">Daily transaction volume</p>
         </div>
         <div className="stat-box">
           <h4>Weekly Average</h4>
-          <p className="stat-big">₹31,15,000</p>
+          <p className="stat-big">{detailedStats.weeklyAvg}</p>
           <p className="stat-small">Weekly transaction volume</p>
         </div>
         <div className="stat-box">
           <h4>Failed Transactions</h4>
-          <p className="stat-big">0.8%</p>
+          <p className="stat-big">{detailedStats.failureRate}</p>
           <p className="stat-small">Failure rate this week</p>
         </div>
       </div>

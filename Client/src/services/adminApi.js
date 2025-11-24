@@ -1,32 +1,90 @@
-// Mock data for now, will be replaced by actual API calls
-const mockDashboardStats = [
-  { label: 'Total Users', value: '2,543', color: '#667eea', change: '+12%' },
-  { label: 'Active Transactions', value: '1,284', color: '#764ba2', change: '+5%' },
-  { label: 'Total Revenue', value: '₹45,60,000', color: '#f093fb', change: '+18%' },
-  { label: 'System Health', value: '98.5%', color: '#4facfe', change: 'Stable' },
-];
+import axios from 'axios';
 
-const mockRecentActivities = [
-  { id: 1, type: 'User Registration', user: 'John Doe', time: '2 mins ago', status: 'success' },
-  { id: 2, type: 'Large Transaction', user: 'Jane Smith', amount: '₹50,000', time: '5 mins ago', status: 'completed' },
-  { id: 3, type: 'Failed Login Attempt', user: 'Unknown', time: '10 mins ago', status: 'warning' },
-  { id: 4, type: 'Card Creation', user: 'Mike Johnson', time: '15 mins ago', status: 'success' },
-  { id: 5, type: 'Password Change', user: 'Sarah Williams', time: '20 mins ago', status: 'success' },
-];
+const API_ROOT = "http://localhost:6060/api/admin";
+
+// Create an axios instance with default config
+const adminClient = axios.create({
+  baseURL: API_ROOT,
+  headers: {
+    'Content-Type': 'application/json',
+  }
+});
+
+// Add a request interceptor to include the admin token
+adminClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('adminToken');
+  if (token) {
+    // config.headers.Authorization = `Bearer ${token}`; // Uncomment when admin auth is implemented
+  }
+  return config;
+});
 
 export const getDashboardStats = async () => {
-  // Simulate API delay
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(mockDashboardStats);
-    }, 500);
-  });
+  try {
+    const response = await adminClient.get('/stats');
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching dashboard stats:", error);
+    throw error;
+  }
 };
 
 export const getRecentActivities = async () => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(mockRecentActivities);
-    }, 500);
-  });
+  try {
+    const response = await adminClient.get('/activities');
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching recent activities:", error);
+    throw error;
+  }
+};
+
+export const getAllUsers = async () => {
+  try {
+    const response = await adminClient.get('/users');
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    throw error;
+  }
+};
+
+export const getAllTransactions = async () => {
+  try {
+    const response = await adminClient.get('/transactions');
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching transactions:", error);
+    throw error;
+  }
+};
+
+export const getMonthlyReports = async () => {
+  try {
+    const response = await adminClient.get('/reports/monthly');
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching monthly reports:", error);
+    throw error;
+  }
+};
+
+export const getAnalytics = async () => {
+  try {
+    const response = await adminClient.get('/analytics');
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching analytics:", error);
+    throw error;
+  }
+};
+
+export const getQuickStats = async () => {
+  try {
+    const response = await adminClient.get('/quick-stats');
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching quick stats:", error);
+    throw error;
+  }
 };
