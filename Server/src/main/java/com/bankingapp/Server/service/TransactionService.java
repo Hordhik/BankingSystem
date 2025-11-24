@@ -5,7 +5,6 @@ import com.bankingapp.Server.model.Account;
 import com.bankingapp.Server.model.Transaction;
 import com.bankingapp.Server.repository.AccountRepository;
 import com.bankingapp.Server.repository.TransactionRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,10 +14,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class TransactionService {
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
+
+    public TransactionService(AccountRepository accountRepository, TransactionRepository transactionRepository) {
+        this.accountRepository = accountRepository;
+        this.transactionRepository = transactionRepository;
+    }
 
     private void saveTransaction(Account account, String type, BigDecimal amount, Long counterpartyAccountId) {
         Transaction tx = Transaction.builder()

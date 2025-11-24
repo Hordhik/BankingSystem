@@ -6,25 +6,34 @@ import com.bankingapp.Server.model.Account;
 import com.bankingapp.Server.repository.AccountRepository;
 import com.bankingapp.Server.repository.UserRepository;
 import com.bankingapp.Server.security.JwtUtil;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class AuthService {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
     private final org.springframework.security.crypto.password.PasswordEncoder encoder;
     private final AccountRepository accountRepository;
 
+    public AuthService(UserRepository userRepository, JwtUtil jwtUtil, org.springframework.security.crypto.password.PasswordEncoder encoder, AccountRepository accountRepository) {
+        this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
+        this.encoder = encoder;
+        this.accountRepository = accountRepository;
+    }
+
     @org.springframework.transaction.annotation.Transactional
     public AuthResponse register(RegisterRequest req) {
         if (isBlank(req.getEmail()) || isBlank(req.getPassword()) || isBlank(req.getFullname())) {
             throw new IllegalArgumentException("Full name, email and password are required");
         }
+        
+        String email = req.getEmail().trim().toLowerCase();
+        
         // Allow optional accountNumber; if absent generate one
         String acctNumber = isBlank(req.getAccountNumber()) ? generateAccountNumber() : req.getAccountNumber().trim();
-        if (userRepository.existsByEmail(req.getEmail())) {
+        
+        if (userRepository.existsByEmail(email)) {
             throw new RuntimeException("Email already exists");
         }
         if (!isBlank(req.getAccountNumber()) && userRepository.existsByAccountNumber(req.getAccountNumber().trim())) {
@@ -33,7 +42,7 @@ public class AuthService {
 
         User user = new User(
             req.getFullname().trim(),
-            req.getEmail().trim().toLowerCase(),
+            email,
             encoder.encode(req.getPassword()),
             isBlank(req.getUsername()) ? generateUsername(req.getFullname()) : req.getUsername().trim(),
             acctNumber,
@@ -59,8 +68,7 @@ public class AuthService {
     public AuthResponse login(LoginRequest req) {
         String email = req.getEmail().trim();
         // Try exact match first, then ignore case
-        User user = userRepository.findByEmail(email)
-                .or(() -> userRepository.findByEmailIgnoreCase(email))
+        User user = userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new RuntimeException("Invalid credentials"));
         
         if (!encoder.matches(req.getPassword(), user.getPassword())) {

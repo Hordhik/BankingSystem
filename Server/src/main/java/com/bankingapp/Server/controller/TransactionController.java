@@ -5,7 +5,6 @@ import com.bankingapp.Server.dto.TransferRequest;
 import com.bankingapp.Server.dto.TransactionResponse;
 import com.bankingapp.Server.model.Account;
 import com.bankingapp.Server.service.TransactionService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,9 +12,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/transactions")
-@RequiredArgsConstructor
 public class TransactionController {
     private final TransactionService transactionService;
+
+    public TransactionController(TransactionService transactionService) {
+        this.transactionService = transactionService;
+    }
 
     @PostMapping("/deposit")
     public ResponseEntity<Account> deposit(@RequestBody TransactionRequest req) {

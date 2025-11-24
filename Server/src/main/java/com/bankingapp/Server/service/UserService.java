@@ -7,16 +7,20 @@ import com.bankingapp.Server.model.User;
 import com.bankingapp.Server.repository.AccountRepository;
 import com.bankingapp.Server.repository.UserRepository;
 import com.bankingapp.Server.security.JwtUtil;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
     private final JwtUtil jwtUtil;
+
+    public UserService(UserRepository userRepository, AccountRepository accountRepository, JwtUtil jwtUtil) {
+        this.userRepository = userRepository;
+        this.accountRepository = accountRepository;
+        this.jwtUtil = jwtUtil;
+    }
 
     public AuthResponse updateUser(Long userId, UpdateUserRequest request) {
         User user = userRepository.findById(userId)

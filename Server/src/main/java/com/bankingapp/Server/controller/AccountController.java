@@ -3,7 +3,6 @@ package com.bankingapp.Server.controller;
 import com.bankingapp.Server.dto.AccountResponse;
 import com.bankingapp.Server.model.Account;
 import com.bankingapp.Server.repository.AccountRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,9 +11,12 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/accounts")
-@RequiredArgsConstructor
 public class AccountController {
     private final AccountRepository accountRepository;
+
+    public AccountController(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
+    }
 
     @GetMapping
     public ResponseEntity<List<AccountResponse>> getAllAccounts() {
