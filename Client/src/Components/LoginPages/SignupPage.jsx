@@ -70,107 +70,126 @@ const SignUpPage = () => {
 
   return (
     <div className="login-page">
-      <div className="login-card">
-        <div className="login-card__header">
-          <img src={personIcon} alt="User" className="login-card__avatar" />
-          <h1 className="login-card__title">Create Account</h1>
-          <p className="login-card__subtitle">Sign up to get started</p>
+      <div className="login-container">
+        {/* Left Side - Visual Design */}
+        <div className="login-visual">
+          <div className="visual-content">
+            <h2>Join the<br/>Revolution.</h2>
+            <p>Create your account today and start managing your finances with ease.</p>
+            <div className="visual-shape-1"></div>
+            <div className="visual-shape-2"></div>
+          </div>
         </div>
 
-        <form className="login-form" onSubmit={handleSubmit}>
-          <div className="input-group">
-            <img src={personIcon} alt="Full name" className="input-group__icon" />
-            <input
-              type="text"
-              placeholder="Full name"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              className="input-group__control"
-              required
-            />
+        {/* Right Side - Form */}
+        <div className="login-form-section">
+          <div className="login-card__header">
+            <div className="avatar-container">
+              <img src={personIcon} alt="User" className="login-card__avatar" />
+            </div>
+            <h1 className="login-card__title">Create Account</h1>
+            <p className="login-card__subtitle">Sign up to get started</p>
           </div>
 
-          <div className="input-group">
-            <img src={personIcon} alt="Username" className="input-group__icon" />
-            <input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="input-group__control"
-            />
+          <form className="login-form" onSubmit={handleSubmit}>
+            <div className="input-group">
+              <img src={personIcon} alt="Full name" className="input-group__icon" />
+              <input
+                type="text"
+                placeholder="Full name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                className="input-group__control"
+                required
+              />
+            </div>
+
+            <div className="input-group">
+              <img src={personIcon} alt="Username" className="input-group__icon" />
+              <input
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="input-group__control"
+              />
+            </div>
+
+            <div className="input-group">
+              <img src={emailIcon} alt="Email" className="input-group__icon" />
+              <input
+                type="email"
+                placeholder="Email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="input-group__control"
+                required
+              />
+            </div>
+
+            <div className="input-group">
+              <img src={personIcon} alt="Account Number" className="input-group__icon" />
+              <input
+                type="text"
+                placeholder="Account Number"
+                value={accountNumber}
+                onChange={(e) => setAccountNumber(e.target.value)}
+                className="input-group__control"
+                inputMode="numeric"
+              />
+            </div>
+
+            <div className="input-group">
+              <img src={personIcon} alt="IFSC Code" className="input-group__icon" />
+              <input
+                type="text"
+                placeholder="IFSC Code"
+                value={ifsc}
+                onChange={(e) => setIfsc(e.target.value)}
+                className="input-group__control"
+                style={{ textTransform: 'uppercase' }}
+              />
+            </div>
+
+            <div className="input-group">
+              <img src={passwordIcon} alt="Password" className="input-group__icon" />
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="input-group__control"
+                required
+              />
+            </div>
+
+            <div className="input-group">
+              <img src={passwordIcon} alt="Confirm password" className="input-group__icon" />
+              <input
+                type="password"
+                placeholder="Confirm password"
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+                className="input-group__control"
+                required
+              />
+            </div>
+
+            {error && <div className="form-error" role="alert">{error}</div>}
+
+            <button type="submit" className="login-button" disabled={loading}>
+              {loading ? 'Creating...' : 'Create Account'}
+            </button>
+          </form>
+
+          <div className="login-footer">
+            <span className="login-link" style={{ color: '#64748b' }}>Already have an account?</span>
+            <Link className="login-link" to="/login">Login</Link>
           </div>
 
-          <div className="input-group">
-            <img src={emailIcon} alt="Email" className="input-group__icon" />
-            <input
-              type="email"
-              placeholder="Email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="input-group__control"
-              required
-            />
-          </div>
-
-          <div className="input-group">
-            <img src={personIcon} alt="Account Number" className="input-group__icon" />
-            <input
-              type="text"
-              placeholder="Account Number"
-              value={accountNumber}
-              onChange={(e) => setAccountNumber(e.target.value)}
-              className="input-group__control"
-              inputMode="numeric"
-            />
-          </div>
-
-          <div className="input-group">
-            <img src={personIcon} alt="IFSC Code" className="input-group__icon" />
-            <input
-              type="text"
-              placeholder="IFSC Code"
-              value={ifsc}
-              onChange={(e) => setIfsc(e.target.value)}
-              className="input-group__control"
-              style={{ textTransform: 'uppercase' }}
-            />
-          </div>
-
-          <div className="input-group">
-            <img src={passwordIcon} alt="Password" className="input-group__icon" />
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="input-group__control"
-              required
-            />
-          </div>
-
-          <div className="input-group">
-            <img src={passwordIcon} alt="Confirm password" className="input-group__icon" />
-            <input
-              type="password"
-              placeholder="Confirm password"
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-              className="input-group__control"
-              required
-            />
-          </div>
-
-          {error && <div className="form-error" role="alert" style={{ color: 'red', marginBottom: 8 }}>{error}</div>}
-
-          <button type="submit" className="login-button" disabled={loading}>
-            {loading ? 'Creating...' : 'Create Account'}
+          <button type="button" className="back-home-btn" onClick={() => navigate('/')}>
+            ← Back to Homepage
           </button>
-        </form>
-
-        <div className="login-footer" style={{ justifyContent: 'space-between' }}>
-          <span className="login-link" style={{ color: '#475569' }}>Already have an account?</span>
-          <Link className="login-link" to="/login">Login</Link>
         </div>
       </div>
     </div>

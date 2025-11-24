@@ -67,52 +67,71 @@ const LoginPage = () => {
 
   return (
     <div className="login-page">
-      <div className="login-card">
-        <div className="login-card__header">
-          <img src={personIcon} alt="User" className="login-card__avatar" />
-          <h1 className="login-card__title">Welcome Back</h1>
-          <p className="login-card__subtitle">Login to your banking account</p>
+      <div className="login-container">
+        {/* Left Side - Visual Design */}
+        <div className="login-visual">
+          <div className="visual-content">
+            <h2>Banking<br/>Reimagined.</h2>
+            <p>Experience the future of finance with our secure and intuitive platform.</p>
+            <div className="visual-shape-1"></div>
+            <div className="visual-shape-2"></div>
+          </div>
         </div>
 
-        <form className="login-form" onSubmit={handleSubmit}>
-          <div className="input-group">
-            <img src={personIcon} alt="Email" className="input-group__icon" />
-            <input
-              type="email"
-              placeholder="Email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="input-group__control"
-              required
-            />
-          </div>
-
-          <div className="input-group">
-            <img src={passwordIcon} alt="Password" className="input-group__icon" />
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="input-group__control"
-              required
-            />
-          </div>
-
-          {errorMessage && (
-            <div className="form-error" role="alert" style={{ color: 'red', marginBottom: 8 }}>
-              {errorMessage}
+        {/* Right Side - Form */}
+        <div className="login-form-section">
+          <div className="login-card__header">
+            <div className="avatar-container">
+              <img src={personIcon} alt="User" className="login-card__avatar" />
             </div>
-          )}
+            <h1 className="login-card__title">Welcome Back</h1>
+            <p className="login-card__subtitle">Login to your banking account</p>
+          </div>
 
-          <button type="submit" className="login-button" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
+          <form className="login-form" onSubmit={handleSubmit}>
+            <div className="input-group">
+              <img src={personIcon} alt="Email" className="input-group__icon" />
+              <input
+                type="email"
+                placeholder="Email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="input-group__control"
+                required
+              />
+            </div>
+
+            <div className="input-group">
+              <img src={passwordIcon} alt="Password" className="input-group__icon" />
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="input-group__control"
+                required
+              />
+            </div>
+
+            {errorMessage && (
+              <div className="form-error" role="alert">
+                {errorMessage}
+              </div>
+            )}
+
+            <button type="submit" className="login-button" disabled={loading}>
+              {loading ? 'Logging in...' : 'Login'}
+            </button>
+          </form>
+
+          <div className="login-footer">
+            <a className="login-link" href="/forgot-password">Forgot password?</a>
+            <a className="login-link" href="/signup">Create account</a>
+          </div>
+
+          <button type="button" className="back-home-btn" onClick={() => navigate('/')}>
+            ← Back to Homepage
           </button>
-        </form>
-
-        <div className="login-footer" style={{ justifyContent: 'space-between' }}>
-          <a className="login-link" href="/forgot-password">Forgot password?</a>
-          <a className="login-link" href="/signup">Create account</a>
         </div>
       </div>
     </div>
