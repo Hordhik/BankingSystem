@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
 import './Admin.css';
 import profile_img from '/src/assets/profile.svg';
-import dashboard from '/src/assets/icons/dashboard.svg';
-import users from '/src/assets/icons/wallet.svg';
-import transactions from '/src/assets/icons/card.svg';
-import settings from '/src/assets/icons/settings.svg';
-import reports from '/src/assets/icons/loans.svg';
-import analytics from '/src/assets/icons/offers.svg';
+import { LayoutDashboard, Users, CreditCard, FileText, BarChart2, Settings, LogOut, Palette } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { clearCurrentUser } from '../Components/Auth/userStore';
 import UserManagement from './components/UserManagement.jsx';
@@ -20,18 +15,26 @@ export const Admin = () => {
   const [activeTab, setActiveTab] = useState("Dashboard");
   const navigate = useNavigate();
 
+  // Check for admin token on mount
+  React.useEffect(() => {
+    const adminToken = localStorage.getItem('adminToken');
+    if (!adminToken) {
+      navigate('/admin/login');
+    }
+  }, [navigate]);
+
   const handleLogout = () => {
-    clearCurrentUser();
-    navigate('/login');
+    localStorage.removeItem('adminToken');
+    navigate('/admin/login');
   };
 
   const adminTabs = [
-    { name: "Dashboard", icon: dashboard },
-    { name: "Users", icon: users },
-    { name: "Transactions", icon: transactions },
-    { name: "Reports", icon: reports },
-    { name: "Analytics", icon: analytics },
-    { name: "Settings", icon: settings },
+    { name: "Dashboard", icon: LayoutDashboard },
+    { name: "Users", icon: Users },
+    { name: "Transactions", icon: CreditCard },
+    { name: "Reports", icon: FileText },
+    { name: "Analytics", icon: BarChart2 },
+    { name: "Settings", icon: Settings },
   ];
 
   const renderContent = () => {
@@ -70,7 +73,7 @@ export const Admin = () => {
               className={`admin-tab ${activeTab === tab.name ? 'active' : ''}`}
               onClick={() => setActiveTab(tab.name)}
             >
-              <img src={tab.icon} alt={tab.name} />
+              <tab.icon size={20} />
               <p>{tab.name}</p>
             </div>
           ))}
@@ -82,17 +85,12 @@ export const Admin = () => {
             <h2>{activeTab}</h2>
             <div className="admin-actions">
               <div className="admin-theme">
+                <Palette size={18} style={{ marginRight: '8px' }} />
                 <p>Change Themes</p>
               </div>
-              <div className="admin-logout">
-                <p 
-                  role="button" 
-                  tabIndex={0} 
-                  onClick={handleLogout} 
-                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleLogout(); }}
-                >
-                  Log Out
-                </p>
+              <div className="admin-logout" onClick={handleLogout}>
+                <LogOut size={18} style={{ marginRight: '8px' }} />
+                <p>Log Out</p>
               </div>
             </div>
           </div>

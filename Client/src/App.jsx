@@ -17,6 +17,7 @@ import ProtectedRoute from './Components/ProtectedRoute';
 
 // Admin
 import Admin from './Admin/Admin.jsx';
+import AdminLogin from './Admin/AdminLogin.jsx';
 
 function App() {
   return (
@@ -28,8 +29,9 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-
+        
         {/* ADMIN ROUTES */}
+        <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<Admin />} />
 
         {/* PROTECTED ROUTES */}

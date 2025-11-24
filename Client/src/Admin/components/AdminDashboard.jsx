@@ -1,21 +1,47 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { Users, CreditCard, DollarSign, Activity } from 'lucide-react';
+import { getDashboardStats, getRecentActivities } from '../../services/adminApi';
+import StatCard from './StatCard';
+import ActivityTable from './ActivityTable';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
-  const dashboardStats = [
-    { label: 'Total Users', value: '2,543', color: '#667eea' },
-    { label: 'Active Transactions', value: '1,284', color: '#764ba2' },
-    { label: 'Total Revenue', value: '₹45,60,000', color: '#f093fb' },
-    { label: 'System Health', value: '98.5%', color: '#4facfe' },
-  ];
+  const [stats, setStats] = useState([]);
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const recentActivities = [
-    { id: 1, type: 'User Registration', user: 'John Doe', time: '2 mins ago', status: 'success' },
-    { id: 2, type: 'Large Transaction', user: 'Jane Smith', amount: '₹50,000', time: '5 mins ago', status: 'completed' },
-    { id: 3, type: 'Failed Login Attempt', user: 'Unknown', time: '10 mins ago', status: 'warning' },
-    { id: 4, type: 'Card Creation', user: 'Mike Johnson', time: '15 mins ago', status: 'success' },
-    { id: 5, type: 'Password Change', user: 'Sarah Williams', time: '20 mins ago', status: 'success' },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [statsData, activitiesData] = await Promise.all([
+          getDashboardStats(),
+          getRecentActivities()
+        ]);
+        setStats(statsData);
+        setActivities(activitiesData);
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const getIconForLabel = (label) => {
+    switch (label) {
+      case 'Total Users': return Users;
+      case 'Active Transactions': return CreditCard;
+      case 'Total Revenue': return DollarSign;
+      case 'System Health': return Activity;
+      default: return Activity;
+    }
+  };
+
+  if (loading) {
+    return <div className="admin-dashboard-loading">Loading dashboard...</div>;
+  }
 
   return (
     <div className="admin-dashboard">
@@ -23,37 +49,22 @@ const AdminDashboard = () => {
       
       {/* Stats Grid */}
       <section className="stats-grid">
-        {dashboardStats.map((stat, index) => (
-          <div key={index} className="stat-card" style={{ borderLeftColor: stat.color }}>
-            <p className="stat-label">{stat.label}</p>
-            <p className="stat-value" style={{ color: stat.color }}>{stat.value}</p>
-          </div>
+        {stats.map((stat, index) => (
+          <StatCard 
+            key={index}
+            label={stat.label}
+            value={stat.value}
+            color={stat.color}
+            change={stat.change}
+            icon={getIconForLabel(stat.label)}
+          />
         ))}
       </section>
 
       {/* Recent Activities */}
       <section className="recent-activities-section">
         <h2>Recent Activities</h2>
-        <div className="activities-table">
-          <div className="table-header">
-            <div className="col-type">Activity Type</div>
-            <div className="col-user">User / Reference</div>
-            <div className="col-time">Time</div>
-            <div className="col-status">Status</div>
-          </div>
-          {recentActivities.map((activity) => (
-            <div key={activity.id} className="table-row">
-              <div className="col-type">{activity.type}</div>
-              <div className="col-user">{activity.user}</div>
-              <div className="col-time">{activity.time}</div>
-              <div className="col-status">
-                <span className={`status-badge ${activity.status}`}>
-                  {activity.status.charAt(0).toUpperCase() + activity.status.slice(1)}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
+        <ActivityTable activities={activities} />
       </section>
 
       {/* Quick Stats */}

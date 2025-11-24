@@ -44,6 +44,9 @@ const offerData = [
                 <a href="#" className="view-all-button">
                     View All Offers
                 </a>
+                <a href="/admin/login" className="view-all-button" style={{ marginLeft: '1rem' }}>
+                    Login to Admin Dashboard
+                </a>
             </div>
         </div>
     );
