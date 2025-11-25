@@ -7,7 +7,7 @@ import './loginPage.css'
 
 const LoginPage = () => {
   const navigate = useNavigate()
-  const [email, setEmail] = useState('')
+  const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [loading, setLoading] = useState(false)
@@ -17,15 +17,15 @@ const LoginPage = () => {
     event.preventDefault()
     setErrorMessage('')
 
-    if (!email || !password) {
-      setErrorMessage('Email and password are required.')
+    if (!identifier || !password) {
+      setErrorMessage('Email/Username and password are required.')
       return
     }
 
     setLoading(true)
     try {
       const payload = {
-        email: email.trim().toLowerCase(),
+        identifier: identifier.trim(),
         password
       }
 
@@ -96,11 +96,11 @@ const LoginPage = () => {
             <div className="input-group">
               <Mail className="input-group__icon" />
               <input
-                type="email"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="input-group__control"
+                type="text"
+                placeholder="Email or Username"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                className="input-group__field"
                 required
               />
             </div>

@@ -1,25 +1,28 @@
 import React, { useState } from 'react';
 import '/src/Dashboard/LoansSection/LoansSection.css';
+import axios from 'axios';
 import { PortfolioSection } from '../PortfolioSection/PortfolioSection.jsx';
+
+const API ='http://localhost:6060';
 
 const IconLibrary = {
   personal: () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
   ),
   home: () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
   ),
   car: () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 16.5 19.5 12 14 7.5"/><path d="M4 12h15.5"/><circle cx="5" cy="19" r="2"/><circle cx="17" cy="19" r="2"/><path d="m3 19-1.5-3.6a1 1 0 0 1 .8-1.4h15.4a1 1 0 0 1 .8 1.4L19 19"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 16.5 19.5 12 14 7.5"/><path d="M4 12h15.5"/><circle cx="5" cy="19" r="2"/><circle cx="17" cy="19" r="2"/><path d="m3 19-1.5-3.6a1 1 0 0 1 .8-1.4h15.4a1 1 0 0 1 .8 1.4L19 19"/></svg>
   ),
   mutualFunds: () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
   ),
   stocks: () => (
-     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>
   ),
   deposits: () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
   ),
 };
 
@@ -29,7 +32,7 @@ export const LoansSection = () => {
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({ name: '', amount: '', tenure: '' });
   const [submitted, setSubmitted] = useState(false);
-  const [portfolioItems, setPortfolioItems] = useState([]); // 👈 added
+  const [portfolioItems, setPortfolioItems] = useState([]);
 
   const loansData = [
     { icon: 'personal', title: 'Personal Loan', description: 'Instant funds for any personal need, from weddings to emergencies.' },
@@ -53,24 +56,47 @@ export const LoansSection = () => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitted(true);
 
-    // Add this loan to portfolio
-    const newItem = {
-      productName: selectedLoan.title,
-      amount: formData.amount,
-      status: 'In Verification',
-      nextPayment: '----',
-    };
-    setPortfolioItems(prev => [...prev, newItem]);
+    try {
+      const userId = Number(localStorage.getItem('userId'));
 
-    // Reset form after success
-    setTimeout(() => {
-      setShowForm(false);
-      setFormData({ name: '', amount: '', tenure: '' });
-    }, 2500);
+      const payload = {
+        userId,
+        loanType: selectedLoan.title,
+        amount: Number(formData.amount),
+        tenureMonths: Number(formData.tenure)
+      };
+
+      await axios.post(`${API}/api/loans/apply`, payload, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+
+      const res = await axios.get(`${API}/api/loans/user/${userId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+
+      setPortfolioItems(
+        res.data.map(l => ({
+          product: l.loanType,
+          amount: `₹${Number(l.amount).toLocaleString()}`,
+          status: l.status,
+          next_action: l.nextPayment || '----',
+          admin_reason: l.adminReason
+        }))
+      );
+
+    } catch (err) {
+      console.error("Loan APPLY ERROR:", err.response ? err.response.data : err);
+    } finally {
+      setTimeout(() => {
+        setShowForm(false);
+        setFormData({ name: '', amount: '', tenure: '' });
+        setSubmitted(false);
+      }, 800);
+    }
   };
 
   return (
@@ -80,7 +106,6 @@ export const LoansSection = () => {
         Explore products to help you borrow smarter and grow your wealth.
       </p>
 
-      {/* Tabs */}
       <div className="product-tabs-container">
         <button
           className={`product-tab ${activeView === 'loans' ? 'active' : ''}`}
@@ -96,7 +121,6 @@ export const LoansSection = () => {
         </button>
       </div>
 
-      {/* Loans or Investments Grid */}
       {activeView === 'loans' ? (
         <div className="loans-grid-dashboard">
           {loansData.map((loan, index) => {
@@ -131,11 +155,9 @@ export const LoansSection = () => {
           })}
         </div>
       )}
-      
-      {/* Pass portfolio items */}
+
       <PortfolioSection portfolioItems={portfolioItems} />
 
-      {/* Modal */}
       {showForm && (
         <div className="loan-modal-overlay">
           <div className="loan-modal">
@@ -143,30 +165,9 @@ export const LoansSection = () => {
               <>
                 <h3>Apply for {selectedLoan?.title}</h3>
                 <form onSubmit={handleSubmit} className="loan-form">
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="Full Name"
-                    value={formData.name}
-                    onChange={handleFormChange}
-                    required
-                  />
-                  <input
-                    type="number"
-                    name="amount"
-                    placeholder="Loan Amount (₹)"
-                    value={formData.amount}
-                    onChange={handleFormChange}
-                    required
-                  />
-                  <input
-                    type="number"
-                    name="tenure"
-                    placeholder="Tenure (in months)"
-                    value={formData.tenure}
-                    onChange={handleFormChange}
-                    required
-                  />
+                  <input type="text" name="name" placeholder="Full Name" value={formData.name} onChange={handleFormChange} required />
+                  <input type="number" name="amount" placeholder="Loan Amount (₹)" value={formData.amount} onChange={handleFormChange} required />
+                  <input type="number" name="tenure" placeholder="Tenure (months)" value={formData.tenure} onChange={handleFormChange} required />
                   <button type="submit" className="loan-submit-btn">Submit</button>
                   <button type="button" className="loan-cancel-btn" onClick={() => setShowForm(false)}>Cancel</button>
                 </form>
@@ -174,8 +175,7 @@ export const LoansSection = () => {
             ) : (
               <div className="loan-success-message">
                 <h4>Application Submitted!</h4>
-                <p>Your {selectedLoan?.title} is under verification.<br/>
-                   You’ll be notified via email and SMS once it’s reviewed.</p>
+                <p>Your {selectedLoan?.title} is under verification.<br/>You’ll be notified once reviewed.</p>
               </div>
             )}
           </div>

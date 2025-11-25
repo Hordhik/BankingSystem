@@ -63,3 +63,9 @@
   background-color: #fff3e0; 
   color: #e65100;
 }
+
+.rejection-note {
+  margin-top: 6px;
+  font-size: 0.8rem;
+  color: #b91c1c; /* red tone */
+}

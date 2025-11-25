@@ -1,7 +1,6 @@
 package com.bankingapp.Server.controller;
 
 import com.bankingapp.Server.dto.AccountResponse;
-import com.bankingapp.Server.model.Account;
 import com.bankingapp.Server.repository.AccountRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
