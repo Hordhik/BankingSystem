@@ -10,15 +10,21 @@ const VisaLogoSVG = () => (
 );
 
 export const DebitCardDisplay = () => {
+  const cardNumber = localStorage.getItem('cardNumber') || 'XXXX XXXX XXXX XXXX';
+  const formattedCardNumber = cardNumber.replace(/\s/g, '').replace(/(\d{4})/g, '$1 ').trim();
+
   return (
     <div className="debit-card-container">
       <div className="debit-card">
         <div className="debit-card__header">
-          <span className="debit-card__logo">FLUIT</span>
+          <div className="debit-card__brand">
+            <span className="debit-card__logo">FLUIT</span>
+            <span className="debit-card__type">DEBIT</span>
+          </div>
           <div className="debit-card__chip"></div>
         </div>
         <div className="debit-card__number">
-          <span>4564 8901 2048 6756</span>
+          <span>{formattedCardNumber}</span>
         </div>
         <div className="debit-card__footer">
           <div className="debit-card__holder">

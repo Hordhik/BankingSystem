@@ -23,13 +23,13 @@ const CardsPage = () => {
   const [isFlipped, setIsFlipped] = useState(false);
 
   const [cards, setCards] = useState([
-    { 
-      id: 1, 
-      number: (localStorage.getItem('accountNumber') || '4564 8901 2048 6756').replace(/(\d{4})(?=\d)/g, '$1 '), 
-      holder: localStorage.getItem('fullname') || 'User Name', 
-      expiry: '12/28', 
-      cvv: '123', 
-      isPrimary: true 
+    {
+      id: 1,
+      number: (localStorage.getItem('cardNumber') || '4564 8901 2048 6756').replace(/(\d{4})(?=\d)/g, '$1 '),
+      holder: localStorage.getItem('fullname') || 'User Name',
+      expiry: localStorage.getItem('expiryDate') || '12/28',
+      cvv: localStorage.getItem('cvv') || '123',
+      isPrimary: true
     },
     { id: 2, number: '6712 9988 4402 1123', holder: 'Rahul Menon', expiry: '07/26', cvv: '411', isPrimary: false },
     { id: 3, number: '5520 3344 2201 9087', holder: 'Sneha Patel', expiry: '03/29', cvv: '862', isPrimary: false },

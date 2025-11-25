@@ -45,6 +45,9 @@ const LoginPage = () => {
       if (data?.email) localStorage.setItem('email', data.email)
       if (data?.primaryAccountId) localStorage.setItem('primaryAccountId', data.primaryAccountId)
       if (data?.accountNumber) localStorage.setItem('accountNumber', data.accountNumber)
+      if (data?.cardNumber) localStorage.setItem('cardNumber', data.cardNumber)
+      if (data?.expiryDate) localStorage.setItem('expiryDate', data.expiryDate)
+      if (data?.cvv) localStorage.setItem('cvv', data.cvv)
       if (data?.username) localStorage.setItem('username', data.username)
       if (data?.primaryAccountBalance) localStorage.setItem('primaryAccountBalance', data.primaryAccountBalance)
 
@@ -72,7 +75,7 @@ const LoginPage = () => {
         {/* Left Side - Visual Design */}
         <div className="login-visual">
           <div className="visual-content">
-            <h2>Banking<br/>Reimagined.</h2>
+            <h2>Banking<br />Reimagined.</h2>
             <p>Experience the future of finance with our secure and intuitive platform.</p>
             <div className="visual-shape-1"></div>
             <div className="visual-shape-2"></div>
