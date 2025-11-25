@@ -94,13 +94,13 @@ const LoginPage = () => {
 
           <form className="login-form" onSubmit={handleSubmit}>
             <div className="input-group">
-              <Mail className="input-group__icon" />
+              <User className="input-group__icon" />
               <input
                 type="text"
                 placeholder="Email or Username"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
-                className="input-group__field"
+                className="input-group__control"
                 required
               />
             </div>

@@ -20,7 +20,8 @@
 
 .fluit_logo {
     font-family: 'Outfit', sans-serif;
-    font-size: 24px;
+    font-size: 28px;
+    /* Increased from 24px */
     font-weight: 800;
     color: #111;
     background: transparent;
@@ -30,15 +31,19 @@
     padding: 0;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    /* Increased gap */
 }
 
 .logo-icon-wrapper {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    /* Increased from 32px */
+    height: 40px;
+    /* Increased from 32px */
     background: #111;
     color: #fff;
-    border-radius: 8px;
+    border-radius: 10px;
+    /* Adjusted radius */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -48,19 +53,23 @@
 .menu {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 8px;
     background: #f5f5f5;
-    padding: 4px;
+    /* Restored background */
+    padding: 6px;
+    /* Restored padding, adjusted for size */
     border-radius: 100px;
+    /* Restored radius */
 }
 
 .menu-option {
-    padding: 8px 24px;
+    padding: 10px 24px;
+    /* Adjusted padding */
     border-radius: 100px;
     border: none;
     background: transparent;
     color: #666;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -71,36 +80,42 @@
 .menu-option:hover {
     color: #111;
     background: rgba(0, 0, 0, 0.03);
-    transform: scale(1.05);
+    /* Restored hover background */
+    transform: scale(1.02);
+    /* Subtle scale */
 }
 
 .menu-option.active {
-    background: #fff;
+    background: #ffffff;
+    /* Restored active background */
     color: #111;
-    font-weight: 600;
+    font-weight: 700;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    transform: scale(1.05);
+    /* Restored shadow */
+    transform: scale(1.02);
 }
 
 .logout {
     display: flex;
-    gap: 12px;
+    gap: 16px;
+    /* Increased gap */
 }
 
 .logout .menu-option {
-    background: #fff;
+    background: transparent;
     color: #111;
     font-weight: 600;
-    padding: 10px 24px;
-    border: 1px solid #e5e5e5;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+    padding: 12px 28px;
+    /* Increased padding */
+    border: none;
+    box-shadow: none;
+    font-size: 16px;
+    /* Ensure consistent size */
 }
 
 .logout .menu-option:hover {
-    background: #f8f8f8;
-    border-color: #d5d5d5;
+    background: transparent;
     transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 .logout .menu-option.logout {
