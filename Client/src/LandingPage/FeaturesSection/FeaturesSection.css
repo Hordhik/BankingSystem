@@ -1,50 +1,57 @@
 .features-section {
   text-align: center;
-  font-family: "Nunito", sans-serif;
-  margin: 100px 50px 50px;
+  font-family: 'Outfit', sans-serif;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .features-title {
-  font-size: 2.5rem;
+  font-size: 48px;
   font-weight: 700;
-  color: #1a1a1a;
-  margin: 0 auto 3rem auto;
+  color: #111;
+  margin: 0 auto 64px auto;
+  letter-spacing: -1.5px;
 }
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); 
-  gap: 1.5rem;
-  max-width: 960px; 
-  margin: 0 auto;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 32px;
+  width: 100%;
 }
 
 .feature-item {
   background-color: #ffffff;
-  padding: 2rem;
-  border-radius: 16px;
-  text-align: center;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s, box-shadow 0.2s;
+  padding: 40px 32px;
+  border-radius: 24px;
+  text-align: left;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
   display: flex;
   flex-direction: column;
+  gap: 16px;
 }
 
 .feature-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+  transform: translateY(-8px);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
 .feature-item h3 {
-  font-size: 1.25rem;
+  font-size: 24px;
   font-weight: 700;
-  color: #1a1a1a;
-  margin: 0 0 0.75rem 0;
+  color: #111;
+  margin: 0;
+  letter-spacing: -0.5px;
 }
 
 .feature-item p {
-  font-size: 1rem;
-  color: #555e68;
+  font-size: 16px;
+  color: #666;
   line-height: 1.6;
   margin: 0;
+  font-weight: 400;
 }

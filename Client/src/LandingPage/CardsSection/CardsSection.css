@@ -2,55 +2,88 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  perspective: 1000px;
 }
 
 .tabs-container {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  background-color: #ffffff;
-  width: 200px;
+  background-color: #f0f0f0;
   padding: 6px;
-  height: 50px;
-  gap :8px;
-  border-radius: 50px;
-  margin-bottom: 16px;
+  border-radius: 100px;
+  margin-bottom: 64px;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.05);
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  animation: slideDownFade 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 0.5s;
+}
+
+@keyframes slideDownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .tab-button {
   border: none;
-  background: #ffffff ;
-  padding: 10px 24px;
-  font-weight: 600;
-  width: 135px;
-  color:#808080;
-  border-radius: 50px;
-  height: 36px;
+  background: transparent;
+  padding: 14px 40px;
+  font-weight: 500;
+  color: #666;
+  border-radius: 100px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px;
+  position: relative;
+  z-index: 2;
 }
 
 .tab-button.active {
-  background-color: #F6F6F6;
-  color: #000000;
+  background-color: #ffffff;
+  color: #111;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transform: scale(1.05);
 }
-
 
 .cards-grid {
   display: flex;
   justify-content: center;
-  flex-direction: row;
-  gap: 20px;
+  flex-wrap: wrap;
+  gap: 32px;
+  width: 100%;
+  padding: 20px;
 }
 
 .cards-grid.animate .card {
   opacity: 0;
-  transform: translateY(8px);
-  animation: fadeInUp 840ms cubic-bezier(.2,.9,.3,1) forwards;
+  transform: translateY(40px) scale(0.95);
+  animation: cardEntrance 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
-.cards-grid.animate .card:nth-child(1) { animation-delay: 80ms; }
-.cards-grid.animate .card:nth-child(2) { animation-delay: 240ms; }
-.cards-grid.animate .card:nth-child(3) { animation-delay: 400ms; }
+
+.cards-grid.animate .card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.cards-grid.animate .card:nth-child(2) {
+  animation-delay: 0.25s;
+}
+
+.cards-grid.animate .card:nth-child(3) {
+  animation-delay: 0.4s;
+}
 
 .cards-grid.no-animate .card,
 .cards-grid.no-animate .card * {
@@ -59,65 +92,147 @@
   transform: none !important;
 }
 
-
-.card {
-  border-radius: 16px;
-  width: 325px;
-  box-shadow: 0 10px 20px rgba(57, 56, 56, 0.1);
-  padding: 10px;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
+@keyframes cardEntrance {
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 32px;
+  flex: 1 1 350px;
+  max-width: 400px;
+  min-width: 320px;
+  padding: 32px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  overflow: hidden;
+  height: auto;
+  /* Ensure height adapts to content */
+  min-height: 500px;
+  /* Minimum height for consistency */
+}
+
+/* 3D Hover Effect */
+.card:hover {
+  transform: translateY(-12px) rotateX(2deg) rotateY(2deg);
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.12), 0 10px 20px rgba(0, 0, 0, 0.05);
+  border-color: rgba(255, 255, 255, 1);
+  z-index: 10;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 100%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.card:hover::before {
+  opacity: 1;
 }
 
 .card-image {
   width: 100%;
-  border-radius: 12px;
-  padding: 8px;
+  border-radius: 20px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  margin-bottom: 12px;
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.card:hover .card-image {
+  transform: scale(1.05) translateY(-5px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
 }
 
 .card h3 {
-  font-size:20px;
-  font-weight: 600;
-  padding: 10px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+  letter-spacing: -0.8px;
 }
 
 .card-tagline {
   font-size: 16px;
-  color: #555e68;
-  padding: 0px 10px;
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+  font-weight: 400;
 }
 
 .benefits-title {
-  font-size: 16px;
-  padding: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 12px;
 }
 
 .benefits-list {
-  list-style-type: none; 
-  color: #555e68;
-  line-height: 1.4;
-  padding: 0px 8px;
-  
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
-.benefit-item{
+.benefit-item {
   display: flex;
-  align-items: center;
-  margin-bottom: 8px;
+  align-items: flex-start;
+  gap: 14px;
+  color: #333;
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 500;
 }
 
 .benefit-icon {
-  width: 16px; 
-  height: 16px;  
+  width: 20px;
+  height: 20px;
   stroke-width: 2;
-  margin-right: 8px;
+  color: #111;
+  flex-shrink: 0;
+  margin-top: 1px;
+  opacity: 0.8;
+}
+
+@media (max-width: 1024px) {
+  .cards-grid {
+    justify-content: center;
+  }
+
+  .card {
+    flex: 1 1 300px;
+    max-width: 380px;
+  }
+}
+
+@media (max-width: 768px) {
+  .cards-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 400px;
+  }
 }

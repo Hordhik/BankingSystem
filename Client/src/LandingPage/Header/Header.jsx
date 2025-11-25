@@ -1,14 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Zap } from 'lucide-react';
 import './Header.css';
 
 export const Header = () => {
   const navigate = useNavigate();
-  const [active, setActive] = useState('credit-card');
+  const [active, setActive] = useState('accounts');
   const ratiosRef = useRef({});
 
   const menu = [
-    { label: 'Accounts', id: 'accounts' },
+    { label: 'Home', id: 'accounts' },
     { label: 'Cards', id: 'credit-card' },
     { label: 'Features', id: 'features' },
     { label: 'Loans', id: 'loans' },
@@ -62,6 +63,9 @@ export const Header = () => {
         aria-label="Go to top"
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
       >
+        <div className="logo-icon-wrapper">
+          <Zap size={20} fill="currentColor" />
+        </div>
         FLUIT
       </button>
 
