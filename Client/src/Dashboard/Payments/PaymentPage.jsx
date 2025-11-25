@@ -6,7 +6,7 @@ import cardIcon from '/src/assets/icons/card.svg';
 import transferIcon from '/src/assets/icons/transfer.svg';
 import walletIcon from '/src/assets/icons/wallet.svg';
 import dashboardIcon from '/src/assets/icons/dashboard.svg';
-import { transfer, getAccounts } from '../../services/bankApi';
+import { transfer, cardTransfer, getAccounts } from '../../services/bankApi';
 
 export default function PaymentPage() {
   const { type } = useParams();
@@ -19,6 +19,7 @@ export default function PaymentPage() {
     cardHolder: '',
     expiry: '',
     cvv: '',
+    receiverCardNumber: '',
     receiverAccount: '',
     amount: '',
   });
@@ -111,6 +112,19 @@ export default function PaymentPage() {
       } catch (err) {
         console.error("Transfer failed", err);
         alert("Transfer failed: " + (err.message || "Unknown error"));
+      }
+    } else if (selectedPayment === 'card') {
+      try {
+        // Remove spaces from card numbers
+        const fromCard = paymentDetails.myCardNumber.replace(/\s/g, '');
+        const toCard = paymentDetails.receiverCardNumber.replace(/\s/g, '');
+
+        await cardTransfer(fromCard, toCard, amount, paymentDetails.cvv, paymentDetails.expiry);
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 1800);
+      } catch (err) {
+        console.error("Card Transfer failed", err);
+        alert("Card Transfer failed: " + (err.message || "Unknown error"));
       }
     } else {
       // Mock for other types
@@ -437,6 +451,16 @@ export default function PaymentPage() {
                     />
                   </div>
                 </div>
+
+                <label>Receiver Card Number</label>
+                <input
+                  type="text"
+                  name="receiverCardNumber"
+                  placeholder="XXXX XXXX XXXX XXXX"
+                  value={paymentDetails.receiverCardNumber}
+                  onChange={handleInputChange}
+                  required
+                />
               </>
             )}
 

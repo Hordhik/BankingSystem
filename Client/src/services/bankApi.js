@@ -15,7 +15,7 @@ async function request(endpoint, method = "GET", body = null) {
   const text = await res.text();
   const contentType = res.headers.get("content-type") || "";
   const data = contentType.includes("application/json") ? JSON.parse(text || "{}") : text;
-  
+
   if (!res.ok) {
     const err = new Error(data?.message || res.statusText || "API error");
     err.status = res.status;
@@ -34,6 +34,9 @@ export const withdraw = (accountId, amount) =>
 
 export const transfer = (fromAccountId, toAccountId, amount) =>
   request("/transactions/transfer", "POST", { fromAccountId, toAccountId, amount });
+
+export const cardTransfer = (fromCardNumber, toCardNumber, amount, cvv, expiryDate) =>
+  request("/transactions/card-transfer", "POST", { fromCardNumber, toCardNumber, amount, cvv, expiryDate });
 
 export const getHistory = (accountId) =>
   request(`/transactions/account/${accountId}/history`, "GET");
