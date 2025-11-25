@@ -12,7 +12,8 @@
 .debit-card {
   width: 100%;
   max-width: 400px;
-  aspect-ratio: 1.586 / 1; /* credit card ratio */
+  aspect-ratio: 1.586 / 1;
+  /* credit card ratio */
   border-radius: 16px;
   padding: 1.25rem 1.5rem;
   color: #fff;
@@ -23,14 +24,69 @@
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
 }
 
-.debit-card__header { display:flex; justify-content:space-between; align-items:center; }
-.debit-card__logo { font-weight:800; font-size:1.4rem; letter-spacing:1px; }
-.debit-card__chip { width:45px; height:35px; background:linear-gradient(135deg, #f1c40f, #e67e22); border-radius:6px; }
+.debit-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
 
-.debit-card__number { display:flex; justify-content:space-between; font-size:1.5rem; font-family:'Space Mono', monospace; letter-spacing:3px; text-shadow:0 1px 2px rgba(0,0,0,.3); }
+.debit-card__brand {
+  display: flex;
+  flex-direction: column;
+}
 
-.debit-card__footer { display:flex; justify-content:space-between; align-items:flex-end; font-size:0.9rem; }
-.debit-card__holder, .debit-card__expiry { display:flex; flex-direction:column; }
-.debit-card__holder .label, .debit-card__expiry .label { font-size:0.7rem; color:#bdc3c7; text-transform:uppercase; margin-bottom:2px; }
-.debit-card__vendor-logo { height:30px; width:auto; }
+.debit-card__logo {
+  font-weight: 800;
+  font-size: 1.4rem;
+  letter-spacing: 1px;
+  line-height: 1;
+}
 
+.debit-card__type {
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+.debit-card__chip {
+  width: 45px;
+  height: 35px;
+  background: linear-gradient(135deg, #f1c40f, #e67e22);
+  border-radius: 6px;
+}
+
+.debit-card__number {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.5rem;
+  font-family: 'Space Mono', monospace;
+  letter-spacing: 3px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .3);
+}
+
+.debit-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-size: 0.9rem;
+}
+
+.debit-card__holder,
+.debit-card__expiry {
+  display: flex;
+  flex-direction: column;
+}
+
+.debit-card__holder .label,
+.debit-card__expiry .label {
+  font-size: 0.7rem;
+  color: #bdc3c7;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.debit-card__vendor-logo {
+  height: 30px;
+  width: auto;
+}

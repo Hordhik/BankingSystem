@@ -8,7 +8,7 @@ import './loginPage.css'
 
 const LoginPage = () => {
   const navigate = useNavigate()
-  const [email, setEmail] = useState('')
+  const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [loading, setLoading] = useState(false)
@@ -17,15 +17,15 @@ const LoginPage = () => {
     event.preventDefault()
     setErrorMessage('')
 
-    if (!email || !password) {
-      setErrorMessage('Email and password are required.')
+    if (!identifier || !password) {
+      setErrorMessage('Email/Username and password are required.')
       return
     }
 
     setLoading(true)
     try {
       const payload = {
-        email: email.trim().toLowerCase(), // normalize
+        identifier: identifier.trim(),
         password
       }
 
@@ -45,6 +45,9 @@ const LoginPage = () => {
       if (data?.email) localStorage.setItem('email', data.email)
       if (data?.primaryAccountId) localStorage.setItem('primaryAccountId', data.primaryAccountId)
       if (data?.accountNumber) localStorage.setItem('accountNumber', data.accountNumber)
+      if (data?.cardNumber) localStorage.setItem('cardNumber', data.cardNumber)
+      if (data?.expiryDate) localStorage.setItem('expiryDate', data.expiryDate)
+      if (data?.cvv) localStorage.setItem('cvv', data.cvv)
       if (data?.username) localStorage.setItem('username', data.username)
       if (data?.primaryAccountBalance) localStorage.setItem('primaryAccountBalance', data.primaryAccountBalance)
 
@@ -72,7 +75,7 @@ const LoginPage = () => {
         {/* Left Side - Visual Design */}
         <div className="login-visual">
           <div className="visual-content">
-            <h2>Banking<br/>Reimagined.</h2>
+            <h2>Banking<br />Reimagined.</h2>
             <p>Experience the future of finance with our secure and intuitive platform.</p>
             <div className="visual-shape-1"></div>
             <div className="visual-shape-2"></div>
@@ -93,11 +96,11 @@ const LoginPage = () => {
             <div className="input-group">
               <img src={personIcon} alt="Email" className="input-group__icon" />
               <input
-                type="email"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="input-group__control"
+                type="text"
+                placeholder="Email or Username"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                className="input-group__field"
                 required
               />
             </div>

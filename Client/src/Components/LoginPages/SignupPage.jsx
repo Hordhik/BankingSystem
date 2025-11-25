@@ -55,6 +55,10 @@ const SignUpPage = () => {
       if (token) localStorage.setItem('token', token)
       if (data?.fullname) localStorage.setItem('fullname', data.fullname)
       if (data?.email) localStorage.setItem('email', data.email)
+      if (data?.cardNumber) localStorage.setItem('cardNumber', data.cardNumber)
+      if (data?.expiryDate) localStorage.setItem('expiryDate', data.expiryDate)
+      if (data?.cvv) localStorage.setItem('cvv', data.cvv)
+      if (data?.accountNumber) localStorage.setItem('accountNumber', data.accountNumber)
 
       // Redirect to dashboard
       navigate('/dashboard')
@@ -74,7 +78,7 @@ const SignUpPage = () => {
         {/* Left Side - Visual Design */}
         <div className="login-visual">
           <div className="visual-content">
-            <h2>Join the<br/>Revolution.</h2>
+            <h2>Join the<br />Revolution.</h2>
             <p>Create your account today and start managing your finances with ease.</p>
             <div className="visual-shape-1"></div>
             <div className="visual-shape-2"></div>
