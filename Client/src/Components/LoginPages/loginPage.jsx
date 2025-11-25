@@ -5,6 +5,8 @@ import { User, Lock, Mail, ArrowLeft, ShieldCheck, Zap, Eye, EyeOff } from 'luci
 import API from '../../services/api'
 import './loginPage.css'
 
+import BackgroundAnimation from '../BackgroundAnimation/BackgroundAnimation';
+
 const LoginPage = () => {
   const navigate = useNavigate()
   const [identifier, setIdentifier] = useState('')
@@ -67,6 +69,7 @@ const LoginPage = () => {
 
   return (
     <div className="login-page">
+      <BackgroundAnimation />
       <div className="login-container">
         {/* Left Side - Visual Design */}
         <div className="login-visual">

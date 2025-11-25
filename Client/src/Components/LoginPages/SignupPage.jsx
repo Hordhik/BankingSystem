@@ -1,11 +1,11 @@
-// Client/src/pages/SignUpPage.jsx
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import API from '../../services/api'
-import { User, Mail, Lock, CreditCard, FileText, ArrowLeft, Zap, Eye, EyeOff } from 'lucide-react'
-import './loginPage.css'
+import { Zap, User, Mail, Lock, Eye, EyeOff, CreditCard, ShieldCheck, FileText, ArrowLeft } from 'lucide-react';
+import './loginPage.css'; // Reusing login styles
+import BackgroundAnimation from '../BackgroundAnimation/BackgroundAnimation';
 
-const SignUpPage = () => {
+const SignupPage = () => {
   const navigate = useNavigate()
   const [fullName, setFullName] = useState('')
   const [username, setUsername] = useState('')
@@ -73,6 +73,7 @@ const SignUpPage = () => {
 
   return (
     <div className="login-page">
+      <BackgroundAnimation />
       <div className="login-container">
         {/* Left Side - Visual Design */}
         <div className="login-visual">
@@ -217,4 +218,4 @@ const SignUpPage = () => {
   )
 }
 
-export default SignUpPage
+export default SignupPage
