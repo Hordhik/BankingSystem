@@ -1,46 +1,42 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import '/src/Dashboard/PortfolioSection/PortfolioSection.css';
 
 export const PortfolioSection = ({ portfolioItems = [] }) => {
-  // existing portfolio data (default)
-  const portfolioData = [
-    {
-      product: 'Personal Loan',
-      amount: '₹5,00,000',
-      status: 'Active',
-      next_action: 'EMI due on 15th Nov',
-      type: 'loan',
-    },
-    {
-      product: 'Equity Mutual Fund',
-      amount: '₹1,25,000',
-      status: 'Growing',
-      next_action: 'Next SIP on 20th Nov',
-      type: 'investment',
-    },
-    {
-      product: 'Fixed Deposit',
-      amount: '₹2,00,000',
-      status: 'Maturing',
-      next_action: 'Matures on 1st Jan 2026',
-      type: 'investment',
-    },
-  ];
+  const [items, setItems] = useState([]);
+  const API ='http://localhost:6060';
 
-  // combine default + new portfolio items
-  const combinedData = [
-    ...portfolioData,
-    ...portfolioItems.map(item => ({
-      product: item.productName,
-      amount: `₹${item.amount}`,
-      status: item.status,
-      next_action: item.nextPayment,
-    })),
-  ];
+  useEffect(() => {
+    fetchLoans();
+  }, [portfolioItems]);
+
+  const fetchLoans = async () => {
+    try {
+      const userId = Number(localStorage.getItem('userId'));
+      const res = await axios.get(`${API}/api/loans/user/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      const formatted = res.data.map((l) => ({
+        product: l.loanType,
+        amount: `₹${Number(l.amount).toLocaleString()}`,
+        status: l.status,
+        next_action: l.nextPayment || '----',
+        admin_reason: l.adminReason || null,
+      }));
+
+      setItems(formatted);
+    } catch (err) {
+      console.error('Error fetching portfolio:', err);
+    }
+  };
 
   return (
     <div className="portfolio-section-dashboard">
       <h3 className="portfolio-title-dashboard">My Portfolio</h3>
+
       <div className="portfolio-table-container">
         <table className="portfolio-table">
           <thead>
@@ -51,19 +47,36 @@ export const PortfolioSection = ({ portfolioItems = [] }) => {
               <th>Next Payment / Maturity</th>
             </tr>
           </thead>
+
           <tbody>
-            {combinedData.map((item, index) => (
-              <tr key={index}>
-                <td>{item.product}</td>
-                <td>{item.amount}</td>
-                <td>
-                  <span className={`status-pill status-${item.status.toLowerCase().replace(' ', '-')}`}>
-                    {item.status}
-                  </span>
+            {items.length === 0 ? (
+              <tr>
+                <td colSpan="4" style={{ textAlign: 'center', padding: '20px' }}>
+                  No loans or investments yet.
                 </td>
-                <td>{item.next_action}</td>
               </tr>
-            ))}
+            ) : (
+              items.map((item, index) => (
+                <tr key={index}>
+                  <td>{item.product}</td>
+                  <td>{item.amount}</td>
+
+                  <td>
+                    <span className={`status-pill status-${item.status.toLowerCase()}`}>
+                      {item.status}
+                    </span>
+
+                    {item.status === 'REJECTED' && item.admin_reason && (
+                      <div className="rejection-note">
+                        Reason: {item.admin_reason}
+                      </div>
+                    )}
+                  </td>
+
+                  <td>{item.next_action}</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

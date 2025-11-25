@@ -3,13 +3,14 @@ import './Admin.css';
 import profile_img from '/src/assets/profile.svg';
 import { LayoutDashboard, Users, CreditCard, FileText, BarChart2, Settings, LogOut, Palette } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { clearCurrentUser } from '../Components/Auth/userStore';
 import UserManagement from './components/UserManagement.jsx';
 import TransactionManagement from './components/TransactionManagement.jsx';
 import AdminDashboard from './components/AdminDashboard.jsx';
+import Loans from './components/Loans.jsx';
 import AdminSettings from './components/AdminSettings.jsx';
 import Reports from './components/Reports.jsx';
 import Analytics from './components/Analytics.jsx';
+import loan from '../assets/icons/loan.png';
 
 export const Admin = () => {
   const [activeTab, setActiveTab] = useState("Dashboard");
@@ -29,12 +30,13 @@ export const Admin = () => {
   };
 
   const adminTabs = [
-    { name: "Dashboard", icon: LayoutDashboard },
-    { name: "Users", icon: Users },
-    { name: "Transactions", icon: CreditCard },
-    { name: "Reports", icon: FileText },
-    { name: "Analytics", icon: BarChart2 },
-    { name: "Settings", icon: Settings },
+    { name: "Dashboard", icon: LayoutDashboard, isImage: false },
+    { name: "Users", icon: Users, isImage: false },
+    { name: "Transactions", icon: CreditCard, isImage: false },
+    { name: "Loans", icon: loan, isImage: true },
+    { name: "Reports", icon: FileText, isImage: false },
+    { name: "Analytics", icon: BarChart2, isImage: false },
+    { name: "Settings", icon: Settings, isImage: false },
   ];
 
   const renderContent = () => {
@@ -49,6 +51,8 @@ export const Admin = () => {
         return <Analytics />;
       case 'Settings':
         return <AdminSettings />;
+      case 'Loans':
+        return <Loans />;
       case 'Dashboard':
       default:
         return <AdminDashboard />;
@@ -73,7 +77,11 @@ export const Admin = () => {
               className={`admin-tab ${activeTab === tab.name ? 'active' : ''}`}
               onClick={() => setActiveTab(tab.name)}
             >
-              <tab.icon size={20} />
+              {tab.isImage ? (
+                <img src={tab.icon} alt={tab.name} style={{ width: '20px', height: '20px' }} />
+              ) : (
+                <tab.icon size={20} />
+              )}
               <p>{tab.name}</p>
             </div>
           ))}
