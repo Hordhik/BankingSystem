@@ -15,7 +15,8 @@ public class AuthService {
     private final org.springframework.security.crypto.password.PasswordEncoder encoder;
     private final AccountRepository accountRepository;
 
-    public AuthService(UserRepository userRepository, JwtUtil jwtUtil, org.springframework.security.crypto.password.PasswordEncoder encoder, AccountRepository accountRepository) {
+    public AuthService(UserRepository userRepository, JwtUtil jwtUtil,
+            org.springframework.security.crypto.password.PasswordEncoder encoder, AccountRepository accountRepository) {
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
         this.encoder = encoder;
@@ -27,12 +28,12 @@ public class AuthService {
         if (isBlank(req.getEmail()) || isBlank(req.getPassword()) || isBlank(req.getFullname())) {
             throw new IllegalArgumentException("Full name, email and password are required");
         }
-        
+
         String email = req.getEmail().trim().toLowerCase();
-        
+
         // Allow optional accountNumber; if absent generate one
         String acctNumber = isBlank(req.getAccountNumber()) ? generateAccountNumber() : req.getAccountNumber().trim();
-        
+
         if (userRepository.existsByEmail(email)) {
             throw new RuntimeException("Email already exists");
         }
@@ -41,66 +42,82 @@ public class AuthService {
         }
 
         User user = new User(
-            req.getFullname().trim(),
-            email,
-            encoder.encode(req.getPassword()),
-            isBlank(req.getUsername()) ? generateUsername(req.getFullname()) : req.getUsername().trim(),
-            acctNumber,
-            isBlank(req.getIfsc()) ? "SBIN000000" : req.getIfsc().trim().toUpperCase()
-        );
+                req.getFullname().trim(),
+                email,
+                encoder.encode(req.getPassword()),
+                isBlank(req.getUsername()) ? generateUsername(req.getFullname()) : req.getUsername().trim(),
+                acctNumber,
+                isBlank(req.getIfsc()) ? "SBIN000000" : req.getIfsc().trim().toUpperCase());
         userRepository.save(user);
 
         // create primary savings account with opening balance 10000.00
         Account account = Account.builder()
-            .accountNumber(acctNumber)
-            .accountType("SAVINGS")
-            .balance(new java.math.BigDecimal("10000.00"))
-            .createdAt(java.time.LocalDateTime.now())
-            .currency("INR")
-            .user(user)
-            .build();
+                .accountNumber(acctNumber)
+                .accountType("SAVINGS")
+                .balance(new java.math.BigDecimal("10000.00"))
+                .createdAt(java.time.LocalDateTime.now())
+                .currency("INR")
+                .user(user)
+                .build();
         accountRepository.save(account); // persist primary account
 
         String token = jwtUtil.generateToken(user.getEmail());
-        return new AuthResponse(token, user.getUserId(), user.getFullname(), user.getEmail(), user.getUsername(), user.getAccountNumber(), account.getId(), account.getBalance());
+        return new AuthResponse(token, user.getUserId(), user.getFullname(), user.getEmail(), user.getUsername(),
+                user.getAccountNumber(), account.getId(), account.getBalance());
     }
 
     public AuthResponse login(LoginRequest req) {
-        String email = req.getEmail().trim();
-        // Try exact match first, then ignore case
-        User user = userRepository.findByEmailIgnoreCase(email)
+        String identifier = req.getIdentifier();
+        if (isBlank(identifier)) {
+            // Fallback to email if identifier is missing (backward compatibility)
+            identifier = req.getEmail();
+        }
+
+        if (isBlank(identifier)) {
+            throw new IllegalArgumentException("Email or Username is required");
+        }
+
+        String finalIdentifier = identifier.trim();
+
+        // Try to find user by email or username
+        User user = userRepository.findByEmailOrUsername(finalIdentifier, finalIdentifier)
                 .orElseThrow(() -> new RuntimeException("Invalid credentials"));
-        
+
         if (!encoder.matches(req.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid credentials");
         }
         String token = jwtUtil.generateToken(user.getEmail());
         // ensure account exists (lazy creation if absent)
         Account account = accountRepository.findByUser(user)
-            .orElseGet(() -> {
+                .orElseGet(() -> {
                     Account created = Account.builder()
-                        .accountNumber(user.getAccountNumber())
-                        .accountType("SAVINGS")
-                        .balance(new java.math.BigDecimal("10000.00"))
-                        .createdAt(java.time.LocalDateTime.now())
-                        .currency("INR")
-                        .user(user)
-                        .build();
-                return accountRepository.save(created);
-            });
-        return new AuthResponse(token, user.getUserId(), user.getFullname(), user.getEmail(), user.getUsername(), user.getAccountNumber(), account.getId(), account.getBalance());
+                            .accountNumber(user.getAccountNumber())
+                            .accountType("SAVINGS")
+                            .balance(new java.math.BigDecimal("10000.00"))
+                            .createdAt(java.time.LocalDateTime.now())
+                            .currency("INR")
+                            .user(user)
+                            .build();
+                    return accountRepository.save(created);
+                });
+        return new AuthResponse(token, user.getUserId(), user.getFullname(), user.getEmail(), user.getUsername(),
+                user.getAccountNumber(), account.getId(), account.getBalance());
     }
 
-    private boolean isBlank(String s){ return s == null || s.trim().isEmpty(); }
-    private String generateUsername(String fullname){
-        String base = fullname.replaceAll("\\s+"," ").split(" ")[0].toLowerCase();
-        return base.length()>12? base.substring(0,12): base + (int)(Math.random()*90+10);
+    private boolean isBlank(String s) {
+        return s == null || s.trim().isEmpty();
     }
-    private String generateAccountNumber(){
+
+    private String generateUsername(String fullname) {
+        String base = fullname.replaceAll("\\s+", " ").split(" ")[0].toLowerCase();
+        return base.length() > 12 ? base.substring(0, 12) : base + (int) (Math.random() * 90 + 10);
+    }
+
+    private String generateAccountNumber() {
         // Simple 10-digit random; in production ensure uniqueness via loop
         String num;
         do {
-            num = String.valueOf((long)(Math.random()*9000000000L)+1000000000L);
+            num = String.valueOf((long) (Math.random() * 9000000000L) + 1000000000L);
         } while (userRepository.existsByAccountNumber(num));
         return num;
     }
