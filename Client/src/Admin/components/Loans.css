@@ -1,0 +1,162 @@
+/* ===========================
+   Admin Loans Page Styling
+   =========================== */
+
+.admin-loans-page {
+  padding: 24px;
+  font-family: 'Inter', sans-serif;
+  color: #0f172a;
+}
+
+.admin-loans-page h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+/* ------- Table ------- */
+
+.admin-loans-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.admin-loans-table thead {
+  background: #f8fafc;
+}
+
+.admin-loans-table thead th {
+  padding: 14px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.admin-loans-table tbody td {
+  padding: 14px 16px;
+  font-size: 15px;
+  color: #1e293b;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.admin-loans-table tbody tr:hover {
+  background: #f9fafc;
+}
+
+/* ------- Buttons ------- */
+
+.admin-btn {
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  transition: 0.15s ease;
+}
+
+.admin-btn-approve {
+  background: #22c55e;
+  color: white;
+}
+
+.admin-btn-approve:hover {
+  background: #16a34a;
+}
+
+.admin-btn-reject {
+  background: #ef4444;
+  color: white;
+}
+
+.admin-btn-reject:hover {
+  background: #dc2626;
+}
+
+/* ------- Rejection Modal ------- */
+
+.reject-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.reject-modal-box {
+  width: 480px;
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+}
+
+.reject-modal-box h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.reject-modal-box p {
+  margin-top: 6px;
+  color: #64748b;
+}
+
+.reject-textarea {
+  width: 100%;
+  min-height: 110px;
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.reject-textarea:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99,102,241,0.25);
+}
+
+.reject-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.reject-cancel {
+  padding: 8px 14px;
+  background: #f1f5f9;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.reject-cancel:hover {
+  background: #e2e8f0;
+}
+
+.reject-submit {
+  padding: 8px 14px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.reject-submit:hover {
+  background: #dc2626;
+}
