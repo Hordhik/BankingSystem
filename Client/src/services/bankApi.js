@@ -60,3 +60,21 @@ export const register = (fullname, email, password, username, accountNumber, ifs
   request("/auth/register", "POST", { fullname, email, password, username, accountNumber, ifsc });
 
 
+export const changePassword = async (userId, data) => {
+  const token = localStorage.getItem('token');
+  const response = await fetch(`${API_URL}/users/${userId}/password`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(data)
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || 'Failed to change password');
+  }
+
+  return await response.text();
+};

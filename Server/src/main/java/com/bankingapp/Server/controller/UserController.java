@@ -21,4 +21,11 @@ public class UserController {
     public ResponseEntity<AuthResponse> updateUser(@PathVariable Long userId, @RequestBody UpdateUserRequest request) {
         return ResponseEntity.ok(userService.updateUser(userId, request));
     }
+
+    @PutMapping("/{userId}/password")
+    public ResponseEntity<String> changePassword(@PathVariable Long userId,
+            @RequestBody com.bankingapp.Server.dto.ChangePasswordRequest request) {
+        userService.changePassword(userId, request);
+        return ResponseEntity.ok("Password updated successfully");
+    }
 }
