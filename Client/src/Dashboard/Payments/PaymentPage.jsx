@@ -3,7 +3,7 @@ import QRCode from 'react-qr-code';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import './PaymentPage.css';
 import { CreditCard, Landmark, Smartphone, Wallet, LayoutDashboard, ArrowLeft, Check, XCircle } from 'lucide-react';
-import { transfer, cardTransfer, getAccounts } from '../../services/bankApi';
+import { transfer, cardTransfer, getAccounts, getCards } from '../../services/bankApi';
 
 export default function PaymentPage() {
   const { type } = useParams();
@@ -32,6 +32,7 @@ export default function PaymentPage() {
   const [qrRef, setQrRef] = useState('');
   const [qrValue, setQrValue] = useState('');
   const [accounts, setAccounts] = useState([]);
+  const [cards, setCards] = useState([]);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showFailure, setShowFailure] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -96,6 +97,19 @@ export default function PaymentPage() {
         const filtered = data.filter(acc => acc.id.toString() !== myAccountId);
         setAccounts(filtered);
       }).catch(err => console.error('Failed to fetch accounts:', err));
+    }
+  }, [selectedPayment]);
+
+  // Fetch cards when Card Transfer is selected
+  useEffect(() => {
+    if (selectedPayment === 'card') {
+      getCards().then(data => {
+        const myCardNumber = localStorage.getItem('cardNumber');
+        // Filter out current user's card if needed, or just show all for now
+        // Assuming we want to show OTHER cards to transfer TO
+        const filtered = data.filter(c => c.cardNumber !== myCardNumber);
+        setCards(filtered);
+      }).catch(err => console.error('Failed to fetch cards:', err));
     }
   }, [selectedPayment]);
 
@@ -540,14 +554,19 @@ export default function PaymentPage() {
                 </div>
 
                 <label>Receiver Card Number</label>
-                <input
-                  type="text"
+                <select
                   name="receiverCardNumber"
-                  placeholder="XXXX XXXX XXXX XXXX"
                   value={paymentDetails.receiverCardNumber}
                   onChange={handleInputChange}
                   required
-                />
+                >
+                  <option value="">Choose Card</option>
+                  {cards.map(card => (
+                    <option key={card.id} value={card.cardNumber}>
+                      {card.ownerName} ({card.cardNumber})
+                    </option>
+                  ))}
+                </select>
               </>
             )}
 
