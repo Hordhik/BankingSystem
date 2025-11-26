@@ -88,3 +88,15 @@ export const getQuickStats = async () => {
     throw error;
   }
 };
+
+export const updateTransactionStatus = async (id, status) => {
+  try {
+    const response = await adminClient.put(`/transactions/${id}/status`, null, {
+      params: { status }
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error updating transaction status:", error);
+    throw error;
+  }
+};

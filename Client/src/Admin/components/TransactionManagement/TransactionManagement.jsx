@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Download, Eye, Ban, CheckCircle, XCircle, Clock } from 'lucide-react';
-import { getAllTransactions } from '../../../services/adminApi';
+import { Search, Filter, Download, Eye, Ban, CheckCircle, XCircle, Clock, X } from 'lucide-react';
+import { getAllTransactions, updateTransactionStatus } from '../../../services/adminApi';
 import './TransactionManagement.css';
 
 const TransactionManagement = () => {
@@ -9,6 +9,10 @@ const TransactionManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const [filterType, setFilterType] = useState('All');
+
+  // Modal state
+  const [showModal, setShowModal] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -33,11 +37,63 @@ const TransactionManagement = () => {
     return matchesSearch && matchesStatus && matchesType;
   });
 
-  const handleBlockTransaction = (id) => {
-    // In a real app, this would call an API
-    setTransactions(transactions.map(t =>
-      t.id === id ? { ...t, status: 'Failed' } : t
-    ));
+  const handleViewTransaction = (txn) => {
+    setSelectedTransaction(txn);
+    setShowModal(true);
+  };
+
+  const handleBlockTransaction = async (id) => {
+    if (window.confirm('Are you sure you want to block this transaction?')) {
+      try {
+        await updateTransactionStatus(id, 'FAILED');
+        setTransactions(transactions.map(t =>
+          t.id === id ? { ...t, status: 'Failed' } : t
+        ));
+      } catch (error) {
+        console.error("Error blocking transaction:", error);
+        alert("Failed to block transaction");
+      }
+    }
+  };
+
+  const handleExport = () => {
+    if (filteredTransactions.length === 0) {
+      alert("No transactions to export");
+      return;
+    }
+
+    // Define CSV headers
+    const headers = ["ID", "From", "To", "Amount", "Type", "Date", "Status"];
+
+    // Map transactions to CSV rows
+    const csvRows = [
+      headers.join(','), // Header row
+      ...filteredTransactions.map(txn => {
+        return [
+          txn.id,
+          `"${txn.from}"`, // Quote strings to handle commas
+          `"${txn.to}"`,
+          `"${txn.amount.replace(/[₹,]/g, '')}"`, // Clean amount
+          txn.type,
+          txn.date,
+          txn.status
+        ].join(',');
+      })
+    ];
+
+    // Create CSV content
+    const csvContent = csvRows.join('\n');
+
+    // Create download link
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `transactions_export_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const totalAmount = filteredTransactions.reduce((sum, txn) => {
@@ -108,7 +164,7 @@ const TransactionManagement = () => {
             </select>
           </div>
 
-          <button className="export-btn">
+          <button className="export-btn" onClick={handleExport}>
             <Download size={16} />
             <span>Export</span>
           </button>
@@ -148,7 +204,11 @@ const TransactionManagement = () => {
                   </span>
                 </div>
                 <div className="col col-actions">
-                  <button className="action-btn view" title="View Details">
+                  <button
+                    className="action-btn view"
+                    title="View Details"
+                    onClick={() => handleViewTransaction(txn)}
+                  >
                     <Eye size={16} />
                   </button>
                   {txn.status === 'Pending' && (
@@ -170,6 +230,56 @@ const TransactionManagement = () => {
           )}
         </div>
       </div>
+
+      {/* Transaction Details Modal */}
+      {showModal && selectedTransaction && (
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: '500px' }}>
+            <div className="modal-header">
+              <h3>Transaction Details</h3>
+              <button className="close-btn" onClick={() => setShowModal(false)}>
+                <X size={20} />
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="txn-details-grid">
+                <div className="detail-item">
+                  <label>Transaction ID</label>
+                  <p>#{selectedTransaction.id}</p>
+                </div>
+                <div className="detail-item">
+                  <label>Date</label>
+                  <p>{selectedTransaction.date}</p>
+                </div>
+                <div className="detail-item">
+                  <label>From</label>
+                  <p>{selectedTransaction.from}</p>
+                </div>
+                <div className="detail-item">
+                  <label>To</label>
+                  <p>{selectedTransaction.to}</p>
+                </div>
+                <div className="detail-item">
+                  <label>Amount</label>
+                  <p className="amount">{selectedTransaction.amount}</p>
+                </div>
+                <div className="detail-item">
+                  <label>Type</label>
+                  <span className={`type-badge ${selectedTransaction.type.toLowerCase()}`}>
+                    {selectedTransaction.type}
+                  </span>
+                </div>
+                <div className="detail-item">
+                  <label>Status</label>
+                  <span className={`status-badge ${selectedTransaction.status.toLowerCase()}`}>
+                    {selectedTransaction.status}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

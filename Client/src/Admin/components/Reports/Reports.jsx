@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { getDashboardStats, getMonthlyReports } from '../../../services/adminApi';
+import { getDashboardStats, getMonthlyReports, getAllTransactions } from '../../../services/adminApi';
+import { X } from 'lucide-react';
 import './Reports.css';
 
 const Reports = () => {
@@ -7,6 +8,12 @@ const Reports = () => {
   const [stats, setStats] = useState([]);
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Modal state
+  const [showModal, setShowModal] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const [monthTransactions, setMonthTransactions] = useState([]);
+  const [loadingDetails, setLoadingDetails] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,6 +43,35 @@ const Reports = () => {
   const getStatChange = (label) => {
     const stat = stats.find(s => s.label === label);
     return stat ? stat.change : '-';
+  };
+
+  const handleViewDetails = async (month) => {
+    setSelectedMonth(month);
+    setShowModal(true);
+    setLoadingDetails(true);
+
+    try {
+      const allTxns = await getAllTransactions();
+
+      // Filter transactions for the selected month
+      // Note: This assumes the API returns date strings that can be parsed
+      const filtered = allTxns.filter(txn => {
+        const txnDate = new Date(txn.date);
+        const txnMonth = txnDate.toLocaleString('default', { month: 'long' });
+        return txnMonth === month;
+      });
+
+      setMonthTransactions(filtered);
+    } catch (error) {
+      console.error("Error fetching details:", error);
+    } finally {
+      setLoadingDetails(false);
+    }
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setMonthTransactions([]);
   };
 
   if (loading) {
@@ -106,7 +142,12 @@ const Reports = () => {
                     <td>{row.revenue}</td>
                     <td>₹{avgVal.toLocaleString('en-IN')}</td>
                     <td>
-                      <button className="btn-view-detail">View</button>
+                      <button
+                        className="btn-view-detail"
+                        onClick={() => handleViewDetails(row.month)}
+                      >
+                        View
+                      </button>
                     </td>
                   </tr>
                 );
@@ -119,6 +160,63 @@ const Reports = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Details Modal */}
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h3>Transactions for {selectedMonth}</h3>
+              <button className="close-btn" onClick={closeModal}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="modal-body">
+              {loadingDetails ? (
+                <div className="loading-spinner">Loading details...</div>
+              ) : (
+                <div className="details-table-wrapper">
+                  {monthTransactions.length > 0 ? (
+                    <table className="details-table">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>From</th>
+                          <th>To</th>
+                          <th>Type</th>
+                          <th>Amount</th>
+                          <th>Date</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {monthTransactions.map((txn) => (
+                          <tr key={txn.id}>
+                            <td>#{txn.id}</td>
+                            <td>{txn.from}</td>
+                            <td>{txn.to}</td>
+                            <td>
+                              <span className={`type-badge ${txn.type.toLowerCase()}`}>{txn.type}</span>
+                            </td>
+                            <td>{txn.amount}</td>
+                            <td>{txn.date}</td>
+                            <td>
+                              <span className={`status-badge ${txn.status.toLowerCase()}`}>{txn.status}</span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="no-data">No transactions found for this month.</div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
