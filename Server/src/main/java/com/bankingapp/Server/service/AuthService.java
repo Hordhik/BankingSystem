@@ -84,9 +84,9 @@ public class AuthService {
             throw new RuntimeException("Email or identifier is required");
         }
 
-        String email = identifier.trim();
+        String identifierInput = identifier.trim();
         // Try to find user by email or username
-        User user = userRepository.findByEmailIgnoreCase(email)
+        User user = userRepository.findByEmailOrUsername(identifierInput, identifierInput)
                 .orElseThrow(() -> new RuntimeException("Invalid credentials"));
 
         if (!encoder.matches(req.getPassword(), user.getPassword())) {

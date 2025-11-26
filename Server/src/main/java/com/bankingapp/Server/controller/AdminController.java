@@ -8,10 +8,7 @@ import com.bankingapp.Server.repository.AccountRepository;
 import com.bankingapp.Server.repository.TransactionRepository;
 import com.bankingapp.Server.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -91,8 +88,9 @@ public class AdminController {
                         Collectors.counting()));
 
         // Create report data
-        List<String> months = List.of("January", "February", "March", "April", "May", "June", "July", "August",
-                "September", "October", "November", "December");
+        // Get current month name
+        String currentMonth = LocalDate.now().getMonth().getDisplayName(java.time.format.TextStyle.FULL, java.util.Locale.ENGLISH);
+        List<String> months = List.of(currentMonth);
 
         List<Map<String, Object>> reportData = months.stream().map(month -> {
             List<Transaction> txs = transactionsByMonth.getOrDefault(month, List.of());
@@ -100,8 +98,12 @@ public class AdminController {
             long newUsers = usersByMonth.getOrDefault(month, 0L);
 
             BigDecimal revenue = txs.stream()
-                    .filter(t -> "DEPOSIT".equals(t.getType()))
-                    .map(Transaction::getAmount)
+                    .map(t -> {
+                        BigDecimal amount = "DEPOSIT".equals(t.getType()) ? t.getAmount() : BigDecimal.ZERO;
+                        BigDecimal fee = t.getFee() != null ? t.getFee() : BigDecimal.ZERO;
+                        BigDecimal tax = t.getTax() != null ? t.getTax() : BigDecimal.ZERO;
+                        return amount.add(fee).add(tax);
+                    })
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
             Map<String, Object> data = new HashMap<>();
@@ -297,8 +299,26 @@ public class AdminController {
             dto.setAmount("₹" + t.getAmount());
             dto.setType(t.getType());
             dto.setDate(t.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
-            dto.setStatus("Completed");
+            String status = "Completed";
+            if ("FAILED".equals(t.getStatus())) {
+                status = "Failed";
+            } else if ("PENDING".equals(t.getStatus())) {
+                status = "Pending";
+            }
+            dto.setStatus(status);
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    @PutMapping("/transactions/{id}/status")
+    public ResponseEntity<?> updateTransactionStatus(@PathVariable Long id, @RequestParam String status) {
+        Optional<Transaction> transactionOpt = transactionRepository.findById(id);
+        if (transactionOpt.isPresent()) {
+            Transaction transaction = transactionOpt.get();
+            transaction.setStatus(status);
+            transactionRepository.save(transaction);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }
