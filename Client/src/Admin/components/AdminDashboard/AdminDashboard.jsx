@@ -3,7 +3,43 @@ import './AdminDashboard.css';
 import StatCard from './StatCard';
 import { Users, CreditCard, DollarSign, Activity, Clock, TrendingUp, Server } from 'lucide-react';
 
+import { getDashboardStats, getRecentActivities, getQuickStats } from '../../../services/adminApi';
+import { useState, useEffect } from 'react';
+
 const AdminDashboard = () => {
+  const [stats, setStats] = useState([]);
+  const [activities, setActivities] = useState([]);
+  const [quickStats, setQuickStats] = useState({
+    todaysTransactions: '₹0',
+    newUsersToday: 0,
+    serverResponseTime: '0ms'
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [statsData, activitiesData, quickStatsData] = await Promise.all([
+          getDashboardStats(),
+          getRecentActivities(),
+          getQuickStats()
+        ]);
+        setStats(statsData);
+        setActivities(activitiesData);
+        setQuickStats(quickStatsData);
+      } catch (error) {
+        console.error("Failed to fetch dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <div className="admin-dashboard">Loading dashboard...</div>;
+  }
   return (
     <div className="admin-dashboard">
       <div className="dashboard-header">
@@ -19,34 +55,23 @@ const AdminDashboard = () => {
       </div>
 
       <div className="dashboard-stats">
-        <StatCard
-          title="Total Users"
-          value="1"
-          change="+12%"
-          icon={Users}
-          color="primary"
-        />
-        <StatCard
-          title="Active Transactions"
-          value="0"
-          change="+5%"
-          icon={CreditCard}
-          color="purple"
-        />
-        <StatCard
-          title="Total Revenue"
-          value="₹0"
-          change="+18%"
-          icon={DollarSign}
-          color="success"
-        />
-        <StatCard
-          title="Avg Transaction Value"
-          value="₹0"
-          change="+3%"
-          icon={Activity}
-          color="primary"
-        />
+        {stats.map((stat, index) => {
+          let Icon = Users;
+          if (stat.label === 'Active Transactions') Icon = CreditCard;
+          if (stat.label === 'Total Revenue') Icon = DollarSign;
+          if (stat.label === 'Avg Transaction Value') Icon = Activity;
+
+          return (
+            <StatCard
+              key={index}
+              title={stat.label}
+              value={stat.value}
+              change={stat.change}
+              icon={Icon}
+              color={stat.color}
+            />
+          );
+        })}
       </div>
 
       <div className="recent-activities">
@@ -62,15 +87,30 @@ const AdminDashboard = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td colSpan="4" className="no-activities">
-                  <div className="empty-state">
-                    <Clock size={48} strokeWidth={1} />
-                    <p>No recent activities found</p>
-                    <span>New activities will appear here</span>
-                  </div>
-                </td>
-              </tr>
+              {activities.length > 0 ? (
+                activities.map((activity) => (
+                  <tr key={activity.id}>
+                    <td>{activity.type}</td>
+                    <td>{activity.from} {activity.to !== '-' ? `→ ${activity.to}` : ''}</td>
+                    <td>{activity.date}</td>
+                    <td>
+                      <span className={`status-badge ${activity.status.toLowerCase()}`}>
+                        {activity.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" className="no-activities">
+                    <div className="empty-state">
+                      <Clock size={48} strokeWidth={1} />
+                      <p>No recent activities found</p>
+                      <span>New activities will appear here</span>
+                    </div>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -85,7 +125,7 @@ const AdminDashboard = () => {
           </div>
           <div>
             <h3>Today's Transactions</h3>
-            <p className="card-value">₹0</p>
+            <p className="card-value">{quickStats.todaysTransactions}</p>
           </div>
           <div className="card-footer">
             <span>Real-time data</span>
@@ -100,7 +140,7 @@ const AdminDashboard = () => {
           </div>
           <div>
             <h3>New Users Today</h3>
-            <p className="card-value">1</p>
+            <p className="card-value">{quickStats.newUsersToday}</p>
           </div>
           <div className="card-footer">
             <span>Real-time data</span>
@@ -115,7 +155,7 @@ const AdminDashboard = () => {
           </div>
           <div>
             <h3>Server Response Time</h3>
-            <p className="card-value">27ms</p>
+            <p className="card-value">{quickStats.serverResponseTime}</p>
           </div>
           <div className="card-footer">
             <span style={{ color: '#10b981' }}>Optimal performance</span>
