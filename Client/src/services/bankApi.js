@@ -35,8 +35,8 @@ export const withdraw = (accountId, amount) =>
 export const transfer = (fromAccountId, toAccountId, amount, fee, tax) =>
   request("/transactions/transfer", "POST", { fromAccountId, toAccountId, amount, fee, tax });
 
-export const cardTransfer = (fromCardNumber, toCardNumber, amount, cvv, expiryDate) =>
-  request("/transactions/card-transfer", "POST", { fromCardNumber, toCardNumber, amount, cvv, expiryDate });
+export const cardTransfer = (senderCardNumber, receiverCardNumber, amount, senderCvv, senderExpiryDate) =>
+  request("/transactions/card-transfer", "POST", { senderCardNumber, receiverCardNumber, amount, senderCvv, senderExpiryDate });
 
 export const getHistory = (accountId) =>
   request(`/transactions/account/${accountId}/history`, "GET");

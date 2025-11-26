@@ -59,6 +59,24 @@ export default function PaymentPage() {
     }
   }, [type]);
 
+  // Auto-fill card details from localStorage
+  useEffect(() => {
+    const savedCard = localStorage.getItem('cardNumber');
+    const savedExpiry = localStorage.getItem('expiryDate');
+    const savedCvv = localStorage.getItem('cvv');
+    const savedHolder = localStorage.getItem('fullname');
+
+    if (savedCard) {
+      setPaymentDetails(prev => ({
+        ...prev,
+        myCardNumber: savedCard.replace(/(\d{4})(?=\d)/g, '$1 '), // Format with spaces
+        expiry: savedExpiry || '',
+        cvv: savedCvv || '',
+        cardHolder: savedHolder || ''
+      }));
+    }
+  }, []);
+
   // Generate a fresh QR value when UPI/QR is selected or amount changes
   useEffect(() => {
     if (selectedPayment !== 'upi') return;
