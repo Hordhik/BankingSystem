@@ -7,6 +7,9 @@ public class TransferRequest {
     private Long toAccountId;
     private BigDecimal amount;
 
+    private BigDecimal fee;
+    private BigDecimal tax;
+
     public TransferRequest() {
     }
 
@@ -32,5 +35,21 @@ public class TransferRequest {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public BigDecimal getFee() {
+        return fee;
+    }
+
+    public void setFee(BigDecimal fee) {
+        this.fee = fee;
+    }
+
+    public BigDecimal getTax() {
+        return tax;
+    }
+
+    public void setTax(BigDecimal tax) {
+        this.tax = tax;
     }
 }

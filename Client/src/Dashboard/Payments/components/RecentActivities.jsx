@@ -1,8 +1,8 @@
 import React from 'react';
 import './RecentActivities.css';
 
-export const RecentActivities = ({ transactions }) => {
-  
+export const RecentActivities = ({ transactions, setActiveTab }) => {
+
   const getStatusClass = (status) => {
     switch (status.toLowerCase()) {
       case 'completed':
@@ -17,9 +17,17 @@ export const RecentActivities = ({ transactions }) => {
     }
   };
 
+  // Limit to 5 transactions
+  const displayedTransactions = transactions.slice(0, 5);
+
   return (
     <div className="activities-container">
-      <h2 className="activities__title">Recent Activities</h2>
+      <div className="activities__header">
+        <h2 className="activities__title">Recent Activities</h2>
+        <button className="view-all-btn" onClick={() => setActiveTab('Transactions')}>
+          View All →
+        </button>
+      </div>
       <div className="activities__table-wrapper">
         <table className="activities-table">
           <thead>
@@ -32,7 +40,7 @@ export const RecentActivities = ({ transactions }) => {
             </tr>
           </thead>
           <tbody>
-            {transactions.map((transaction) => (
+            {displayedTransactions.map((transaction) => (
               <tr key={transaction.id}>
                 <td>{transaction.to}</td>
                 <td>{transaction.type}</td>

@@ -3,103 +3,141 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 90px;
-    padding: 16px 120px 26px 120px;
+    height: 80px;
+    padding: 0 40px;
     display: flex;
-    width: 100%;
     justify-content: space-between;
     align-items: center;
-    background: tr;
-    background-blend-mode: multiply;
+    background: transparent;
+    /* Made transparent */
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     z-index: 1000;
-}
-
-
-.header .name, .header .menu, .header .logout{
-    display: flex;
-    padding: 6px;
-    align-items: center;
-    justify-content: space-between;
-    border-radius: 35px;
-    border: 1px solid #EAEAEA;
-    background: #FFF;
-    gap: 6px;
-}
-
-.name .logo{
-    width: 36px;
-    height: 36px;
-    padding: 15px 16px;
-    border-radius: 30px;
-    background: #F6F6F6;
-}
-
-.name .id{
-    display: flex;
-    height: 36px;
-    padding: 15px 16px;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    border-radius: 30px;
-    background: #F6F6F6;
-    font-size: 14px;
-    font-weight: 500;
-}
-
-.menu .menu-option,.logout .menu-option{
-    display: inline-flex;
-    height: 36px;
-    padding: 8px 14px;
-    justify-content: center;
-    align-items: center;
-    font-size: 14px;
-    font-weight: 500;
-    color: #808080;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-}
-
-.menu .menu-option:hover, .menu .menu-option:focus{
-    color: #333;
-    outline: none;
-}
-
-.menu .menu-option:focus{
-    box-shadow: 0 0 0 3px rgba(0,0,0,0.06);
-    border-radius: 30px;
-}
-
-.menu .menu-option.active{
-    color: #FFF;
-    font-weight: 600;
-    border-radius: 30px;
-    background: #1A1A1A;
-}
-
-.menu-option.logout{
-    border-radius: 30px;
-    color: #1A1A1A;
-    font-weight: 600;
-    background: #F6F6F6;
-}
-
-.fluit_logo{
-    border: none;
-    background: transparent;
-    cursor: pointer;
+    border-bottom: none;
+    /* Removed border */
+    transition: all 0.3s ease;
 }
 
 .fluit_logo {
-    width: 109px;
-    height: 28px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 28px;
+    /* Increased from 24px */
     font-weight: 800;
-    font-size: 40px;
-    font-family:  "Nunito",sans-serif;
-    line-height: 1;
-    margin-bottom: 12px;  
-    padding: 0 8px;
-    letter-spacing: -1px;
+    color: #111;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    letter-spacing: -0.5px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    /* Increased gap */
+}
+
+.logo-icon-wrapper {
+    width: 40px;
+    /* Increased from 32px */
+    height: 40px;
+    /* Increased from 32px */
+    background: #111;
+    color: #fff;
+    border-radius: 10px;
+    /* Adjusted radius */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f5f5f5;
+    /* Restored background */
+    padding: 6px;
+    /* Restored padding, adjusted for size */
+    border-radius: 100px;
+    /* Restored radius */
+}
+
+.menu-option {
+    padding: 10px 24px;
+    /* Adjusted padding */
+    border-radius: 100px;
+    border: none;
+    background: transparent;
+    color: #666;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    font-family: 'Outfit', sans-serif;
+    position: relative;
+}
+
+.menu-option:hover {
+    color: #111;
+    background: rgba(0, 0, 0, 0.03);
+    /* Restored hover background */
+    transform: scale(1.02);
+    /* Subtle scale */
+}
+
+.menu-option.active {
+    background: #ffffff;
+    /* Restored active background */
+    color: #111;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    /* Restored shadow */
+    transform: scale(1.02);
+}
+
+.logout {
+    display: flex;
+    gap: 16px;
+    /* Increased gap */
+}
+
+.logout .menu-option {
+    background: transparent;
+    color: #111;
+    font-weight: 600;
+    padding: 12px 28px;
+    /* Increased padding */
+    border: none;
+    box-shadow: none;
+    font-size: 16px;
+    /* Ensure consistent size */
+}
+
+.logout .menu-option:hover {
+    background: transparent;
+    transform: translateY(-1px);
+}
+
+.logout .menu-option.logout {
+    background: #111;
+    color: #fff;
+    border: 1px solid #111;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.logout .menu-option.logout:hover {
+    background: #000;
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 0 20px;
+        height: 70px;
+    }
+
+    .menu {
+        display: none;
+    }
 }

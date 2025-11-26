@@ -1,41 +1,62 @@
 .flowchart-section {
   text-align: center;
-  font-family: "Nunito", sans-serif;
-  background-color: transparent; 
+  font-family: 'Outfit', sans-serif;
+  background-color: transparent;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .flowchart-title {
-  font-size: 2.5rem;
+  font-size: 48px;
   font-weight: 700;
-  color: #1a1a1a;
-  margin: 2rem 0 1rem 0;
+  color: #111;
+  margin: 0 0 16px 0;
+  letter-spacing: -1.5px;
 }
 
 .flowchart-subtitle {
-  font-size: 1.2rem;
-  color: #808080; 
-  max-width: 450px;
-  margin: 0 auto 1rem;
+  font-size: 18px;
+  color: #666;
+  max-width: 500px;
+  margin: 0 auto 48px;
   line-height: 1.6;
+  font-weight: 400;
 }
 
 .flowchart-steps {
   display: flex;
   flex-direction: column;
-  align-items: center; 
+  align-items: center;
+  gap: 8px;
 }
 
 .flowchart-step {
-  max-width: 500px; 
+  background: #fff;
+  padding: 24px 32px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  max-width: 600px;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.flowchart-step:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
 }
 
 .flowchart-step p {
-  font-size: 1.1rem;
-  color: #333;
-  line-height: 1.6;
+  font-size: 18px;
+  color: #111;
+  line-height: 1.5;
+  font-weight: 500;
+  margin: 0;
 }
 
 .flowchart-arrow {
-  margin: 8px;
-  height: 50px;
+  margin: 8px 0;
+  height: 40px;
+  opacity: 0.4;
+  color: #111;
 }

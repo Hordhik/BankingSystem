@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { clearCurrentUser } from '../Components/Auth/userStore';
+import { Sun, Moon } from 'lucide-react';
 import './Dashboard.css';
 import profile_img from '/src/assets/profile.svg';
 import dashboard from '/src/assets/icons/dashboard.svg';
@@ -20,20 +21,40 @@ import SupportTickets from './SupportTicket/SupportTicket.jsx';
 // Auth-free mode: no userStore for now
 
 export const Dashboard = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [activeTab, setActiveTab] = useState(() => {
     return localStorage.getItem('activeTab') || "Dashboard";
   });
-  const navigate = useNavigate();
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('theme') || 'light';
+  });
+
+  useEffect(() => {
+    if (location.state?.activeTab) {
+      setActiveTab(location.state.activeTab);
+    }
+  }, [location]);
 
   useEffect(() => {
     localStorage.setItem('activeTab', activeTab);
   }, [activeTab]);
+
+  useEffect(() => {
+    localStorage.setItem('theme', theme);
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
 
   // Auth-free mode: don't redirect; dashboard is publicly accessible for now
 
   const handleLogout = () => {
     clearCurrentUser();
     navigate('/login');
+  };
+
+  const toggleTheme = (newTheme) => {
+    setTheme(newTheme);
   };
 
   let essentialsTabs = [
@@ -56,7 +77,7 @@ export const Dashboard = () => {
       case 'Pre-Approved Offers':
         return <OffersSection />;
       case 'Dashboard':
-        return <Payments />;
+        return <Payments setActiveTab={setActiveTab} />;
       case 'Transactions':
         return <Transactions />;
       case 'Cards':
@@ -110,8 +131,21 @@ export const Dashboard = () => {
       <div className="main-content">
         <div className="top-bar">
           <div className="others">
-            <div className="theme">
-              <p>Change Themes</p>
+            <div className="theme-toggle">
+              <button
+                className={`theme-btn light-mode ${theme === 'light' ? 'active' : ''}`}
+                onClick={() => toggleTheme('light')}
+              >
+                <Sun size={18} strokeWidth={2.5} />
+                <span>Light</span>
+              </button>
+              <button
+                className={`theme-btn dark-mode ${theme === 'dark' ? 'active' : ''}`}
+                onClick={() => toggleTheme('dark')}
+              >
+                <Moon size={18} strokeWidth={2.5} />
+                <span>Dark</span>
+              </button>
             </div>
             <div className="log-out">
               <p role="button" tabIndex={0} onClick={handleLogout} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleLogout(); }}>Log Out</p>

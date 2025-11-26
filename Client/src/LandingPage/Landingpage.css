@@ -1,67 +1,228 @@
-.landing-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 60px;
-    padding-top: 110px;
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --text-primary: #0a0a0a;
+  --text-secondary: #555555;
+  --accent-blue: #0066FF;
+  --accent-purple: #6600FF;
+  --glass-border: rgba(0, 0, 0, 0.05);
 }
 
+.landing-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  font-family: 'Outfit', sans-serif;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* Hero Section */
 .hero-content {
-    text-align: center;
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  padding: 180px 20px 120px;
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+  /* Added to push content below fold */
+  opacity: 0;
+  animation: heroFadeIn 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes heroFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dynamic Aurora Background */
+.hero-content::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140%;
+  height: 1200px;
+  background: radial-gradient(circle at 50% 50%,
+      rgba(230, 230, 250, 0.5) 0%,
+      /* Light Lavender */
+      rgba(240, 248, 255, 0.4) 30%,
+      /* Alice Blue */
+      rgba(255, 255, 255, 0) 60%);
+  z-index: -1;
+  pointer-events: none;
+  filter: blur(80px);
+  animation: auroraMove 15s infinite alternate ease-in-out;
+}
+
+@keyframes auroraMove {
+  0% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translateX(-50%) scale(1.1);
+    opacity: 1;
+  }
 }
 
 .hero-content h1 {
-    font-size: 24px;
-    width: 600px;
-    color: #000000;
-    font-weight: 600;
-    font-family: "Nunito", sans-serif;
+  font-size: 80px;
+  line-height: 1.05;
+  color: var(--text-primary);
+  font-weight: 700;
+  letter-spacing: -2.5px;
+  max-width: 1000px;
+  background: linear-gradient(180deg, #000 0%, #333 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
 }
 
 .hero-content h2 {
-    width: 472px;
-    color : #808080;
-    font-weight: 500;
-    font-size: 20px;
+  font-size: 22px;
+  color: var(--text-secondary);
+  font-weight: 400;
+  max-width: 560px;
+  line-height: 1.6;
+  letter-spacing: -0.2px;
 }
+
 .button-container {
-    display: flex;
-    justify-content: center;
-    width: 320px;
-    align-items: center;
-    gap: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 24px;
 }
 
 .button-container button {
-    width: 160px;
-    height: 36px;
-    background: white;
-    border-radius: 30px;
-    padding: 10px;
-    border-width: 1px;
-    cursor: pointer;
-    border-color: #c3c3c3;
-    font-size: 12px;
-    font-weight: 500;
-}
-.menu-option {
+  padding: 18px 40px;
+  border-radius: 100px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  letter-spacing: -0.2px;
 }
 
-.menu-option:hover {
-  color: black;
+.button-container button:first-child {
+  background: var(--text-primary);
+  color: white;
+  border: 1px solid var(--text-primary);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
-.logout .menu-option {
-  cursor: pointer;
+.button-container button:first-child:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  background: #000;
 }
 
-.logout .menu-option:hover {
-  color: black;
+.button-container button:last-child {
+  background: white;
+  color: var(--text-primary);
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
 }
 
+.button-container button:last-child:hover {
+  background: #f8f8f8;
+  border-color: #ccc;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* Section Spacing & Animations */
+#credit-card {
+  padding-top: 180px;
+  /* Increased padding to prevent overlap */
+  padding-bottom: 100px;
+}
+
+#features,
+#loans,
+#offers {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 100px 0;
+  opacity: 0;
+  animation: sectionFadeIn 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation-timeline: view();
+  animation-range: entry 10% cover 30%;
+}
+
+#credit-card {
+  padding-top: 40px;
+  /* Reduced padding */
+  padding-bottom: 100px;
+  margin-top: 100px;
+  /* Added margin for spacing */
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  opacity: 0;
+  animation: sectionFadeIn 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  /* Removed animation-timeline to ensure visibility */
+}
+
+@keyframes sectionFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#features {
+  background: linear-gradient(180deg, #fff 0%, var(--bg-secondary) 100%);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-content h1 {
+    font-size: 48px;
+    padding: 0 16px;
+  }
+
+  .hero-content {
+    padding-top: 140px;
+  }
+
+  .button-container {
+    flex-direction: column;
+    width: 100%;
+    padding: 0 20px;
+  }
+
+  .button-container button {
+    width: 100%;
+    max-width: 340px;
+  }
+}

@@ -1,15 +1,47 @@
-
 .activities-container {
-  background-color: #ffffff;
-  padding: 1.5rem;
-  border-radius: 16px;
-  border: 1px solid #eaeaea;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+}
+
+.activities__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0 8px;
 }
 
 .activities__title {
-  font-size: 1.25rem;
+  font-size: 14px;
   font-weight: 700;
-  margin: 0 0 1.5rem 0;
+  margin: 0;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.view-all-btn {
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-all-btn:hover {
+  background: rgba(255, 255, 255, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .activities__table-wrapper {
@@ -18,14 +50,29 @@
 
 .activities-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  /* Changed to separate for border-radius on rows */
+  border-spacing: 0 8px;
+  /* Spacing between rows */
 }
 
-.activities-table th, .activities-table td {
-  padding: 1rem;
+.activities-table th,
+.activities-table td {
+  padding: 16px 8px;
   text-align: left;
-  border-bottom: 1px solid #f0f0f0;
+  border: none;
   vertical-align: middle;
+  color: #111;
+}
+
+.activities-table th:first-child,
+.activities-table td:first-child {
+  padding-left: 16px;
+}
+
+.activities-table th:last-child,
+.activities-table td:last-child {
+  padding-right: 16px;
 }
 
 /* Align Amount column (4th column) to the right */
@@ -41,45 +88,74 @@
 }
 
 .activities-table th {
-  font-size: 0.75rem;
+  font-size: 12px;
   font-weight: 600;
-  color: #808080;
+  color: #666;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 1px;
+  padding-bottom: 8px;
+}
+
+.activities-table tbody tr {
+  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+}
+
+.activities-table tbody tr td:first-child {
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+  font-weight: 600;
+}
+
+.activities-table tbody tr td:last-child {
+  border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px;
 }
 
 .activities-table tbody tr:hover {
-  background-color: #f9f9f9;
+  background: rgba(255, 255, 255, 0.8);
+  transform: scale(1.01);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .amount--positive {
-  color: #34c759;
+  color: #059669;
+  font-weight: 700;
+  font-size: 15px;
 }
 
 .amount--negative {
-  color: #ff3b30;
+  color: #dc2626;
+  font-weight: 700;
+  font-size: 15px;
 }
 
 .status-pill {
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 700;
   display: inline-block;
   white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .status--completed {
-  background-color: #e0f2f1;
-  color: #00796b;
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  color: #065f46;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.2);
 }
 
 .status--failed {
-  background-color: #ffebee;
-  color: #c62828;
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  color: #991b1b;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.2);
 }
 
 .status--pending {
-  background-color: #fff3e0;
-  color: #e65100;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  color: #92400e;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.2);
 }

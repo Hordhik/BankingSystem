@@ -1,39 +1,39 @@
 const STORAGE_KEY = 'banking_users'
 const CURRENT_USER_KEY = 'banking_current_user'
 
-export function getUsers(){
-  try{
+export function getUsers() {
+  try {
     const raw = localStorage.getItem(STORAGE_KEY)
     return raw ? JSON.parse(raw) : []
-  }catch(_){
+  } catch (_) {
     return []
   }
 }
 
-export function saveUsers(users){
+export function saveUsers(users) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(users))
 }
 
-export function findUserByEmail(email){
+export function findUserByEmail(email) {
   const users = getUsers()
   return users.find(u => u.email.toLowerCase() === String(email).toLowerCase()) || null
 }
 
-export function createUser({ email, password, fullName, username, accountNumber, ifscCode }){
+export function createUser({ email, password, fullName, username, accountNumber, ifscCode }) {
   const users = getUsers()
   const emailExists = users.some(u => (u.email || '').toLowerCase() === String(email).toLowerCase())
-  if (emailExists){
+  if (emailExists) {
     throw new Error('An account with this email already exists')
   }
-  if (username){
+  if (username) {
     const usernameExists = users.some(u => (u.username || '').toLowerCase() === String(username).toLowerCase())
-    if (usernameExists){
+    if (usernameExists) {
       throw new Error('Username already taken')
     }
   }
-  if (accountNumber){
+  if (accountNumber) {
     const acctExists = users.some(u => (u.accountNumber || '') === String(accountNumber))
-    if (acctExists){
+    if (acctExists) {
       throw new Error('Account number already in use')
     }
   }
@@ -44,40 +44,49 @@ export function createUser({ email, password, fullName, username, accountNumber,
   return newUser
 }
 
-export function validateCredentials(email, password){
+export function validateCredentials(email, password) {
   const user = findUserByEmail(email)
   if (!user) return false
   return user.password === password
 }
 
-export function updatePassword(email, newPassword){
+export function updatePassword(email, newPassword) {
   const users = getUsers()
   const idx = users.findIndex(u => u.email.toLowerCase() === String(email).toLowerCase())
-  if (idx === -1){
+  if (idx === -1) {
     throw new Error('No account found with that email')
   }
   users[idx] = { ...users[idx], password: newPassword }
   saveUsers(users)
 }
 
-export function setCurrentUser(email){
+export function setCurrentUser(email) {
   localStorage.setItem(CURRENT_USER_KEY, JSON.stringify({ email }))
 }
 
-export function getCurrentUser(){
-  try{
+export function getCurrentUser() {
+  try {
     const raw = localStorage.getItem(CURRENT_USER_KEY)
     return raw ? JSON.parse(raw) : null
-  }catch(_){
+  } catch (_) {
     return null
   }
 }
 
-export function clearCurrentUser(){
+export function clearCurrentUser() {
   localStorage.removeItem(CURRENT_USER_KEY)
   localStorage.removeItem('token')
   localStorage.removeItem('fullname')
   localStorage.removeItem('email')
+  localStorage.removeItem('userId')
+  localStorage.removeItem('username')
+  localStorage.removeItem('accountNumber')
+  localStorage.removeItem('primaryAccountId')
+  localStorage.removeItem('primaryAccountBalance')
+  localStorage.removeItem('cardNumber')
+  localStorage.removeItem('cvv')
+  localStorage.removeItem('expiryDate')
+  localStorage.removeItem('activeTab')
 }
 
 

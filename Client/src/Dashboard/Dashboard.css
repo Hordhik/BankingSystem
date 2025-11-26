@@ -1,91 +1,142 @@
-body{
+body {
     background-color: #F6F6F6;
 }
 
-.dashboard{
+.dashboard {
     display: flex;
     width: 100vw;
     height: 100vh;
 }
 
-.side-bar{
+.side-bar {
     width: 22%;
     display: flex;
     flex-direction: column;
     background-color: #FFFFFF;
-    padding: 18px;
+    padding: 24px 20px;
     border-right: 1px solid #EAEAEA;
-    gap: 10px;
+    gap: 24px;
 }
 
-.side-bar .profile{
+.side-bar .profile {
     display: flex;
-    padding: 10px;
+    padding: 14px;
     align-items: center;
-    border-radius: 18px;
-    gap: 10px;
+    border-radius: 16px;
+    gap: 12px;
     background: #F6F6F6;
-}
-
-.side-bar .essentials-tabs, .side-bar .operationals-tabs{
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.tab{
-    display: flex;
-    gap: 8px;
-    height: 40px;
-    padding: 0px 6px 0px 12px;
-    border-radius: 14px;
-    font-size: 14px;
-    align-items: center;
+    border: 1px solid #EAEAEA;
+    transition: all 0.2s ease;
     cursor: pointer;
 }
 
-.tab.active, .tab:hover{
-    background: #F6F6F6;
+.side-bar .profile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    background: #FAFAFA;
 }
 
-.essentials-tabs img{
-    width: 22px;
-    height: 22px;
-}
-
-.profile img{
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    background: #FFF;
-}
-
-.profile .user-details{
+.side-bar .essentials-tabs,
+.side-bar .operationals-tabs {
     display: flex;
     flex-direction: column;
-    font-family: Inter;
-    font-size: 14px;
-    font-weight: 500;
-    line-height: normal;
+    gap: 6px;
 }
 
-.main-content{
+.side-bar .essentials-tabs>p,
+.side-bar .operationals-tabs>p {
+    font-size: 11px;
+    font-weight: 700;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin: 8px 0 8px 12px;
+    padding: 0;
+}
+
+.tab {
+    display: flex;
+    gap: 12px;
+    height: 44px;
+    padding: 0 14px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    align-items: center;
+    cursor: pointer;
+    color: #666;
+    transition: color 0.2s ease;
+}
+
+.tab.active {
+    background: #F6F6F6;
+    color: #111;
+    font-weight: 600;
+}
+
+.tab:hover:not(.active) {
+    color: #333;
+}
+
+.essentials-tabs img,
+.operationals-tabs img {
+    width: 20px;
+    height: 20px;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.tab.active img {
+    opacity: 1;
+}
+
+.profile img {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: #FFF;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.profile .user-details {
+    display: flex;
+    flex-direction: column;
+    font-family: 'Inter', sans-serif;
+    gap: 2px;
+}
+
+.profile .user-details p:first-child {
+    font-size: 15px;
+    font-weight: 600;
+    color: #111;
+    margin: 0;
+}
+
+.profile .user-details p:last-child {
+    font-size: 12px;
+    font-weight: 500;
+    color: #666;
+    margin: 0;
+}
+
+.main-content {
     width: 78%;
     display: flex;
     flex-direction: column;
 }
 
-.main-content .top-bar{
+.main-content .top-bar {
     display: flex;
-    height: 54px;
-    padding: 14px 18px;
+    height: 64px;
+    padding: 16px 24px;
     justify-content: end;
     align-items: center;
     border-bottom: 1px solid #EAEAEA;
     background: #FFF;
 }
 
-.top-bar .kyc{
+.top-bar .kyc {
     display: flex;
     height: 36px;
     padding: 15px 16px;
@@ -99,25 +150,73 @@ body{
     line-height: normal;
 }
 
-.top-bar .others{
+.top-bar .others {
     display: flex;
     gap: 16px;
     align-items: center;
 }
 
-.others .theme, .others .log-out{
+.theme-toggle {
+    display: flex;
+    gap: 8px;
+    background: #F6F6F6;
+    padding: 4px;
+    border-radius: 20px;
+    border: 1px solid #EAEAEA;
+}
+
+.theme-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 16px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    transition: all 0.2s ease;
+}
+
+.theme-btn.active {
+    background: #FFFFFF;
+    color: #111;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.theme-btn:hover:not(.active) {
+    color: #333;
+}
+
+.others .log-out {
     display: flex;
     height: 36px;
-    padding: 15px 16px;
+    padding: 0 20px;
     justify-content: center;
     align-items: center;
     gap: 8px;
     border-radius: 16px;
     background: #F6F6F6;
     cursor: pointer;
+    border: 1px solid #EAEAEA;
+    transition: all 0.2s ease;
 }
 
-.main-content .content{
+.others .log-out:hover {
+    background: #FFFFFF;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.others .log-out p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #dc2626;
+}
+
+.main-content .content {
     width: 100%;
     height: 100%;
     overflow-y: scroll;
