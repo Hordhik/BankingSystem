@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Download, Eye, Ban, CheckCircle, XCircle, Clock } from 'lucide-react';
-import { getAllTransactions } from '../../services/adminApi';
+import { getAllTransactions } from '../../../services/adminApi';
 import './TransactionManagement.css';
 
 const TransactionManagement = () => {

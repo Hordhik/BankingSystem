@@ -3,13 +3,13 @@ import './Admin.css';
 import profile_img from '/src/assets/profile.svg';
 import { LayoutDashboard, Users, CreditCard, FileText, BarChart2, Settings, LogOut, Palette } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
-import UserManagement from './components/UserManagement.jsx';
-import TransactionManagement from './components/TransactionManagement.jsx';
-import AdminDashboard from './components/AdminDashboard.jsx';
-import Loans from './components/Loans.jsx';
-import AdminSettings from './components/AdminSettings.jsx';
-import Reports from './components/Reports.jsx';
-import Analytics from './components/Analytics.jsx';
+import UserManagement from './components/UserManagement/UserManagement.jsx';
+import TransactionManagement from './components/TransactionManagement/TransactionManagement.jsx';
+import AdminDashboard from './components/AdminDashboard/AdminDashboard.jsx';
+import Loans from './components/Loans/Loans.jsx';
+import AdminSettings from './components/AdminSettings/AdminSettings.jsx';
+import Reports from './components/Reports/Reports.jsx';
+import Analytics from './components/Analytics/Analytics.jsx';
 import loan from '../assets/icons/loan.png';
 
 export const Admin = () => {
@@ -73,7 +73,7 @@ export const Admin = () => {
         <div className="admin-tabs">
           <p className="admin-section-title">Management</p>
           {adminTabs.map((tab) => (
-            <div 
+            <div
               key={tab.name}
               className={`admin-tab ${activeTab === tab.name ? 'active' : ''}`}
               onClick={() => {
@@ -82,9 +82,9 @@ export const Admin = () => {
               }}
             >
               {tab.isImage ? (
-                <img src={tab.icon} alt={tab.name} style={{ width: '20px', height: '20px' }} />
+                <img src={tab.icon} alt={tab.name} />
               ) : (
-                <tab.icon size={20} />
+                <tab.icon size={20} strokeWidth={1.5} />
               )}
               <p>{tab.name}</p>
             </div>
@@ -94,14 +94,11 @@ export const Admin = () => {
       <div className="admin-main-content">
         <div className="admin-top-bar">
           <div className="admin-bar-content">
-            <h2>{activeTab}</h2>
             <div className="admin-actions">
               <div className="admin-theme">
-                <Palette size={18} style={{ marginRight: '8px' }} />
-                <p>Change Themes</p>
+                {/* Placeholder for theme toggle if needed, or just keep logout for now as per design */}
               </div>
               <div className="admin-logout" onClick={handleLogout}>
-                <LogOut size={18} style={{ marginRight: '8px' }} />
                 <p>Log Out</p>
               </div>
             </div>
