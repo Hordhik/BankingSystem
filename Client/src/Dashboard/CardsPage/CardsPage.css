@@ -1,406 +1,1130 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  --primary-dark: #0f172a;
+  --primary-light: #334155;
+  --accent-gold: #f59e0b;
+  --accent-gold-light: #fbbf24;
+  --accent-blue: #3b82f6;
+  --accent-blue-dark: #1d4ed8;
+  --bg-light: #f8fafc;
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-premium: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
 .cards-page-container {
+  padding: 2.5rem;
+  /* font-family: 'Outfit', sans-serif; - Removed to match global font */
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem;
+  background-color: #f8fafc;
+  min-height: 100vh;
+  color: #1e293b;
+  background-image:
+    radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(245, 158, 11, 0.05) 0px, transparent 50%);
+}
+
+/* --- Header --- */
+.cards-page-container .cards-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cards-page-container .cards-page-header h2 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin: 0;
+  color: #0f172a;
+  letter-spacing: -0.03em;
+}
+
+.cards-page-container .add-card-btn {
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  border-radius: 100px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+}
+
+.cards-page-container .btn-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+  font-weight: 300;
+}
+
+.cards-page-container .add-card-btn:hover {
+  background: #1e293b;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* --- Card Display Area --- */
+.cards-page-container .card-display-area {
+  display: grid;
+  grid-template-columns: 440px 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+/* --- Flip Card Wrapper --- */
+.cards-page-container .debit-card-wrapper {
+  perspective: 2000px;
+  width: 100%;
+  height: 270px;
+  position: relative;
+  cursor: pointer;
+  margin-top: 2rem;
+}
+
+.cards-page-container .debit-card-visual {
+  width: 100%;
+  height: 100%;
+  border-radius: 28px;
+  padding: 2.2rem;
+  color: white;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  box-shadow: var(--shadow-lg);
+  backface-visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Premium Shine Effect */
+.cards-page-container .card-shine {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 60%);
+  pointer-events: none;
+  transform: rotate(30deg);
+}
+
+.cards-page-container .debit-card-wrapper.flipped .card-front {
+  transform: rotateY(180deg);
+}
+
+.cards-page-container .debit-card-wrapper.flipped .card-back {
+  transform: rotateY(0deg);
+}
+
+.cards-page-container .card-front {
+  transform: rotateY(0deg);
+  z-index: 2;
+}
+
+.cards-page-container .card-back {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  transform: rotateY(180deg);
+  justify-content: flex-start;
+  padding: 0;
+  padding-top: 35px;
+  z-index: 1;
+}
+
+/* --- Card Controls --- */
+.cards-page-container .card-top-buttons {
+  position: absolute;
+  top: -60px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.cards-page-container .nav-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.cards-page-container .nav-btn {
+  background: white;
+  border: 1px solid #e2e8f0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+
+.cards-page-container .nav-btn:hover {
+  background: #f8fafc;
+  transform: scale(1.05);
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.cards-page-container .primary-btn {
+  background: transparent;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+  border-radius: 100px;
+  padding: 8px 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+
+}
+
+.cards-page-container .primary-btn.is-primary {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+  border-color: #2563eb;
+  cursor: default;
+  font-weight: 600;
+}
+
+.cards-page-container .primary-btn:hover:not(.is-primary) {
+  background: white;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+/* --- Card Visual Details --- */
+.cards-page-container .debit-card-visual__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 2;
+}
+
+.cards-page-container .debit-card-visual__logo {
+  font-weight: 800;
+  font-size: 1.6rem;
+  letter-spacing: 2px;
+  background: linear-gradient(to bottom, #fff, #cbd5e1);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cards-page-container .debit-card-visual__chip {
+  width: 54px;
+  height: 40px;
+  background: linear-gradient(135deg, #fceabb 0%, #f8b500 100%);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.4), 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.cards-page-container .debit-card-visual__chip::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.cards-page-container .debit-card-visual__number {
+  font-size: 1.7rem;
+  font-family: 'Space Mono', monospace;
+  letter-spacing: 3px;
+  text-align: left;
+  margin-top: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  color: #f8fafc;
+  position: relative;
+  z-index: 2;
+}
+
+.cards-page-container .debit-card-visual__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  position: relative;
+  z-index: 2;
+}
+
+.cards-page-container .debit-card-visual__holder {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.cards-page-container .debit-card-visual__holder .label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.cards-page-container .debit-card-visual__holder span:not(.label) {
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  font-family: 'Space Mono', monospace;
+  text-transform: uppercase;
+}
+
+.cards-page-container .card-vendor-logo {
+  height: 44px;
+  width: auto;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* --- Card Back --- */
+.cards-page-container .card-stripe {
+  background: #000;
+  height: 55px;
+  width: 100%;
+  margin-bottom: 2.5rem;
+}
+
+.cards-page-container .card-back-details {
+  padding: 0 2.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.cards-page-container .card-info-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.8rem;
+}
+
+.cards-page-container .card-info-line .label {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.cards-page-container .card-info-line span:not(.label) {
+  font-family: 'Space Mono', monospace;
+  font-size: 1.1rem;
+  color: #f1f5f9;
+}
+
+/* --- Management Panel --- */
+.cards-page-container .card-management-panel {
+  background-color: #ffffff;
+  border-radius: 28px;
+  padding: 2.5rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid #f1f5f9;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.cards-page-container .management-tabs {
+  display: flex;
+  gap: 0.5rem;
+  background: #f1f5f9;
+  padding: 0.4rem;
+  border-radius: 16px;
+  margin-bottom: 2.5rem;
+  width: fit-content;
+}
+
+.cards-page-container .management-tabs button {
+  border: none;
+  background: transparent;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+
+}
+
+.cards-page-container .management-tabs button:hover {
+  color: #334155;
+}
+
+.cards-page-container .management-tabs button.active {
+  color: #0f172a;
+  background: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  font-weight: 600;
+}
+
+.cards-page-container .management-content h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Details Tab */
+.cards-page-container .detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.cards-page-container .detail-row:last-child {
+  border-bottom: none;
+}
+
+.cards-page-container .detail-label {
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.cards-page-container .detail-value {
+  color: #0f172a;
+  font-weight: 500;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.9rem;
+}
+
+.cards-page-container .status-badge {
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cards-page-container .status-badge.primary {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.cards-page-container .status-badge.secondary {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+/* Inputs (PIN) */
+.cards-page-container .input-group {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.cards-page-container .input-group input {
+  width: 100%;
+  padding: 1rem 1rem 0.5rem;
+  border: none;
+  border-bottom: 2px solid #e2e8f0;
+  background: transparent;
+  font-size: 1.1rem;
+  transition: all 0.2s;
+  border-radius: 4px 4px 0 0;
+  font-family: 'Space Mono', monospace;
+}
+
+.cards-page-container .input-group input:focus {
+  outline: none;
+  border-bottom-color: #0f172a;
+  background: #f8fafc;
+}
+
+.cards-page-container .input-group label {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  color: #94a3b8;
+  font-size: 1rem;
+  transition: all 0.2s;
+  pointer-events: none;
+}
+
+.cards-page-container .input-group input:focus+label,
+.cards-page-container .input-group input:not(:placeholder-shown)+label {
+  top: 0.2rem;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.cards-page-container .set-pin-btn {
+  width: 100%;
+  background: #0f172a;
+  color: white;
+  padding: 1rem;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-top: 1rem;
+  transition: all 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.cards-page-container .set-pin-btn:hover {
+  background: #1e293b;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Limits */
+.cards-page-container .limit-item {
+  margin-bottom: 2rem;
+}
+
+.cards-page-container .limit-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+
+.cards-page-container .limit-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #334155;
+}
+
+.cards-page-container .limit-value {
+  font-size: 0.9rem;
+  color: #64748b;
+  font-family: 'Space Mono', monospace;
+}
+
+.cards-page-container .limit-bar-container {
+  height: 8px;
+  background: #f1f5f9;
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.cards-page-container .limit-progress {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  border-radius: 100px;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+}
+
+.cards-page-container .limit-progress.warning {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+}
+
+/* Insights */
+.cards-page-container .insight-card {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  border-radius: 16px;
   padding: 1.5rem;
-  font-family: "Nunito", sans-serif;
+  color: white;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  box-shadow: var(--shadow-md);
+}
+
+.cards-page-container .insight-label {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.cards-page-container .insight-value {
+  font-size: 2rem;
+  font-weight: 700;
+  font-family: 'Space Mono', monospace;
+}
+
+.cards-page-container .insight-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-bottom: 1px solid #f1f5f9;
+  color: #475569;
+}
+
+.cards-page-container .insight-row strong {
+  color: #0f172a;
+}
+
+/* --- Apply Section --- */
+.cards-page-container .apply-for-cards-section {
+  margin-top: 2rem;
+}
+
+.cards-page-container .apply-for-cards-section h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: #0f172a;
+}
+
+.cards-page-container .apply-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.cards-page-container .apply-card-item {
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 24px;
+  padding: 2rem;
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 280px;
+}
+
+.cards-page-container .apply-card-item:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+  border-color: transparent;
+}
+
+.cards-page-container .card-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.cards-page-container .apply-card-item h4 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.cards-page-container .category-tag {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 10px;
+  background: #f1f5f9;
+  color: #64748b;
+  border-radius: 100px;
+  font-weight: 600;
+}
+
+.cards-page-container .apply-card-item p {
+  color: #64748b;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  flex-grow: 1;
+}
+
+.cards-page-container .view-details-btn {
+  background: transparent;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+  padding: 1rem;
+  border-radius: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+  cursor: pointer;
+  width: 100%;
+}
+
+.cards-page-container .view-details-btn:hover {
+  background: #0f172a;
+  color: white;
+  border-color: #0f172a;
+}
+
+.cards-page-container .application-status {
+  background: #ecfdf5;
+  color: #059669;
+  padding: 1rem;
+  border-radius: 14px;
+  border: 1px solid #d1fae5;
+  font-size: 0.95rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+/* --- Modal Styles (The "Model") --- */
+/* Scoped to cards-page-container assuming modal is inside it */
+.cards-page-container .modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.cards-page-container .modal-container {
+  background: #ffffff;
+  width: 90%;
+  max-width: 550px;
+  border-radius: 32px;
+  padding: 2.5rem;
+  position: relative;
+  box-shadow: var(--shadow-premium);
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cards-page-container .marketplace-container {
+  max-width: 1000px;
+  background: #f8fafc;
+}
+
+.cards-page-container .modal-close-btn {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: #f1f5f9;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.cards-page-container .modal-close-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.cards-page-container .modal-header {
+  margin-bottom: 2rem;
+  /* Reduced bottom margin */
+  text-align: center;
+}
+
+.cards-page-container .modal-header h3 {
+  font-size: 1.5rem;
+  /* Reduced from 1.8rem */
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 0.4rem 0;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.cards-page-container .modal-subtitle {
+  color: #64748b;
+  font-size: 0.95rem;
+  /* Reduced from 1rem */
+  margin: 0;
+  line-height: 1.5;
+  max-width: 80%;
+  margin: 0 auto;
+  /* Center and constrain width */
+}
+
+/* Modal Body */
+.cards-page-container .modal-body {
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
 }
 
-.cards-page-header {
+.cards-page-container .card-benefits h4,
+.cards-page-container .application-form h4 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #94a3b8;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.cards-page-container .card-benefits ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.8rem;
+}
+
+.cards-page-container .card-benefits li {
+  position: relative;
+  padding-left: 2rem;
+  color: #334155;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.cards-page-container .card-benefits li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 20px;
+  height: 20px;
+  background: #dcfce7;
+  color: #16a34a;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+
+.cards-page-container .card-financials {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.cards-page-header h2 {
-  font-size: 1.75rem;
-  font-weight: 700;
-  margin: 0;
-}
-
-.add-card-btn {
-  background-color: #1a1a1a;
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  padding: 0.6rem 1.2rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.add-card-btn:hover {
-  background-color: #333;
-}
-
-/* --- Card Display Area --- */
-.card-display-area {
-  display: grid;
-  grid-template-columns: 1fr 1.5fr;
-  gap: 2rem;
-  align-items: center;
-}
-
-.debit-card-visual {
-  width: 100%;
-  max-width: 400px;
-  aspect-ratio: 1.586 / 1;
-  border-radius: 16px;
+  background: #f8fafc;
   padding: 1.5rem;
-  color: white;
-  background: linear-gradient(135deg, #2c3e50, #34495e);
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+}
+
+.cards-page-container .financial-item {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
-  margin: 0 auto;
-  position: relative;
-}
-
-.debit-card-visual__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.debit-card-visual__logo {
-  font-weight: 800;
-  font-size: 1.4rem;
-}
-
-.debit-card-visual__chip {
-  width: 45px;
-  height: 35px;
-  background: linear-gradient(135deg, #f1c40f, #e67e22);
-  border-radius: 6px;
-}
-
-.debit-card-visual__number {
-  font-size: 1.5rem;
-  font-family: 'Space Mono', monospace;
-  letter-spacing: 3px;
+  gap: 0.4rem;
+  flex: 1;
   text-align: center;
 }
 
-.debit-card-visual__footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
+.cards-page-container .financial-divider {
+  width: 1px;
+  height: 40px;
+  background: #e2e8f0;
 }
 
-.debit-card-visual__holder {
-  font-size: 0.9rem;
-}
-
-.debit-card-visual__holder .label {
-  font-size: 0.7rem;
-  color: #bdc3c7;
-  display: block;
-}
-
-.card-vendor-logo {
-  height: 30px;
-  width: auto;
-}
-
-.card-management-panel {
-  background-color: #fff;
-  border: 1px solid #eaeaea;
-  border-radius: 16px;
-  padding: 1.5rem;
-  min-height: 100%; 
-}
-
-.management-tabs {
-  display: flex;
-  gap: 0.5rem;
-  border-bottom: 1px solid #eaeaea;
-  margin-bottom: 1.5rem;
-}
-
-.management-tabs button {
-  border: none;
-  background: transparent;
-  padding: 0.75rem 1rem;
-  font-size: 0.9rem;
+.cards-page-container .financial-item .label {
+  font-size: 0.75rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   font-weight: 600;
-  color: #808080;
-  cursor: pointer;
+}
+
+.cards-page-container .financial-item .value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* Form Styles */
+.cards-page-container .application-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 2rem;
+}
+
+.cards-page-container .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
   position: relative;
-  border-bottom: 2px solid transparent;
-  transition: color 0.2s, border-color 0.2s;
 }
 
-.management-tabs button.active {
-  color: #1a1a1a;
-  border-bottom-color: #1a1a1a;
+.cards-page-container .floating-label input {
+  width: 100%;
+  padding: 32px 20px 12px 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+  font-family: 'Space Mono', monospace;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  transition: all 0.3s ease;
+  color: #0f172a;
+  font-weight: 500;
+  min-height: 64px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
 }
 
-.card-limit-info {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+.cards-page-container .floating-label input:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05);
 }
 
-.limit-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+.cards-page-container .floating-label input:focus {
+  outline: none;
+  border-color: #0f172a;
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.05);
+  transform: translateY(-1px);
 }
 
-.limit-label {
+.cards-page-container .floating-label label {
+  position: absolute;
+  top: 12px;
+  left: 20px;
+  color: #94a3b8;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  pointer-events: none;
+  transition: all 0.2s;
+
+}
+
+.cards-page-container .floating-label input:focus+label,
+.cards-page-container .floating-label input:not(:placeholder-shown)+label {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.cards-page-container .static-label {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #333;
+  color: #334155;
+  margin-bottom: 0.5rem;
 }
 
-.limit-value {
-  font-size: 0.8rem;
-  color: #808080;
+.cards-page-container .network-options {
+  display: flex;
+  gap: 1rem;
 }
 
-.limit-bar {
-  width: 100%;
-  height: 8px;
-  background-color: #f0f0f0;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.limit-progress {
-  height: 100%;
-  background-color: #007bff;
-  border-radius: 4px;
-}
-
-.apply-for-cards-section {
-  background-color: #fff;
-  border: 1px solid #eaeaea;
+.cards-page-container .network-option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  padding: 1.2rem 1rem;
+  /* Increased vertical padding */
+  border: 2px solid #e2e8f0;
   border-radius: 16px;
-  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 1.05rem;
+  /* Slightly larger text */
+  font-weight: 600;
+  color: #64748b;
+  position: relative;
+  overflow: hidden;
+  min-height: 64px;
+  /* Ensure substantial height */
+  letter-spacing: 0.5px;
 }
 
-.apply-for-cards-section h3 {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin: 0 0 1.5rem 0;
+.cards-page-container .network-option:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
 }
 
-.apply-cards-grid {
+.cards-page-container .network-option.selected {
+  border-color: #0f172a;
+  background: #0f172a;
+  color: white;
+}
+
+.cards-page-container .network-option input {
+  display: none;
+}
+
+.cards-page-container .confirm-application-btn {
+  background: #0f172a;
+  color: white;
+  border: none;
+  padding: 1.2rem;
+  border-radius: 16px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 1rem;
+  box-shadow: var(--shadow-md);
+}
+
+.cards-page-container .confirm-application-btn:hover {
+  background: #1e293b;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* --- Marketplace Grid --- */
+.cards-page-container .marketplace-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
+  padding-bottom: 1rem;
 }
 
-.apply-card-item {
-  background-color: #f9f9f9;
-  border: 1px solid #f0f0f0;
-  padding: 1.5rem;
-  border-radius: 12px;
+.cards-page-container .marketplace-card-item {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  padding: 1.8rem;
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  transition: all 0.3s ease;
+  min-height: 260px;
 }
 
-.apply-card-item:hover {
+.cards-page-container .marketplace-card-item:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.07);
+  box-shadow: var(--shadow-md);
+  border-color: #cbd5e1;
 }
 
-.apply-card-item h4 {
-  font-size: 1.1rem;
+.cards-page-container .partner-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+}
+
+.cards-page-container .marketplace-card-header {
+  margin-bottom: 1rem;
+}
+
+.cards-page-container .marketplace-card-header h4 {
+  font-size: 1.2rem;
   font-weight: 700;
+  color: #0f172a;
   margin: 0 0 0.5rem 0;
 }
 
-.apply-card-item p {
-  font-size: 0.9rem;
-  color: #555e68;
-  line-height: 1.6;
-  margin: 0 0 1.5rem 0;
-  flex-grow: 1; 
+.cards-page-container .marketplace-desc {
+  color: #64748b;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
 }
 
-.apply-card-item button {
-  background-color: #1a1a1a;
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  padding: 0.6rem 1.2rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  align-self: flex-start; 
+.cards-page-container .marketplace-footer {
+  margin-top: auto;
 }
 
-.apply-card-item button:hover {
-  background-color: #333;
-}
-
-
-.card-top-buttons {
-  display: flex;
-  justify-content: end;
-  align-items: center;
-  margin-bottom: 12px;
-  position: absolute;
-  top: -35px;
-  left: 0;
+.cards-page-container .apply-btn {
   width: 100%;
-  gap: 20px;
-}
-
-.nav-btn {
-  background: transparent;
+  background: #0f172a;
+  color: white;
   border: none;
-  font-size: 20px;
-  color: black;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.nav-btn:hover {
-  opacity: 0.7;
-}
-
-.primary-btn {
-  background: #ffffff22;
-  color: black;
-  border: 1px solid black;
-  border-radius: 20px;
-  padding: 6px 16px;
-  font-size: 14px;
+  padding: 0.8rem;
+  border-radius: 12px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
 }
 
-.primary-btn.is-primary {
-  background: rgb(22, 22, 238);
-  border-color: rgb(22, 22, 238);
-  color: #fff;
-  cursor: default;
+.cards-page-container .apply-btn:hover {
+  background: #1e293b;
 }
 
-.primary-btn:hover:not(.is-primary) {
-  background: #ffffff33;
-}
-
-.details-tab, .pin-tab, .insights-tab {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-}
-
-.details-tab h4, .pin-tab h4, .insights-tab h4 {
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-}
-
-.pin-tab input {
-  padding: 0.6rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  outline: none;
-}
-
-.set-pin-btn {
-  margin-top: 0.5rem;
-  background-color: #1a1a1a;
-  color: #fff;
+.cards-page-container .applied-btn {
+  width: 100%;
+  background: #f1f5f9;
+  color: #94a3b8;
   border: none;
-  padding: 0.7rem 1.2rem;
-  border-radius: 8px;
+  padding: 0.8rem;
+  border-radius: 12px;
   font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
+  cursor: not-allowed;
 }
 
-.set-pin-btn:hover {
-  background-color: #333;
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
-/* Flip container */
-.debit-card-wrapper {
-  perspective: 1000px;
-  width: 100%;
-  max-width: 400px;
-  height: 250px;
-  position: relative;
-  cursor: pointer;
+@keyframes slideUp {
+  from {
+    transform: translateY(40px) scale(0.95);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
 }
 
-.debit-card-visual {
-  width: 100%;
-  height: 100%;
-  border-radius: 16px;
-  padding: 1.5rem;
-  color: white;
-  background: linear-gradient(135deg, #2c3e50, #34495e);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
-  backface-visibility: hidden;
-  position: absolute;
-  top: 0;
-  left: 0;
-  transition: transform 0.8s ease;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+.cards-page-container .fade-in {
+  animation: fadeIn 0.4s ease-out;
 }
 
-.debit-card-wrapper.flipped .card-front {
-  transform: rotateY(180deg);
-}
+/* Responsive */
+@media (max-width: 1024px) {
+  .cards-page-container .card-display-area {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
 
-.debit-card-wrapper.flipped .card-back {
-  transform: rotateY(0deg);
-}
+  .cards-page-container .debit-card-wrapper {
+    margin: 3rem auto 0;
+    max-width: 420px;
+  }
 
-.card-front {
-  transform: rotateY(0deg);
+  .cards-page-container .card-top-buttons {
+    top: -50px;
+  }
 }
-
-.card-back {
-  background: linear-gradient(135deg, #222, #444);
-  transform: rotateY(180deg);
-  justify-content: flex-start;
-  padding-top: 40px;
-}
-
-.card-stripe {
-  background: #000;
-  height: 40px;
-  width: 100%;
-  border-radius: 4px;
-  margin-bottom: 20px;
-}
-
-.card-details-back {
-  color: white;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.card-info-line {
-  display: flex;
-  justify-content: space-between;
-  font-size: 1rem;
-}
-
-.card-info-line .label {
-  font-size: 0.8rem;
-  color: #aaa;
-}
-
-.application-status {
-  background-color: #f0f9f0;
-  color: #0a662e;
-  border: 1px solid #b6e1b6;
-  padding: 0.8rem 1rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  line-height: 1.5;
-}
-
