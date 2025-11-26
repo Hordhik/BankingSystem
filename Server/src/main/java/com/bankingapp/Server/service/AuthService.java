@@ -5,6 +5,8 @@ import com.bankingapp.Server.model.User;
 import com.bankingapp.Server.model.Account;
 import com.bankingapp.Server.repository.AccountRepository;
 import com.bankingapp.Server.repository.UserRepository;
+import com.bankingapp.Server.repository.CardRepository;
+import com.bankingapp.Server.model.Card;
 import com.bankingapp.Server.security.JwtUtil;
 import org.springframework.stereotype.Service;
 
@@ -14,13 +16,15 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final org.springframework.security.crypto.password.PasswordEncoder encoder;
     private final AccountRepository accountRepository;
+    private final CardRepository cardRepository;
 
     public AuthService(UserRepository userRepository, JwtUtil jwtUtil,
-            org.springframework.security.crypto.password.PasswordEncoder encoder, AccountRepository accountRepository) {
+            org.springframework.security.crypto.password.PasswordEncoder encoder, AccountRepository accountRepository, CardRepository cardRepository) {
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
         this.encoder = encoder;
         this.accountRepository = accountRepository;
+        this.cardRepository = cardRepository;
     }
 
     @org.springframework.transaction.annotation.Transactional
@@ -61,9 +65,17 @@ public class AuthService {
                 .build();
         accountRepository.save(account); // persist primary account
 
+        // Generate and save Card
+        String cardNumber = generateCardNumber();
+        String cvv = String.format("%03d", (int) (Math.random() * 1000));
+        java.time.LocalDate expiryDate = java.time.LocalDate.now().plusYears(5);
+
+        Card card = new Card(cardNumber, expiryDate, cvv, "DEBIT", "ACTIVE", user, account);
+        cardRepository.save(card);
+
         String token = jwtUtil.generateToken(user.getEmail());
         return new AuthResponse(token, user.getUserId(), user.getFullname(), user.getEmail(), user.getUsername(),
-                user.getAccountNumber(), account.getId(), account.getBalance());
+                user.getAccountNumber(), card.getCardNumber(), card.getCvv(), card.getExpiryDate().toString(), account.getId(), account.getBalance());
     }
 
     public AuthResponse login(LoginRequest req) {
@@ -100,8 +112,22 @@ public class AuthService {
                             .build();
                     return accountRepository.save(created);
                 });
+
+        Card card = cardRepository.findByUser(user).orElseGet(() -> {
+            // Generate new card for existing users who don't have one
+            String cardNumber = generateCardNumber();
+            String cvv = String.format("%03d", (int) (Math.random() * 1000));
+            java.time.LocalDate expiryDate = java.time.LocalDate.now().plusYears(5);
+            Card newCard = new Card(cardNumber, expiryDate, cvv, "DEBIT", "ACTIVE", user, account);
+            return cardRepository.save(newCard);
+        });
+
+        String cNum = card.getCardNumber();
+        String cCvv = card.getCvv();
+        String cExp = card.getExpiryDate().toString();
+
         return new AuthResponse(token, user.getUserId(), user.getFullname(), user.getEmail(), user.getUsername(),
-                user.getAccountNumber(), account.getId(), account.getBalance());
+                user.getAccountNumber(), cNum, cCvv, cExp, account.getId(), account.getBalance());
     }
 
     private boolean isBlank(String s) {
@@ -119,6 +145,19 @@ public class AuthService {
         do {
             num = String.valueOf((long) (Math.random() * 9000000000L) + 1000000000L);
         } while (userRepository.existsByAccountNumber(num));
+        return num;
+    }
+
+    private String generateCardNumber() {
+        // Simple 16-digit random; in production ensure uniqueness
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 16; i++) {
+            sb.append((int) (Math.random() * 10));
+        }
+        String num = sb.toString();
+        if (cardRepository.findByCardNumber(num).isPresent()) {
+            return generateCardNumber(); // retry
+        }
         return num;
     }
 }

@@ -2,6 +2,7 @@ package com.bankingapp.Server.controller;
 
 import com.bankingapp.Server.dto.TransactionRequest;
 import com.bankingapp.Server.dto.TransferRequest;
+import com.bankingapp.Server.dto.CardTransferRequest;
 import com.bankingapp.Server.dto.TransactionResponse;
 import com.bankingapp.Server.model.Account;
 import com.bankingapp.Server.service.TransactionService;
@@ -36,6 +37,14 @@ public class TransactionController {
         transactionService.transfer(req.getFromAccountId(), req.getToAccountId(), req.getAmount(), req.getFee(),
                 req.getTax());
         return ResponseEntity.ok("Transfer successful");
+    }
+
+    @PostMapping("/card-transfer")
+    public ResponseEntity<String> cardTransfer(@RequestBody CardTransferRequest req) {
+        System.out.println("Controller: Received Card Transfer Request. Sender=" + req.getSenderCardNumber());
+        transactionService.transferByCard(req.getSenderCardNumber(), req.getSenderCvv(), req.getSenderExpiryDate(),
+                req.getReceiverCardNumber(), req.getAmount());
+        return ResponseEntity.ok("Card Transfer successful");
     }
 
     @GetMapping("/account/{id}/history")

@@ -3,7 +3,9 @@ package com.bankingapp.Server.service;
 import com.bankingapp.Server.dto.TransactionResponse;
 import com.bankingapp.Server.model.Account;
 import com.bankingapp.Server.model.Transaction;
+import com.bankingapp.Server.model.Card;
 import com.bankingapp.Server.repository.AccountRepository;
+import com.bankingapp.Server.repository.CardRepository;
 import com.bankingapp.Server.repository.TransactionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,10 +19,12 @@ import java.util.stream.Collectors;
 public class TransactionService {
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
+    private final CardRepository cardRepository;
 
-    public TransactionService(AccountRepository accountRepository, TransactionRepository transactionRepository) {
+    public TransactionService(AccountRepository accountRepository, TransactionRepository transactionRepository, CardRepository cardRepository) {
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
+        this.cardRepository = cardRepository;
     }
 
     private void saveTransaction(Account account, String type, BigDecimal amount, Long counterpartyAccountId,
@@ -86,7 +90,10 @@ public class TransactionService {
         Account to = accountRepository.findById(toAccountId)
                 .orElseThrow(() -> new IllegalArgumentException("Destination account not found"));
 
+        System.out.println("Transfer Debug: FromAccount=" + from.getAccountNumber() + ", Balance=" + from.getBalance() + ", Amount=" + amount + ", TotalDeduction=" + totalDeduction);
+
         if (from.getBalance().compareTo(totalDeduction) < 0) {
+            System.out.println("Transfer Failed: Insufficient funds. Balance=" + from.getBalance() + ", Required=" + totalDeduction);
             throw new IllegalArgumentException("Insufficient funds for transfer + fees");
         }
 
@@ -102,6 +109,31 @@ public class TransactionService {
         // principal.
         saveTransaction(from, "TRANSFER_SENT", amount, to.getId(), safeFee, safeTax);
         saveTransaction(to, "TRANSFER_RECEIVED", amount, from.getId(), BigDecimal.ZERO, BigDecimal.ZERO);
+    }
+
+    @Transactional
+    public void transferByCard(String senderCardNumber, String senderCvv, String senderExpiry, String receiverCardNumber, BigDecimal amount) {
+        System.out.println("Card Transfer Request: SenderCard=" + senderCardNumber + ", Amount=" + amount);
+        
+        Card senderCard = cardRepository.findByCardNumber(senderCardNumber)
+                .orElseThrow(() -> new IllegalArgumentException("Sender card not found"));
+
+        if (!senderCard.getCvv().equals(senderCvv)) {
+            throw new IllegalArgumentException("Invalid CVV");
+        }
+        // Simple expiry check (MM/YY)
+        // In production, parse date properly
+        
+        Card receiverCard = cardRepository.findByCardNumber(receiverCardNumber)
+                .orElseThrow(() -> new IllegalArgumentException("Receiver card not found"));
+
+        Account from = senderCard.getAccount();
+        Account to = receiverCard.getAccount();
+        
+        System.out.println("Card Transfer Resolved: FromAccount=" + from.getAccountNumber() + ", ToAccount=" + to.getAccountNumber());
+
+        // Reuse existing transfer logic (assuming 0 fee/tax for now or calculate it)
+        transfer(from.getId(), to.getId(), amount, BigDecimal.ZERO, BigDecimal.ZERO);
     }
 
     public List<TransactionResponse> getTransactionsForAccount(Long accountId, String userEmail) {

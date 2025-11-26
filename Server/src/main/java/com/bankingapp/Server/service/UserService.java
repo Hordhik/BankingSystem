@@ -49,6 +49,7 @@ public class UserService {
                 updatedUser.getEmail(),
                 updatedUser.getUsername(),
                 updatedUser.getAccountNumber(),
+                null, null, null,
                 account.getId(),
                 account.getBalance()
         );
