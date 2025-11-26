@@ -1,18 +1,8 @@
 package com.bankingapp.Server.dto;
 
 public class LoginRequest {
-    private String identifier;
-
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-
-    // Keep email for backward compatibility if needed, but identifier is primary
     private String email;
+    private String identifier;
     private String password;
 
     public String getEmail() {
@@ -23,6 +13,14 @@ public class LoginRequest {
         this.email = email;
     }
 
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
     public String getPassword() {
         return password;
     }
@@ -30,4 +28,10 @@ public class LoginRequest {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    // Helper method to get the login identifier (email or identifier field)
+    public String getLoginIdentifier() {
+        return identifier != null ? identifier : email;
+    }
 }
+

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './Admin.css';
 import profile_img from '/src/assets/profile.svg';
 import { LayoutDashboard, Users, CreditCard, FileText, BarChart2, Settings, LogOut, Palette } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import UserManagement from './components/UserManagement.jsx';
 import TransactionManagement from './components/TransactionManagement.jsx';
 import AdminDashboard from './components/AdminDashboard.jsx';
@@ -13,7 +13,8 @@ import Analytics from './components/Analytics.jsx';
 import loan from '../assets/icons/loan.png';
 
 export const Admin = () => {
-  const [activeTab, setActiveTab] = useState("Dashboard");
+  const { tab } = useParams();
+  const [activeTab, setActiveTab] = useState(tab || "Dashboard");
   const navigate = useNavigate();
 
   // Check for admin token on mount
@@ -75,7 +76,10 @@ export const Admin = () => {
             <div 
               key={tab.name}
               className={`admin-tab ${activeTab === tab.name ? 'active' : ''}`}
-              onClick={() => setActiveTab(tab.name)}
+              onClick={() => {
+                setActiveTab(tab.name);
+                navigate(`/admin/${tab.name.toLowerCase()}`);
+              }}
             >
               {tab.isImage ? (
                 <img src={tab.icon} alt={tab.name} style={{ width: '20px', height: '20px' }} />

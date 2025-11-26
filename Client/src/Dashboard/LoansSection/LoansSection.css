@@ -29,7 +29,6 @@
 }
 
 .product-tab {
-  font-family: "Nunito", sans-serif;
   border: 1px solid #e1e8ed;
   background-color: #f9f9f9;
   padding: 0.6rem 1.5rem;
@@ -46,7 +45,6 @@
   color: #ffffff;
   border-color: #1a1a1a;
 }
-
 
 .loans-grid-dashboard {
   display: grid;
@@ -85,41 +83,14 @@
   margin-bottom: 1.25rem;
 }
 
-.loan-icon-wrapper-dashboard svg {
-  width: 28px;
-  height: 28px;
-}
-
-.loan-card-dashboard h3 {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin: 0 0 0.75rem 0;
-}
-
-.loan-card-dashboard p {
-  font-size: 0.9rem;
-  color: #555e68;
-  line-height: 1.6;
-  margin: 0 0 1.5rem 0;
-  flex-grow: 1; 
-}
-
 .loan-apply-button-dashboard {
-  font-family: "Nunito", sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
   color: #ffffff;
   background-color: #1a1a1a;
   border: none;
   border-radius: 999px;
   padding: 0.6rem 1.5rem;
   cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.loan-apply-button-dashboard:hover {
-  background-color: #333333;
+  font-weight: 600;
 }
 
 .loan-modal-overlay {
@@ -140,9 +111,8 @@
   border-radius: 12px;
   padding: 2rem;
   width: 90%;
-  max-width: 420px;
+  max-width: 480px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-  text-align: center;
   animation: slideUp 0.3s ease-out;
 }
 
@@ -155,7 +125,6 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  margin-top: 1rem;
 }
 
 .loan-form input {
@@ -165,6 +134,70 @@
   font-size: 0.95rem;
 }
 
+/* EMI Breakdown Box */
+.emi-breakdown {
+  background: #f6f8ff;
+  border: 1px solid #dce3ff;
+  padding: 16px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+.emi-summary-grid {
+  display: flex;
+  gap: 12px;
+}
+
+.emi-summary-card {
+  flex: 1;
+  background: white;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #e6eaff;
+  text-align: center;
+}
+
+.emi-summary-card .label {
+  font-size: 13px;
+  color: #666;
+}
+
+.emi-summary-card .value {
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+/* EMI TABLE */
+.emi-table-container {
+  max-height: 220px;
+  overflow-y: auto;
+  border-radius: 8px;
+  border: 1px solid #e1e6ff;
+  background: white;
+  margin-top: 12px;
+}
+
+.emi-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.emi-table th {
+  position: sticky;
+  top: 0;
+  background: #eef2ff;
+  padding: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.emi-table td {
+  padding: 8px;
+  font-size: 13px;
+  border-bottom: 1px solid #f2f2f2;
+}
+
 .loan-submit-btn {
   background-color: #1a1a1a;
   color: white;
@@ -172,43 +205,15 @@
   border-radius: 999px;
   padding: 0.6rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.loan-submit-btn:hover {
-  background-color: #333;
 }
 
 .loan-cancel-btn {
-  background: transparent;
+  background: none;
   border: none;
-  color: #555;
-  font-size: 0.9rem;
+  color: #666;
   cursor: pointer;
 }
 
-.loan-success-message h4 {
-  color: #1a1a1a;
-  margin-bottom: 0.5rem;
+.loan-success-message {
+  text-align: center;
 }
-
-.loan-success-message p {
-  color: #555;
-  font-size: 0.95rem;
-}
-
-.status-pill {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: white;
-  text-transform: capitalize;
-}
-
-.status-active { background-color: #1a73e8; }
-.status-growing { background-color: #16a34a; }
-.status-maturing { background-color: #facc15; color: #333; }
-.status-in-verification { background-color: #f97316; }

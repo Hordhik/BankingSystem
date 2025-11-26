@@ -3,8 +3,9 @@ package com.bankingapp.Server.dto;
 import java.math.BigDecimal;
 
 public class LoanApplyRequest {
-    public Long userId;           // ideally extracted from JWT in controller
+    public Long userId;
+    public String accountNumber;
     public String loanType;
-    public BigDecimal amount;
+    public BigDecimal principalAmount;
     public Integer tenureMonths;
 }
