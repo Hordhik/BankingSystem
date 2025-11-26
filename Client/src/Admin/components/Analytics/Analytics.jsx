@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getAnalytics } from '../../services/adminApi';
+import { getAnalytics } from '../../../services/adminApi';
 import './Analytics.css';
 
 const Analytics = () => {

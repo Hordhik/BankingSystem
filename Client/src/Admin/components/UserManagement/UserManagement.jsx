@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { getAllUsers } from '../../services/adminApi';
+import { Search, Filter } from 'lucide-react';
+import { getAllUsers } from '../../../services/adminApi';
 import './UserManagement.css';
 
 const UserManagement = () => {
@@ -10,15 +11,12 @@ const UserManagement = () => {
     const fetchUsers = async () => {
       try {
         const data = await getAllUsers();
-        // Map backend user data to frontend structure if needed
-        // Backend User: { userId, fullname, email, accountNumber, ... }
-        // Frontend User: { id, name, email, accountNumber, status, joinDate }
         const formattedUsers = data.map(u => ({
           id: u.userId,
           name: u.fullname,
           email: u.email,
           accountNumber: u.accountNumber,
-          status: 'Active', // Defaulting to Active as backend doesn't have status yet
+          status: 'Active',
           joinDate: new Date(u.createdAt).toLocaleDateString()
         }));
         setUsers(formattedUsers);
@@ -62,24 +60,37 @@ const UserManagement = () => {
   return (
     <div className="user-management">
       <div className="user-header">
-        <h2>User Management</h2>
-        <button className="btn-add-user">+ Add New User</button>
+        <div>
+          <h2>User Management</h2>
+          <p className="user-subtitle">Manage and monitor user accounts</p>
+        </div>
+        <div className="header-stats">
+          <span className="total-users-badge">
+            Total Users: {users.length}
+          </span>
+        </div>
       </div>
 
-      <div className="user-filters">
-        <input
-          type="text"
-          placeholder="Search by name or email..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-input"
-        />
-        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="status-filter">
-          <option>All</option>
-          <option>Active</option>
-          <option>Inactive</option>
-          <option>Suspended</option>
-        </select>
+      <div className="user-controls">
+        <div className="search-wrapper">
+          <Search size={18} className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search by name or email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+        </div>
+        <div className="filter-wrapper">
+          <Filter size={16} className="filter-icon" />
+          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="status-filter">
+            <option>All Status</option>
+            <option>Active</option>
+            <option>Inactive</option>
+            <option>Suspended</option>
+          </select>
+        </div>
       </div>
 
       <div className="users-table">
