@@ -6,6 +6,7 @@ import { Activity, CreditCard, Zap, Bell } from 'lucide-react';
 import transferIcon from '/src/assets/icons/transfer.svg';
 import cardIcon from '/src/assets/icons/card.svg';
 import loansIcon from '/src/assets/icons/loans.svg';
+import autopayIcon from '/src/assets/icons/autopay.svg';
 import offersIcon from '/src/assets/icons/offers.svg';
 import { useNavigate } from 'react-router-dom';
 import { DebitCardDisplay } from './components/DebitCardDisplay.jsx';
@@ -21,6 +22,7 @@ function Payments({ setActiveTab }) {
     { label: 'Transfer / Pay', icon: transferIcon, action: () => navigate('/payment') },
     { label: 'Cards', icon: cardIcon, action: () => setActiveTab('Cards') },
     { label: 'Loans & Investments', icon: loansIcon, action: () => setActiveTab('Loans & Investments') },
+    { label: 'Autopayments', icon: autopayIcon, action: () => setActiveTab('Autopayments') },
     { label: 'Pre-Approved Offers', icon: offersIcon, action: () => setActiveTab('Pre-Approved Offers') },
   ];
 

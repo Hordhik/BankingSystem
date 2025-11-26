@@ -12,6 +12,7 @@ import offers from '/src/assets/icons/offers.svg';
 import ticket from '/src/assets/icons/ticket.svg';
 import settings from '/src/assets/icons/settings.svg';
 import Payments from './Payments/Payments.jsx';
+import Autopayments from './Autopayments/Autopayments.jsx';
 import { LoansSection } from './LoansSection/LoansSection.jsx';
 import { OffersSection } from './OffersSection/OffersSection.jsx';
 import Transactions from './Transactions/Transactions.jsx';
@@ -76,6 +77,8 @@ export const Dashboard = () => {
         return <LoansSection />;
       case 'Pre-Approved Offers':
         return <OffersSection />;
+      case 'Autopayments':
+        return <Autopayments setActiveTab={setActiveTab} />;
       case 'Dashboard':
         return <Payments setActiveTab={setActiveTab} />;
       case 'Transactions':

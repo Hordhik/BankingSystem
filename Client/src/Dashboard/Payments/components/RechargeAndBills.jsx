@@ -1,7 +1,7 @@
 import React from 'react';
 import './RechargeAndBills.css';
 import { useNavigate } from 'react-router-dom';
-import { Smartphone, SatelliteDish, Zap, Flame, Wifi, Droplets, ShieldCheck, GraduationCap } from 'lucide-react';
+import { Smartphone, SatelliteDish, Zap, Flame, Wifi, Droplets, ShieldCheck, GraduationCap, Tv, Play, Film } from 'lucide-react';
 
 export const RechargeAndBills = () => {
   const navigate = useNavigate();
@@ -15,6 +15,12 @@ export const RechargeAndBills = () => {
     { type: 'water', name: 'Water' },
     { type: 'insurance', name: 'Insurance' },
     { type: 'education', name: 'Education' },
+    { type: 'netflix', name: 'Netflix' },
+    { type: 'prime', name: 'Prime Video' },
+    { type: 'hotstar', name: 'Hotstar' },
+    { type: 'zee5', name: 'Zee5' },
+    { type: 'sonyliv', name: 'Sony Liv' },
+    { type: 'aha', name: 'Aha' },
   ];
 
   return (
@@ -51,9 +57,7 @@ export const RechargeAndBills = () => {
       <div className="recharge-bills__header">
         <h3 className="recharge-bills__title">Recharge & Bills</h3>
         <div className="header-actions">
-          <button className="auto-pay-btn" onClick={() => navigate('/autopay')}>
-            Auto Payments
-          </button>
+
           <a href="#" className="recharge-bills__see-all">All Categories →</a>
         </div>
       </div>
@@ -73,6 +77,12 @@ export const RechargeAndBills = () => {
               {option.type === 'water' && <Droplets size={24} strokeWidth={1.5} />}
               {option.type === 'insurance' && <ShieldCheck size={24} strokeWidth={1.5} />}
               {option.type === 'education' && <GraduationCap size={24} strokeWidth={1.5} />}
+              {option.type === 'netflix' && <Tv size={24} strokeWidth={1.5} />}
+              {option.type === 'prime' && <Play size={24} strokeWidth={1.5} />}
+              {option.type === 'hotstar' && <Film size={24} strokeWidth={1.5} />}
+              {option.type === 'zee5' && <Tv size={24} strokeWidth={1.5} />}
+              {option.type === 'sonyliv' && <Play size={24} strokeWidth={1.5} />}
+              {option.type === 'aha' && <Film size={24} strokeWidth={1.5} />}
             </div>
             <p>{option.name}</p>
           </div>

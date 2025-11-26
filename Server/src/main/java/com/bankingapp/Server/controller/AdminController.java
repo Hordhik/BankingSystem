@@ -7,7 +7,6 @@ import com.bankingapp.Server.model.User;
 import com.bankingapp.Server.repository.AccountRepository;
 import com.bankingapp.Server.repository.TransactionRepository;
 import com.bankingapp.Server.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,13 +21,18 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/admin")
-@RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class AdminController {
 
     private final UserRepository userRepository;
     private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
+
+    public AdminController(UserRepository userRepository, TransactionRepository transactionRepository, AccountRepository accountRepository) {
+        this.userRepository = userRepository;
+        this.transactionRepository = transactionRepository;
+        this.accountRepository = accountRepository;
+    }
 
     @GetMapping("/stats")
     public ResponseEntity<List<Map<String, Object>>> getDashboardStats() {
@@ -286,15 +290,15 @@ public class AdminController {
                 toUser = t.getType().equals("DEPOSIT") ? "Bank" : "Self";
             }
 
-            return AdminTransactionDTO.builder()
-                    .id(t.getId())
-                    .from(fromUser)
-                    .to(toUser)
-                    .amount("₹" + t.getAmount())
-                    .type(t.getType())
-                    .date(t.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
-                    .status("Completed") // Assuming all are completed
-                    .build();
+            AdminTransactionDTO dto = new AdminTransactionDTO();
+            dto.setId(t.getId());
+            dto.setFrom(fromUser);
+            dto.setTo(toUser);
+            dto.setAmount("₹" + t.getAmount());
+            dto.setType(t.getType());
+            dto.setDate(t.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+            dto.setStatus("Completed");
+            return dto;
         }).collect(Collectors.toList());
     }
 }

@@ -33,6 +33,7 @@ function App() {
         {/* ADMIN ROUTES */}
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/admin/:tab" element={<Admin />} />
 
         {/* PROTECTED ROUTES */}
         <Route element={<ProtectedRoute />}>

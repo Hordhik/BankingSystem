@@ -3,7 +3,7 @@ import '/src/Dashboard/LoansSection/LoansSection.css';
 import axios from 'axios';
 import { PortfolioSection } from '../PortfolioSection/PortfolioSection.jsx';
 
-const API ='http://localhost:6060';
+const API = 'http://localhost:6060';
 
 const IconLibrary = {
   personal: () => (
@@ -19,7 +19,7 @@ const IconLibrary = {
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
   ),
   stocks: () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>
+     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>
   ),
   deposits: () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
@@ -30,7 +30,12 @@ export const LoansSection = () => {
   const [activeView, setActiveView] = useState('loans');
   const [selectedLoan, setSelectedLoan] = useState(null);
   const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({ name: '', amount: '', tenure: '' });
+
+  const [formData, setFormData] = useState({
+    amount: '',
+    tenure: '',
+  });
+
   const [submitted, setSubmitted] = useState(false);
   const [portfolioItems, setPortfolioItems] = useState([]);
 
@@ -65,8 +70,9 @@ export const LoansSection = () => {
 
       const payload = {
         userId,
+        accountNumber: localStorage.getItem('accountNumber') || 'N/A',
         loanType: selectedLoan.title,
-        amount: Number(formData.amount),
+        principalAmount: Number(formData.amount),
         tenureMonths: Number(formData.tenure)
       };
 
@@ -81,19 +87,19 @@ export const LoansSection = () => {
       setPortfolioItems(
         res.data.map(l => ({
           product: l.loanType,
-          amount: `₹${Number(l.amount).toLocaleString()}`,
+          amount: l.principalAmount,
           status: l.status,
-          next_action: l.nextPayment || '----',
-          admin_reason: l.adminReason
+          details: l.details,
+          emi: l.monthlyEmi
         }))
       );
 
     } catch (err) {
-      console.error("Loan APPLY ERROR:", err.response ? err.response.data : err);
+      console.error("Loan APPLY ERROR:", err);
     } finally {
       setTimeout(() => {
         setShowForm(false);
-        setFormData({ name: '', amount: '', tenure: '' });
+        setFormData({ amount: '', tenure: '' });
         setSubmitted(false);
       }, 800);
     }
@@ -161,13 +167,113 @@ export const LoansSection = () => {
       {showForm && (
         <div className="loan-modal-overlay">
           <div className="loan-modal">
+
             {!submitted ? (
               <>
                 <h3>Apply for {selectedLoan?.title}</h3>
+
                 <form onSubmit={handleSubmit} className="loan-form">
-                  <input type="text" name="name" placeholder="Full Name" value={formData.name} onChange={handleFormChange} required />
-                  <input type="number" name="amount" placeholder="Loan Amount (₹)" value={formData.amount} onChange={handleFormChange} required />
-                  <input type="number" name="tenure" placeholder="Tenure (months)" value={formData.tenure} onChange={handleFormChange} required />
+                  <input
+                    type="number"
+                    name="amount"
+                    placeholder="Loan Amount (₹)"
+                    value={formData.amount}
+                    onChange={handleFormChange}
+                    required
+                  />
+
+                  <input
+                    type="number"
+                    name="tenure"
+                    placeholder="Tenure (months)"
+                    value={formData.tenure}
+                    onChange={handleFormChange}
+                    required
+                  />
+
+                  {/* FULL EMI BREAKDOWN */}
+                  {formData.amount && formData.tenure ? (() => {
+                    const P = Number(formData.amount);
+                    const annualRate = 0.10; 
+                    const R = annualRate / 12;
+                    const N = Number(formData.tenure);
+
+                    const emi =
+                      (P * R * Math.pow(1 + R, N)) /
+                      (Math.pow(1 + R, N) - 1);
+
+                    const totalPayable = emi * N;
+                    const totalInterest = totalPayable - P;
+
+                    // Build amortization
+                    const breakdown = [];
+                    let balance = P;
+
+                    for (let i = 1; i <= N; i++) {
+                      const interest = balance * R;
+                      const principal = emi - interest;
+                      balance -= principal;
+
+                      breakdown.push({
+                        month: i,
+                        emi: Math.round(emi),
+                        principal: Math.round(principal),
+                        interest: Math.round(interest),
+                        balance: Math.max(0, Math.round(balance))
+                      });
+                    }
+
+                    return (
+                      <div className="emi-breakdown">
+                        <h4>EMI Breakdown</h4>
+
+                        <div className="emi-summary-grid">
+                          <div className="emi-summary-card">
+                            <p className="label">Monthly EMI</p>
+                            <p className="value">₹{Math.round(emi).toLocaleString()}</p>
+                          </div>
+
+                          <div className="emi-summary-card">
+                            <p className="label">Total Interest</p>
+                            <p className="value">₹{Math.round(totalInterest).toLocaleString()}</p>
+                          </div>
+
+                          <div className="emi-summary-card">
+                            <p className="label">Total Payable</p>
+                            <p className="value">₹{Math.round(totalPayable).toLocaleString()}</p>
+                          </div>
+                        </div>
+
+                        <h4 className="table-title">Amortization Table</h4>
+
+                        <div className="emi-table-container">
+                          <table className="emi-table">
+                            <thead>
+                              <tr>
+                                <th>Month</th>
+                                <th>EMI</th>
+                                <th>Principal</th>
+                                <th>Interest</th>
+                                <th>Balance</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {breakdown.map((row) => (
+                                <tr key={row.month}>
+                                  <td>{row.month}</td>
+                                  <td>₹{row.emi.toLocaleString()}</td>
+                                  <td>₹{row.principal.toLocaleString()}</td>
+                                  <td>₹{row.interest.toLocaleString()}</td>
+                                  <td>₹{row.balance.toLocaleString()}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    );
+                  })() : null}
+
                   <button type="submit" className="loan-submit-btn">Submit</button>
                   <button type="button" className="loan-cancel-btn" onClick={() => setShowForm(false)}>Cancel</button>
                 </form>
@@ -178,9 +284,11 @@ export const LoansSection = () => {
                 <p>Your {selectedLoan?.title} is under verification.<br/>You’ll be notified once reviewed.</p>
               </div>
             )}
+
           </div>
         </div>
       )}
+
     </section>
   );
 };

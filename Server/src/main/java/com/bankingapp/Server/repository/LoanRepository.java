@@ -6,5 +6,4 @@ import java.util.List;
 
 public interface LoanRepository extends JpaRepository<Loan, Long> {
     List<Loan> findByUserIdOrderByCreatedAtDesc(Long userId);
-    List<Loan> findByStatusOrderByCreatedAtDesc(String status);
 }

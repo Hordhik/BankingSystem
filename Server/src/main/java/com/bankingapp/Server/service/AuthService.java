@@ -79,20 +79,14 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest req) {
-        String identifier = req.getIdentifier();
+        String identifier = req.getLoginIdentifier();
         if (isBlank(identifier)) {
-            // Fallback to email if identifier is missing (backward compatibility)
-            identifier = req.getEmail();
+            throw new RuntimeException("Email or identifier is required");
         }
 
-        if (isBlank(identifier)) {
-            throw new IllegalArgumentException("Email or Username is required");
-        }
-
-        String finalIdentifier = identifier.trim();
-
+        String email = identifier.trim();
         // Try to find user by email or username
-        User user = userRepository.findByEmailOrUsername(finalIdentifier, finalIdentifier)
+        User user = userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new RuntimeException("Invalid credentials"));
 
         if (!encoder.matches(req.getPassword(), user.getPassword())) {
