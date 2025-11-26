@@ -318,8 +318,10 @@
 .stat-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 4px;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .stat-badge {
@@ -332,7 +334,7 @@
 }
 
 .stat-value {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   color: #111;
   margin: 0;
@@ -372,67 +374,65 @@
   border-radius: 10px;
 }
 
-@media (max-width: 1100px) {
-
-  .methods-wrapper,
-  .bills-wrapper {
-    min-height: 300px;
-    /* Minimum height for consistency */
+@media (max-width: 1200px) {
+  .dash-top-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
 
-  /* Recent activities wrapper already styled by component */
-
-  @media (max-width: 1100px) {
-    .dash-top-grid {
-      grid-template-columns: 1fr;
-      gap: 20px;
-    }
-
-    .dash-mid-grid {
-      grid-template-columns: 1fr;
-      /* Stack on smaller screens */
-      gap: 20px;
-    }
-
-    .mini-cards {
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .quick-grid {
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    .stats-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
+  .dash-mid-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
 
-  @media (max-width: 640px) {
-    .mini-cards {
-      grid-template-columns: 1fr;
-    }
-
-    .quick-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .stats-grid {
-      grid-template-columns: 1fr;
-    }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-.payments-container {
-  padding: 16px;
+@media (max-width: 768px) {
+  .payments-container {
+    padding: 16px;
+  }
+
+  .mini-cards {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .quick-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card {
+    padding: 16px;
+  }
+
+  .stat-header {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
 }
 
-.big-amount {
-  font-size: 40px;
-}
+@media (max-width: 480px) {
+  .mini-cards {
+    grid-template-columns: 1fr;
+  }
 
-.balance-panel,
-.top-card-wrapper,
-.mid-panel {
-  padding: 20px;
+  .quick-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .big-amount {
+    font-size: 40px;
+  }
+
+  .balance-panel,
+  .top-card-wrapper,
+  .mid-panel {
+    padding: 20px;
+  }
 }

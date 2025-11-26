@@ -196,8 +196,31 @@ export default function PaymentPage() {
         const toCard = paymentDetails.receiverCardNumber.replace(/\s/g, '');
 
         await cardTransfer(fromCard, toCard, amount, paymentDetails.cvv, paymentDetails.expiry);
+
+        // Construct receipt object for Card Transfer
+        const receipt = {
+          transactionId: "TXN" + Math.random().toString(36).substr(2, 9).toUpperCase(),
+          dateISO: new Date().toISOString(),
+          amount: `- ₹${numericAmount.toFixed(2)}`,
+          to: cards.find(c => c.cardNumber === paymentDetails.receiverCardNumber)?.ownerName || 'Card Transfer',
+          type: 'CARD_PAYMENT',
+          status: 'Completed',
+          fee: `₹${fee.toFixed(2)}`,
+          tax: `₹${tax.toFixed(2)}`,
+          totalDebited: `₹${totalDebited}`
+        };
+
         setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 1800);
+
+        // Redirect after animation
+        setTimeout(() => {
+          navigate('/dashboard', {
+            state: {
+              activeTab: 'Transactions',
+              receipt: receipt
+            }
+          });
+        }, 2500);
 
       } else {
         // Mock for other types

@@ -23,14 +23,13 @@ public class TransactionService {
 
     private final TransactionLoggingService transactionLoggingService;
 
-    public TransactionService(AccountRepository accountRepository, TransactionRepository transactionRepository, CardRepository cardRepository, TransactionLoggingService transactionLoggingService) {
+    public TransactionService(AccountRepository accountRepository, TransactionRepository transactionRepository,
+            CardRepository cardRepository, TransactionLoggingService transactionLoggingService) {
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
         this.cardRepository = cardRepository;
         this.transactionLoggingService = transactionLoggingService;
     }
-
-
 
     @Transactional
     public Account deposit(Long accountId, BigDecimal amount) {
@@ -39,14 +38,16 @@ public class TransactionService {
         }
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found"));
-        
+
         try {
             account.setBalance(account.getBalance().add(amount));
             Account saved = accountRepository.save(account);
-            transactionLoggingService.saveTransaction(saved, "DEPOSIT", amount, null, BigDecimal.ZERO, BigDecimal.ZERO, "SUCCESS");
+            transactionLoggingService.saveTransaction(saved, "DEPOSIT", amount, null, BigDecimal.ZERO, BigDecimal.ZERO,
+                    "SUCCESS");
             return saved;
         } catch (Exception e) {
-            transactionLoggingService.saveTransaction(account, "DEPOSIT", amount, null, BigDecimal.ZERO, BigDecimal.ZERO, "FAILED");
+            transactionLoggingService.saveTransaction(account, "DEPOSIT", amount, null, BigDecimal.ZERO,
+                    BigDecimal.ZERO, "FAILED");
             throw e;
         }
     }
@@ -58,17 +59,19 @@ public class TransactionService {
         }
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found"));
-        
+
         try {
             if (account.getBalance().compareTo(amount) < 0) {
                 throw new IllegalArgumentException("Insufficient funds");
             }
             account.setBalance(account.getBalance().subtract(amount));
             Account saved = accountRepository.save(account);
-            transactionLoggingService.saveTransaction(saved, "WITHDRAW", amount, null, BigDecimal.ZERO, BigDecimal.ZERO, "SUCCESS");
+            transactionLoggingService.saveTransaction(saved, "WITHDRAW", amount, null, BigDecimal.ZERO, BigDecimal.ZERO,
+                    "SUCCESS");
             return saved;
         } catch (Exception e) {
-            transactionLoggingService.saveTransaction(account, "WITHDRAW", amount, null, BigDecimal.ZERO, BigDecimal.ZERO, "FAILED");
+            transactionLoggingService.saveTransaction(account, "WITHDRAW", amount, null, BigDecimal.ZERO,
+                    BigDecimal.ZERO, "FAILED");
             throw e;
         }
     }
@@ -91,11 +94,13 @@ public class TransactionService {
         Account to = accountRepository.findById(toAccountId)
                 .orElseThrow(() -> new IllegalArgumentException("Destination account not found"));
 
-        System.out.println("Transfer Debug: FromAccount=" + from.getAccountNumber() + ", Balance=" + from.getBalance() + ", Amount=" + amount + ", TotalDeduction=" + totalDeduction);
+        System.out.println("Transfer Debug: FromAccount=" + from.getAccountNumber() + ", Balance=" + from.getBalance()
+                + ", Amount=" + amount + ", TotalDeduction=" + totalDeduction);
 
         try {
             if (from.getBalance().compareTo(totalDeduction) < 0) {
-                System.out.println("Transfer Failed: Insufficient funds. Balance=" + from.getBalance() + ", Required=" + totalDeduction);
+                System.out.println("Transfer Failed: Insufficient funds. Balance=" + from.getBalance() + ", Required="
+                        + totalDeduction);
                 throw new IllegalArgumentException("Insufficient funds for transfer + fees");
             }
 
@@ -105,20 +110,24 @@ public class TransactionService {
             accountRepository.save(from);
             accountRepository.save(to);
 
-            transactionLoggingService.saveTransaction(from, "TRANSFER_SENT", amount, to.getId(), safeFee, safeTax, "SUCCESS");
-            transactionLoggingService.saveTransaction(to, "TRANSFER_RECEIVED", amount, from.getId(), BigDecimal.ZERO, BigDecimal.ZERO, "SUCCESS");
+            transactionLoggingService.saveTransaction(from, "TRANSFER_SENT", amount, to.getId(), safeFee, safeTax,
+                    "SUCCESS");
+            transactionLoggingService.saveTransaction(to, "TRANSFER_RECEIVED", amount, from.getId(), BigDecimal.ZERO,
+                    BigDecimal.ZERO, "SUCCESS");
         } catch (Exception e) {
-            transactionLoggingService.saveTransaction(from, "TRANSFER_SENT", amount, to.getId(), safeFee, safeTax, "FAILED");
-            // We might not want to log a failed RECEIVED transaction for the recipient, or maybe we do?
-            // Usually only the sender knows it failed.
+            transactionLoggingService.saveTransaction(from, "TRANSFER_SENT", amount, to.getId(), safeFee, safeTax,
+                    "FAILED");
+            transactionLoggingService.saveTransaction(to, "TRANSFER_RECEIVED", amount, from.getId(), BigDecimal.ZERO,
+                    BigDecimal.ZERO, "FAILED");
             throw e;
         }
     }
 
     @Transactional
-    public void transferByCard(String senderCardNumber, String senderCvv, String senderExpiry, String receiverCardNumber, BigDecimal amount) {
+    public void transferByCard(String senderCardNumber, String senderCvv, String senderExpiry,
+            String receiverCardNumber, BigDecimal amount) {
         System.out.println("Card Transfer Request: SenderCard=" + senderCardNumber + ", Amount=" + amount);
-        
+
         Card senderCard = cardRepository.findByCardNumber(senderCardNumber)
                 .orElseThrow(() -> new IllegalArgumentException("Sender card not found"));
 
@@ -127,17 +136,41 @@ public class TransactionService {
         }
         // Simple expiry check (MM/YY)
         // In production, parse date properly
-        
+
         Card receiverCard = cardRepository.findByCardNumber(receiverCardNumber)
                 .orElseThrow(() -> new IllegalArgumentException("Receiver card not found"));
 
         Account from = senderCard.getAccount();
         Account to = receiverCard.getAccount();
-        
-        System.out.println("Card Transfer Resolved: FromAccount=" + from.getAccountNumber() + ", ToAccount=" + to.getAccountNumber());
 
-        // Reuse existing transfer logic (assuming 0 fee/tax for now or calculate it)
-        transfer(from.getId(), to.getId(), amount, BigDecimal.ZERO, BigDecimal.ZERO);
+        System.out.println("Card Transfer Resolved: FromAccount=" + from.getAccountNumber() + ", ToAccount="
+                + to.getAccountNumber());
+
+        BigDecimal fee = amount.multiply(new BigDecimal("0.01"));
+        BigDecimal tax = fee.multiply(new BigDecimal("0.18"));
+        BigDecimal totalDeduction = amount.add(fee).add(tax);
+
+        if (from.getBalance().compareTo(totalDeduction) < 0) {
+            transactionLoggingService.saveTransaction(from, "CARD_PAYMENT", amount, to.getId(), fee, tax, "FAILED");
+            throw new IllegalArgumentException("Insufficient funds for card transfer + fees");
+        }
+
+        try {
+            from.setBalance(from.getBalance().subtract(totalDeduction));
+            to.setBalance(to.getBalance().add(amount));
+
+            accountRepository.save(from);
+            accountRepository.save(to);
+
+            transactionLoggingService.saveTransaction(from, "CARD_PAYMENT", amount, to.getId(), fee, tax, "SUCCESS");
+            transactionLoggingService.saveTransaction(to, "CARD_RECEIVE", amount, from.getId(), BigDecimal.ZERO,
+                    BigDecimal.ZERO, "SUCCESS");
+        } catch (Exception e) {
+            transactionLoggingService.saveTransaction(from, "CARD_PAYMENT", amount, to.getId(), fee, tax, "FAILED");
+            transactionLoggingService.saveTransaction(to, "CARD_RECEIVE", amount, from.getId(), BigDecimal.ZERO,
+                    BigDecimal.ZERO, "FAILED");
+            throw e;
+        }
     }
 
     public List<TransactionResponse> getTransactionsForAccount(Long accountId, String userEmail) {

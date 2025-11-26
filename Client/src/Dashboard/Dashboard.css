@@ -216,8 +216,23 @@ body {
     color: #dc2626;
 }
 
+.main-content {
+    width: 78%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    /* Enable scrolling on main container */
+    height: 100vh;
+    /* Ensure full height */
+}
+
+
+
 .main-content .content {
     width: 100%;
-    height: 100%;
-    overflow-y: scroll;
+    height: auto;
+    /* Allow content to grow */
+    overflow: visible;
+    /* Prevent clipping of dropdowns */
+    padding-bottom: 40px;
 }

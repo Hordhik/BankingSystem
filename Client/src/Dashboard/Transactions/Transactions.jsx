@@ -53,7 +53,7 @@ const Transactions = () => {
         const data = await getHistory(accountId); // expects TransactionResponse[] from backend
         const mapped = (data || []).map(t => {
           // Determine if transaction is incoming or outgoing based on TYPE
-          const isIncoming = t.type === 'TRANSFER_RECEIVED' || t.type === 'DEPOSIT';
+          const isIncoming = t.type === 'TRANSFER_RECEIVED' || t.type === 'DEPOSIT' || t.type === 'CARD_RECEIVE';
           const num = Number(t.amount);
           const absAmount = Math.abs(num).toFixed(2);
           const amountStr = isIncoming ? `+ ₹${absAmount}` : `- ₹${absAmount}`;
@@ -69,8 +69,8 @@ const Transactions = () => {
             type: t.type,
             dateISO: t.createdAt,
             amount: amountStr,
-            status: 'Completed', // backend doesn't currently provide status in DTO — change if available
-            channel: 'bank',
+            status: (t.status === 'SUCCESS' ? 'Completed' : (t.status === 'FAILED' ? 'Failed' : (t.status || 'Completed'))),
+            channel: t.type.includes('CARD') ? 'card' : 'bank',
             fee: fee,
             tax: tax,
             totalDebited: totalDebited
@@ -79,9 +79,17 @@ const Transactions = () => {
 
         if (injectedTx) {
           // Avoid duplicates if it somehow exists
-          if (!mapped.find(t => t.transactionId === injectedTx.transactionId)) {
+          const exists = mapped.find(t =>
+            t.transactionId === injectedTx.transactionId ||
+            (t.amount === injectedTx.amount && t.type === injectedTx.type && Math.abs(new Date(t.dateISO) - new Date(injectedTx.dateISO)) < 5000)
+          );
+
+          if (!exists) {
             mapped.unshift(injectedTx);
           }
+
+          // Clear location state to prevent persistence on refresh
+          window.history.replaceState({}, document.title);
         }
 
         if (mounted) setTransactions(mapped);
@@ -105,8 +113,8 @@ const Transactions = () => {
 
   const filteredByChip = useMemo(() => {
     if (filter === 'all') return transactions;
-    if (filter === 'credited') return transactions.filter(tx => tx.amount.startsWith('+'));
-    if (filter === 'debited') return transactions.filter(tx => tx.amount.startsWith('-'));
+    if (filter === 'credited') return transactions.filter(tx => tx.amount.startsWith('+') && tx.status !== 'Failed');
+    if (filter === 'debited') return transactions.filter(tx => tx.amount.startsWith('-') && tx.status !== 'Failed');
     if (filter === 'failed') return transactions.filter(tx => tx.status.toLowerCase() === 'failed');
     if (filter === 'bills') return transactions.filter(tx => tx.type.toLowerCase().includes('bill'));
     return transactions.filter(tx => tx.channel === filter);
@@ -126,7 +134,10 @@ const Transactions = () => {
         toEnd.setHours(23, 59, 59, 999);
         if (d > toEnd) return false;
       }
-      if (query && !tx.transactionId.toLowerCase().includes(query)) return false;
+      if (query && !(
+        (tx.transactionId && tx.transactionId.toLowerCase().includes(query)) ||
+        (tx.to && tx.to.toLowerCase().includes(query))
+      )) return false;
       return true;
     });
   }, [filteredByChip, fromDate, toDate, searchQuery]);
@@ -204,7 +215,15 @@ const Transactions = () => {
     doc.text(`${isIncoming ? 'Received From' : 'Paid To'}: ${tx.to}`, 20, 90);
 
     doc.setFontSize(16);
+    if (tx.status === 'Failed') {
+      doc.setTextColor(0, 0, 0); // Black
+    } else if (isIncoming) {
+      doc.setTextColor(16, 185, 129); // Green
+    } else {
+      doc.setTextColor(239, 68, 68); // Red
+    }
     doc.text(`Amount: ${tx.amount}`, 20, 110);
+    doc.setTextColor(0, 0, 0); // Reset to black
 
     if (tx.fee) {
       doc.setFontSize(12);
@@ -230,6 +249,23 @@ const Transactions = () => {
     }
   };
 
+  const monthlySpending = useMemo(() => {
+    const spending = new Array(12).fill(0);
+    transactions.forEach(tx => {
+      // Check if it's an outgoing transaction (negative amount or specific types)
+      if (tx.amount.startsWith('-') || tx.type === 'TRANSFER_SENT' || tx.type === 'CARD_PAYMENT' || tx.type === 'WITHDRAWAL') {
+        const date = new Date(tx.dateISO);
+        const month = date.getMonth(); // 0-11
+        // Remove currency symbol and commas to parse amount
+        const amountVal = parseFloat(tx.amount.replace(/[^0-9.]/g, ''));
+        if (!isNaN(amountVal)) {
+          spending[month] += amountVal;
+        }
+      }
+    });
+    return spending;
+  }, [transactions]);
+
   return (
     <div className="transactions-page">
       <div className="transactions-left">
@@ -253,6 +289,15 @@ const Transactions = () => {
                 </button>
               ))}
             </div>
+            <div className="search-bar-container">
+              <input
+                type="text"
+                placeholder="Search by ID or Name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="search-input"
+              />
+            </div>
             <div className="export-wrap" ref={exportRef}>
               <button className="chip export" onClick={() => setExportOpen(v => !v)}>Export ▾</button>
               {exportOpen && (
@@ -266,15 +311,6 @@ const Transactions = () => {
                   <button className="btn-primary" onClick={() => generatePdf(filtered)}>Export PDF</button>
                 </div>
               )}
-            </div>
-            <div className="search-bar-container">
-              <input
-                type="text"
-                placeholder="Search by Transaction ID..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="search-input"
-              />
             </div>
           </div>
         </div>
@@ -296,27 +332,37 @@ const Transactions = () => {
                   <td>{tx.to}</td>
                   <td>{tx.type}</td>
                   <td>{displayDate(tx.dateISO)}</td>
-                  <td className={tx.amount.startsWith('+') ? 'amount-positive' : 'amount-negative'}>{tx.amount}</td>
+                  <td className={tx.status === 'Failed' ? 'amount-failed' : (tx.amount.startsWith('+') ? 'amount-positive' : 'amount-negative')}>{tx.amount}</td>
                   <td><span className={`status-pill ${getStatusClass(tx.status)}`}>{tx.status}</span></td>
                 </tr>
               ))}
+              {filtered.length === 0 && !loadingTx && (
+                <tr><td colSpan="5" style={{ textAlign: 'center', padding: 20 }}>No transactions found</td></tr>
+              )}
             </tbody>
           </table>
         </div>
       </div>
       <div className="transactions-right">
         <div className="analytics-card">
-          <h3 className="section-title">Spending Analytics</h3>
-          <SpendingChart />
+          <h3>Spending Analytics</h3>
+          <SpendingChart data={monthlySpending} />
         </div>
         <div className="expenses-card">
-          <h3 className="section-title">Expenses by Category</h3>
+          <h3>Expenses by Category</h3>
           <DonutChart />
-          <ul className="legend">
-            <li><span className="dot bills" /> Bills</li>
-            <li><span className="dot recharge" /> Recharge</li>
-            <li><span className="dot other" /> Other</li>
-          </ul>
+          <div className="expense-legend">
+            <div className="legend-item">
+              <span className="dot blue"></span>
+              <span>Bills & Utilities</span>
+              <span className="pct">35%</span>
+            </div>
+            <div className="legend-item">
+              <span className="dot green"></span>
+              <span>Recharge</span>
+              <span className="pct">15%</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -335,28 +381,20 @@ const Transactions = () => {
                   <span className="value">{selectedTx.transactionId}</span>
                 </div>
                 <div className="detail-row">
-                  <span className="label">Date</span>
+                  <span className="label">Date & Time</span>
                   <span className="value">{new Date(selectedTx.dateISO).toLocaleString()}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="label">To / From</span>
+                  <span className="value">{selectedTx.to}</span>
                 </div>
                 <div className="detail-row">
                   <span className="label">Type</span>
                   <span className="value">{selectedTx.type}</span>
                 </div>
                 <div className="detail-row">
-                  <span className="label">From</span>
-                  <span className="value">
-                    {selectedTx.amount.startsWith('+') ? selectedTx.to : (localStorage.getItem('fullname') || 'My Account')}
-                  </span>
-                </div>
-                <div className="detail-row">
-                  <span className="label">To</span>
-                  <span className="value">
-                    {selectedTx.amount.startsWith('+') ? (localStorage.getItem('fullname') || 'My Account') : selectedTx.to}
-                  </span>
-                </div>
-                <div className="detail-row">
                   <span className="label">Amount</span>
-                  <span className={`value ${selectedTx.amount.startsWith('+') ? 'amount-positive' : 'amount-negative'}`}>
+                  <span className={`value ${selectedTx.status === 'Failed' ? 'amount-failed' : (selectedTx.amount.startsWith('+') ? 'amount-positive' : 'amount-negative')}`}>
                     {selectedTx.amount}
                   </span>
                 </div>
@@ -397,15 +435,16 @@ export default Transactions;
 
 // Simple inline bar chart without external libs
 const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const sampleSpends = [12000, 18500, 15400, 20100, 9800, 17600, 22000, 24500, 19900, 26800, 23100, 18800];
 
-function SpendingChart({ data = sampleSpends, labels = monthLabels }) {
+function SpendingChart({ data, labels = monthLabels }) {
   const max = Math.max(...data, 1);
   return (
     <div className="spend-chart">
       {data.map((val, i) => (
         <div className="spend-bar" key={labels[i]}>
-          <div className="spend-bar__column" style={{ height: `${(val / max) * 140}px` }} />
+          <div className="spend-bar__column" style={{ height: `${(val / max) * 140}px` }}>
+            <div className="tooltip">₹{val.toLocaleString('en-IN')}</div>
+          </div>
           <span className="spend-label">{labels[i]}</span>
         </div>
       ))}
