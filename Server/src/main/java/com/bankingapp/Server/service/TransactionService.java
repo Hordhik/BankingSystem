@@ -21,27 +21,16 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final CardRepository cardRepository;
 
-    public TransactionService(AccountRepository accountRepository, TransactionRepository transactionRepository, CardRepository cardRepository) {
+    private final TransactionLoggingService transactionLoggingService;
+
+    public TransactionService(AccountRepository accountRepository, TransactionRepository transactionRepository, CardRepository cardRepository, TransactionLoggingService transactionLoggingService) {
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
         this.cardRepository = cardRepository;
+        this.transactionLoggingService = transactionLoggingService;
     }
 
-    private void saveTransaction(Account account, String type, BigDecimal amount, Long counterpartyAccountId,
-            BigDecimal fee, BigDecimal tax) {
-        Transaction tx = Transaction.builder()
-                .account(account)
-                .type(type)
-                .amount(amount)
-                .counterpartyAccountId(counterpartyAccountId)
-                .transactionId(
-                        "TXN" + java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase())
-                .createdAt(LocalDateTime.now())
-                .fee(fee)
-                .tax(tax)
-                .build();
-        transactionRepository.save(tx);
-    }
+
 
     @Transactional
     public Account deposit(Long accountId, BigDecimal amount) {
@@ -50,10 +39,16 @@ public class TransactionService {
         }
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found"));
-        account.setBalance(account.getBalance().add(amount));
-        Account saved = accountRepository.save(account);
-        saveTransaction(saved, "DEPOSIT", amount, null, BigDecimal.ZERO, BigDecimal.ZERO);
-        return saved;
+        
+        try {
+            account.setBalance(account.getBalance().add(amount));
+            Account saved = accountRepository.save(account);
+            transactionLoggingService.saveTransaction(saved, "DEPOSIT", amount, null, BigDecimal.ZERO, BigDecimal.ZERO, "SUCCESS");
+            return saved;
+        } catch (Exception e) {
+            transactionLoggingService.saveTransaction(account, "DEPOSIT", amount, null, BigDecimal.ZERO, BigDecimal.ZERO, "FAILED");
+            throw e;
+        }
     }
 
     @Transactional
@@ -63,13 +58,19 @@ public class TransactionService {
         }
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found"));
-        if (account.getBalance().compareTo(amount) < 0) {
-            throw new IllegalArgumentException("Insufficient funds");
+        
+        try {
+            if (account.getBalance().compareTo(amount) < 0) {
+                throw new IllegalArgumentException("Insufficient funds");
+            }
+            account.setBalance(account.getBalance().subtract(amount));
+            Account saved = accountRepository.save(account);
+            transactionLoggingService.saveTransaction(saved, "WITHDRAW", amount, null, BigDecimal.ZERO, BigDecimal.ZERO, "SUCCESS");
+            return saved;
+        } catch (Exception e) {
+            transactionLoggingService.saveTransaction(account, "WITHDRAW", amount, null, BigDecimal.ZERO, BigDecimal.ZERO, "FAILED");
+            throw e;
         }
-        account.setBalance(account.getBalance().subtract(amount));
-        Account saved = accountRepository.save(account);
-        saveTransaction(saved, "WITHDRAW", amount, null, BigDecimal.ZERO, BigDecimal.ZERO);
-        return saved;
     }
 
     @Transactional
@@ -92,23 +93,26 @@ public class TransactionService {
 
         System.out.println("Transfer Debug: FromAccount=" + from.getAccountNumber() + ", Balance=" + from.getBalance() + ", Amount=" + amount + ", TotalDeduction=" + totalDeduction);
 
-        if (from.getBalance().compareTo(totalDeduction) < 0) {
-            System.out.println("Transfer Failed: Insufficient funds. Balance=" + from.getBalance() + ", Required=" + totalDeduction);
-            throw new IllegalArgumentException("Insufficient funds for transfer + fees");
+        try {
+            if (from.getBalance().compareTo(totalDeduction) < 0) {
+                System.out.println("Transfer Failed: Insufficient funds. Balance=" + from.getBalance() + ", Required=" + totalDeduction);
+                throw new IllegalArgumentException("Insufficient funds for transfer + fees");
+            }
+
+            from.setBalance(from.getBalance().subtract(totalDeduction));
+            to.setBalance(to.getBalance().add(amount));
+
+            accountRepository.save(from);
+            accountRepository.save(to);
+
+            transactionLoggingService.saveTransaction(from, "TRANSFER_SENT", amount, to.getId(), safeFee, safeTax, "SUCCESS");
+            transactionLoggingService.saveTransaction(to, "TRANSFER_RECEIVED", amount, from.getId(), BigDecimal.ZERO, BigDecimal.ZERO, "SUCCESS");
+        } catch (Exception e) {
+            transactionLoggingService.saveTransaction(from, "TRANSFER_SENT", amount, to.getId(), safeFee, safeTax, "FAILED");
+            // We might not want to log a failed RECEIVED transaction for the recipient, or maybe we do?
+            // Usually only the sender knows it failed.
+            throw e;
         }
-
-        from.setBalance(from.getBalance().subtract(totalDeduction));
-        to.setBalance(to.getBalance().add(amount));
-
-        accountRepository.save(from);
-        accountRepository.save(to);
-
-        // Sender sees the principal amount in the transaction record, but fee/tax are
-        // stored separately
-        // Or should we store the total amount? Usually transaction amount is the
-        // principal.
-        saveTransaction(from, "TRANSFER_SENT", amount, to.getId(), safeFee, safeTax);
-        saveTransaction(to, "TRANSFER_RECEIVED", amount, from.getId(), BigDecimal.ZERO, BigDecimal.ZERO);
     }
 
     @Transactional
@@ -166,6 +170,7 @@ public class TransactionService {
                             .createdAt(t.getCreatedAt()) // LocalDateTime field
                             .fee(t.getFee())
                             .tax(t.getTax())
+                            .status(t.getStatus())
                             .build();
                 })
                 .collect(Collectors.toList());

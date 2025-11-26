@@ -14,12 +14,13 @@ public class TransactionResponse {
     private LocalDateTime createdAt;
     private BigDecimal fee;
     private BigDecimal tax;
+    private String status;
 
     public TransactionResponse() {
     }
 
     public TransactionResponse(Long id, String type, BigDecimal amount, Long accountId, Long counterpartyAccountId,
-            String counterpartyName, String transactionId, LocalDateTime createdAt, BigDecimal fee, BigDecimal tax) {
+            String counterpartyName, String transactionId, LocalDateTime createdAt, BigDecimal fee, BigDecimal tax, String status) {
         this.id = id;
         this.type = type;
         this.amount = amount;
@@ -30,6 +31,7 @@ public class TransactionResponse {
         this.createdAt = createdAt;
         this.fee = fee;
         this.tax = tax;
+        this.status = status;
     }
 
     public Long getId() {
@@ -112,6 +114,14 @@ public class TransactionResponse {
         this.tax = tax;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public static TransactionResponseBuilder builder() {
         return new TransactionResponseBuilder();
     }
@@ -127,6 +137,7 @@ public class TransactionResponse {
         private LocalDateTime createdAt;
         private BigDecimal fee;
         private BigDecimal tax;
+        private String status;
 
         TransactionResponseBuilder() {
         }
@@ -181,9 +192,14 @@ public class TransactionResponse {
             return this;
         }
 
+        public TransactionResponseBuilder status(String status) {
+            this.status = status;
+            return this;
+        }
+
         public TransactionResponse build() {
             return new TransactionResponse(id, type, amount, accountId, counterpartyAccountId, counterpartyName,
-                    transactionId, createdAt, fee, tax);
+                    transactionId, createdAt, fee, tax, status);
         }
 
         public String toString() {
@@ -191,7 +207,7 @@ public class TransactionResponse {
                     + this.amount + ", accountId=" + this.accountId + ", counterpartyAccountId="
                     + this.counterpartyAccountId + ", counterpartyName=" + this.counterpartyName + ", transactionId="
                     + this.transactionId + ", createdAt=" + this.createdAt + ", fee=" + this.fee + ", tax=" + this.tax
-                    + ")";
+                    + ", status=" + this.status + ")";
         }
     }
 }
