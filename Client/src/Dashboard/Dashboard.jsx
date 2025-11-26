@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { clearCurrentUser } from '../Components/Auth/userStore';
 import { Sun, Moon } from 'lucide-react';
 import './Dashboard.css';
@@ -21,13 +21,21 @@ import SupportTickets from './SupportTicket/SupportTicket.jsx';
 // Auth-free mode: no userStore for now
 
 export const Dashboard = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [activeTab, setActiveTab] = useState(() => {
     return localStorage.getItem('activeTab') || "Dashboard";
   });
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('theme') || 'light';
   });
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.state?.activeTab) {
+      setActiveTab(location.state.activeTab);
+    }
+  }, [location]);
 
   useEffect(() => {
     localStorage.setItem('activeTab', activeTab);

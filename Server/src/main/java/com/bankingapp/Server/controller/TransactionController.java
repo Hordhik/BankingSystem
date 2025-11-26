@@ -33,7 +33,8 @@ public class TransactionController {
 
     @PostMapping("/transfer")
     public ResponseEntity<String> transfer(@RequestBody TransferRequest req) {
-        transactionService.transfer(req.getFromAccountId(), req.getToAccountId(), req.getAmount());
+        transactionService.transfer(req.getFromAccountId(), req.getToAccountId(), req.getAmount(), req.getFee(),
+                req.getTax());
         return ResponseEntity.ok("Transfer successful");
     }
 
@@ -44,7 +45,7 @@ public class TransactionController {
                 .getContext()
                 .getAuthentication()
                 .getName();
-        
+
         return ResponseEntity.ok(transactionService.getTransactionsForAccount(accountId, userEmail));
     }
 }

@@ -32,8 +32,8 @@ export const deposit = (accountId, amount) =>
 export const withdraw = (accountId, amount) =>
   request("/transactions/withdraw", "POST", { accountId, amount });
 
-export const transfer = (fromAccountId, toAccountId, amount) =>
-  request("/transactions/transfer", "POST", { fromAccountId, toAccountId, amount });
+export const transfer = (fromAccountId, toAccountId, amount, fee, tax) =>
+  request("/transactions/transfer", "POST", { fromAccountId, toAccountId, amount, fee, tax });
 
 export const cardTransfer = (fromCardNumber, toCardNumber, amount, cvv, expiryDate) =>
   request("/transactions/card-transfer", "POST", { fromCardNumber, toCardNumber, amount, cvv, expiryDate });

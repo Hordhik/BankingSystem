@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './Payments.css';
 import { PaymentMethods } from './components/PaymentMethods.jsx';
 import { RechargeAndBills } from './components/RechargeAndBills.jsx';
-import { TrendingUp, Wallet, BarChart3, AlertCircle } from 'lucide-react';
+import { Activity, CreditCard, Zap, Bell } from 'lucide-react';
 import transferIcon from '/src/assets/icons/transfer.svg';
 import cardIcon from '/src/assets/icons/card.svg';
 import loansIcon from '/src/assets/icons/loans.svg';
@@ -19,9 +19,9 @@ function Payments({ setActiveTab }) {
 
   const quickTiles = [
     { label: 'Transfer / Pay', icon: transferIcon, action: () => navigate('/payment') },
-    { label: 'Cards', icon: cardIcon, action: () => navigate('/dashboard') },
-    { label: 'Loans & Investments', icon: loansIcon, action: () => navigate('/dashboard') },
-    { label: 'Pre-Approved Offers', icon: offersIcon, action: () => navigate('/dashboard') },
+    { label: 'Cards', icon: cardIcon, action: () => setActiveTab('Cards') },
+    { label: 'Loans & Investments', icon: loansIcon, action: () => setActiveTab('Loans & Investments') },
+    { label: 'Pre-Approved Offers', icon: offersIcon, action: () => setActiveTab('Pre-Approved Offers') },
   ];
 
   useEffect(() => {
@@ -119,48 +119,64 @@ function Payments({ setActiveTab }) {
         </div>
       </section>
 
-      {/* Quick Stats & Analytics */}
+      {/* Premium Insights Section */}
       <section className="dash-stats-section">
         <div className="stats-grid">
-          <div className="stat-card">
+          {/* Monthly Spend Limit -> Transactions */}
+          <div className="stat-card" onClick={() => setActiveTab('Transactions')} style={{ cursor: 'pointer' }}>
             <div className="stat-icon">
-              <BarChart3 size={28} strokeWidth={2} />
+              <Activity size={24} strokeWidth={1.5} />
             </div>
             <div className="stat-content">
-              <p className="stat-label">Total Transactions</p>
-              <p className="stat-value">{transactions.length}</p>
+              <div className="stat-header">
+                <p className="stat-label">Monthly Limit</p>
+                <span className="stat-badge">75% Used</span>
+              </div>
+              <p className="stat-value">₹45,000 <span className="stat-sub">/ ₹60k</span></p>
+              <div className="progress-bar">
+                <div className="progress-fill" style={{ width: '75%' }}></div>
+              </div>
             </div>
           </div>
-          <div className="stat-card">
+
+          {/* Credit Score -> Loans & Investments */}
+          <div className="stat-card" onClick={() => setActiveTab('Loans & Investments')} style={{ cursor: 'pointer' }}>
             <div className="stat-icon">
-              <Wallet size={28} strokeWidth={2} />
+              <CreditCard size={24} strokeWidth={1.5} />
             </div>
             <div className="stat-content">
-              <p className="stat-label">This Month</p>
-              <p className="stat-value">₹{balance.toLocaleString()}</p>
+              <p className="stat-label">Credit Score</p>
+              <p className="stat-value">785 <span className="stat-sub text-green">Excellent</span></p>
+              <p className="stat-desc">Updated today</p>
             </div>
           </div>
-          <div className="stat-card">
+
+          {/* Rewards -> Pre-Approved Offers */}
+          <div className="stat-card" onClick={() => setActiveTab('Pre-Approved Offers')} style={{ cursor: 'pointer' }}>
             <div className="stat-icon">
-              <TrendingUp size={28} strokeWidth={2} />
+              <Zap size={24} strokeWidth={1.5} />
             </div>
             <div className="stat-content">
-              <p className="stat-label">Auto Payments</p>
-              <p className="stat-value">Active</p>
+              <p className="stat-label">Reward Points</p>
+              <p className="stat-value">1,250 <span className="stat-sub">Pts</span></p>
+              <p className="stat-desc">Redeem for cashback</p>
             </div>
           </div>
-          <div className="stat-card">
+
+          {/* Security Status -> Settings */}
+          <div className="stat-card" onClick={() => setActiveTab('Settings')} style={{ cursor: 'pointer' }}>
             <div className="stat-icon">
-              <AlertCircle size={28} strokeWidth={2} />
+              <Bell size={24} strokeWidth={1.5} />
             </div>
             <div className="stat-content">
-              <p className="stat-label">Pending Bills</p>
-              <p className="stat-value">3</p>
+              <p className="stat-label">Security Status</p>
+              <p className="stat-value">Safe <span className="stat-sub text-green">✓</span></p>
+              <p className="stat-desc">2-Factor Active</p>
             </div>
           </div>
         </div>
       </section>
-    </div>
+    </div >
   );
 }
 

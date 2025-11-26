@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import QRCode from 'react-qr-code';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import './PaymentPage.css';
-import cardIcon from '/src/assets/icons/card.svg';
-import transferIcon from '/src/assets/icons/transfer.svg';
-import walletIcon from '/src/assets/icons/wallet.svg';
-import dashboardIcon from '/src/assets/icons/dashboard.svg';
+import { CreditCard, Landmark, Smartphone, Wallet, LayoutDashboard, ArrowLeft, Check, XCircle } from 'lucide-react';
 import { transfer, cardTransfer, getAccounts } from '../../services/bankApi';
 
 export default function PaymentPage() {
   const { type } = useParams();
+  const navigate = useNavigate();
   const [selectedPayment, setSelectedPayment] = useState('card');
   const billTypeKeys = ['mobile', 'dth', 'electricity', 'gas', 'broadband', 'water', 'insurance', 'education'];
   const [billType, setBillType] = useState('');
@@ -35,13 +33,15 @@ export default function PaymentPage() {
   const [qrValue, setQrValue] = useState('');
   const [accounts, setAccounts] = useState([]);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showFailure, setShowFailure] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const paymentTypes = [
-    { key: 'card', label: 'Card' },
-    { key: 'banks', label: 'Bank Transfer' },
-    { key: 'self', label: 'Self Transfer' },
-    { key: 'upi', label: 'UPI' },
-    { key: 'wallet', label: 'Wallet' },
+    { key: 'card', label: 'Card', icon: CreditCard },
+    { key: 'banks', label: 'Bank Transfer', icon: Landmark },
+    { key: 'self', label: 'Self Transfer', icon: Smartphone },
+    { key: 'upi', label: 'UPI', icon: Wallet },
+    { key: 'wallet', label: 'Wallet', icon: Wallet },
   ];
 
   const bankList = ['HDFC Bank', 'ICICI Bank', 'SBI', 'Axis Bank', 'Kotak Bank'];
@@ -99,22 +99,66 @@ export default function PaymentPage() {
   const handlePay = async (e) => {
     if (e) e.preventDefault();
 
-    if (selectedPayment === 'banks') {
-      try {
-        const fromId = localStorage.getItem('primaryAccountId');
-        if (!fromId) {
-          alert("Account ID not found. Please login again.");
-          return;
+    if (!amount || isNaN(amount) || Number(amount) <= 0) {
+      alert('Please enter a valid amount');
+      return;
+    }
+    if (!selectedPayment) {
+      alert('Please select a payment method');
+      return;
+    }
+
+    // For bank transfer, validate receiver
+    if (selectedPayment === 'banks' && !paymentDetails.receiverAccount) {
+      alert('Please select a receiver account');
+      return;
+    }
+
+    setIsProcessing(true);
+
+    // Simulate processing delay for "Premium" feel
+    await new Promise(resolve => setTimeout(resolve, 600));
+
+    try {
+      const numericAmount = Number(amount);
+      const fee = convenienceFee;
+      const tax = taxes;
+      const totalDebited = (numericAmount + fee + tax).toFixed(2);
+
+      if (selectedPayment === 'banks') {
+        const fromAccountId = localStorage.getItem('primaryAccountId');
+        if (!fromAccountId) {
+          throw new Error("Account ID not found. Please login again.");
         }
-        await transfer(fromId, paymentDetails.receiverAccount, amount);
+        // Pass fee and tax to backend
+        await transfer(fromAccountId, paymentDetails.receiverAccount, numericAmount, fee, tax);
+
+        // Construct receipt object
+        const receipt = {
+          transactionId: "TXN" + Math.random().toString(36).substr(2, 9).toUpperCase(),
+          dateISO: new Date().toISOString(),
+          amount: `- ₹${numericAmount.toFixed(2)}`,
+          to: accounts.find(a => a.id == paymentDetails.receiverAccount)?.ownerName || 'Unknown',
+          type: 'TRANSFER_SENT',
+          status: 'Completed',
+          fee: `₹${fee.toFixed(2)}`,
+          tax: `₹${tax.toFixed(2)}`,
+          totalDebited: `₹${totalDebited}`
+        };
+
         setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 1800);
-      } catch (err) {
-        console.error("Transfer failed", err);
-        alert("Transfer failed: " + (err.message || "Unknown error"));
-      }
-    } else if (selectedPayment === 'card') {
-      try {
+
+        // Redirect after animation
+        setTimeout(() => {
+          navigate('/dashboard', {
+            state: {
+              activeTab: 'Transactions',
+              receipt: receipt
+            }
+          });
+        }, 2500);
+
+      } else if (selectedPayment === 'card') {
         // Remove spaces from card numbers
         const fromCard = paymentDetails.myCardNumber.replace(/\s/g, '');
         const toCard = paymentDetails.receiverCardNumber.replace(/\s/g, '');
@@ -122,20 +166,55 @@ export default function PaymentPage() {
         await cardTransfer(fromCard, toCard, amount, paymentDetails.cvv, paymentDetails.expiry);
         setShowSuccess(true);
         setTimeout(() => setShowSuccess(false), 1800);
-      } catch (err) {
-        console.error("Card Transfer failed", err);
-        alert("Card Transfer failed: " + (err.message || "Unknown error"));
+
+      } else {
+        // Mock for other types
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 1800);
       }
-    } else {
-      // Mock for other types
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 1800);
+    } catch (err) {
+      console.error("Payment failed:", err);
+
+      // Construct failed receipt object
+      const numericAmount = Number(amount);
+      const fee = convenienceFee;
+      const tax = taxes;
+      const totalDebited = (numericAmount + fee + tax).toFixed(2);
+
+      const failedReceipt = {
+        transactionId: "TXN" + Math.random().toString(36).substr(2, 9).toUpperCase(),
+        dateISO: new Date().toISOString(),
+        amount: `- ₹${numericAmount.toFixed(2)}`,
+        to: accounts.find(a => a.id == paymentDetails.receiverAccount)?.ownerName || 'Unknown',
+        type: 'TRANSFER_SENT',
+        status: 'Failed',
+        fee: `₹${fee.toFixed(2)}`,
+        tax: `₹${tax.toFixed(2)}`,
+        totalDebited: `₹${totalDebited}`
+      };
+
+      setShowFailure(true);
+
+      // Redirect after animation
+      setTimeout(() => {
+        navigate('/dashboard', {
+          state: {
+            activeTab: 'Transactions',
+            receipt: failedReceipt
+          }
+        });
+      }, 2500);
+
+    } finally {
+      setIsProcessing(false);
     }
   };
 
   return (
     <div className={`payment-page ${billType ? 'is-bill' : ''}`}>
-      <Link to="/dashboard" className="back-link">← Back to Dashboard</Link>
+      <Link to="/dashboard" className="back-link">
+        <ArrowLeft size={18} /> Back to Dashboard
+      </Link>
 
       <div className="payment-3col">
         {/* 1) Selecting Payment Methods */}
@@ -149,17 +228,7 @@ export default function PaymentPage() {
                 className={`method-card ${selectedPayment === p.key ? 'selected' : ''}`}
                 onClick={() => setSelectedPayment(p.key)}
               >
-                <img
-                  className="method-icon-img"
-                  src={
-                    p.key === 'card' ? cardIcon :
-                      p.key === 'banks' ? transferIcon :
-                        p.key === 'upi' ? walletIcon :
-                          p.key === 'wallet' ? walletIcon :
-                            dashboardIcon
-                  }
-                  alt={p.label}
-                />
+                <p.icon size={20} strokeWidth={1.5} className="method-icon-img" />
                 <span>{p.label}</span>
               </button>
             ))}
@@ -490,7 +559,7 @@ export default function PaymentPage() {
                       <option value="">Choose Account</option>
                       {accounts.map(acc => (
                         <option key={acc.id} value={acc.id}>
-                          {acc.ownerName} - Account #{acc.id} ({acc.accountNumber})
+                          {acc.ownerName}  ({acc.accountNumber})
                         </option>
                       ))}
                     </select>
@@ -543,19 +612,32 @@ export default function PaymentPage() {
           <div className="summary-row"><span>Convenience Fee</span><span>₹{convenienceFee.toFixed(2)}</span></div>
           <div className="summary-row"><span>Taxes (18%)</span><span>₹{taxes.toFixed(2)}</span></div>
           <div className="summary-total"><span>Total</span><span>₹{total.toFixed(2)}</span></div>
-          <button className="pay-btn summary-btn" onClick={handlePay} disabled={!amount}>{selectedPayment === 'wallet' ? 'Add Money' : 'Pay Now'}</button>
+          <button className="pay-btn summary-btn" onClick={handlePay} disabled={!amount || isProcessing}>
+            {isProcessing ? 'Processing...' : (selectedPayment === 'wallet' ? 'Add Money' : 'Pay Now')}
+          </button>
           <p className="summary-note">Fees are illustrative. No real payments are processed.</p>
         </aside>
       </div>
+
       {showSuccess && (
         <div className="success-overlay">
           <div className="success-modal">
             <div className="success-check">
-              <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 6L9 17l-5-5" />
-              </svg>
+              <Check size={32} strokeWidth={3} color="white" />
             </div>
             <div className="success-text">Payment Successful</div>
+          </div>
+        </div>
+      )}
+
+      {showFailure && (
+        <div className="success-overlay">
+          <div className="success-modal failure-modal">
+            <div className="success-check failure-check">
+              <XCircle size={32} strokeWidth={3} color="white" />
+            </div>
+            <div className="success-text">Payment Failed</div>
+            <div className="failure-reason">Insufficient Funds</div>
           </div>
         </div>
       )}

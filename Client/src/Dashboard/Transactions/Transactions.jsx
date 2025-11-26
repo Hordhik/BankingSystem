@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import '/src/Dashboard/Transactions/Transactions.css';
 import { jsPDF } from 'jspdf';
 import { getHistory } from '../../services/bankApi'; // <-- adjust path if needed
@@ -17,6 +18,7 @@ const Icon = ({ type }) => {
 
 const Transactions = () => {
 
+  const location = useLocation();
   const [filter, setFilter] = useState('all');
   const [exportOpen, setExportOpen] = useState(false);
   const [fromDate, setFromDate] = useState('');
@@ -38,6 +40,7 @@ const Transactions = () => {
   }, [exportRef]);
 
   // ===== replaced static data with live data =====
+  const [injectedTx] = useState(location.state?.receipt || null);
   const [transactions, setTransactions] = useState([]);
   const [loadingTx, setLoadingTx] = useState(false);
   const accountId = localStorage.getItem('primaryAccountId'); // Get logged-in user's account ID
@@ -55,6 +58,10 @@ const Transactions = () => {
           const absAmount = Math.abs(num).toFixed(2);
           const amountStr = isIncoming ? `+ ₹${absAmount}` : `- ₹${absAmount}`;
 
+          const fee = t.fee ? `₹${t.fee.toFixed(2)}` : null;
+          const tax = t.tax ? `₹${t.tax.toFixed(2)}` : null;
+          const totalDebited = (t.fee && t.tax) ? `₹${(num + t.fee + t.tax).toFixed(2)}` : null;
+
           return {
             id: t.id,
             transactionId: t.transactionId || `TXN${t.id}`, // Fallback if backend doesn't send it yet
@@ -63,13 +70,27 @@ const Transactions = () => {
             dateISO: t.createdAt,
             amount: amountStr,
             status: 'Completed', // backend doesn't currently provide status in DTO — change if available
-            channel: 'bank'
+            channel: 'bank',
+            fee: fee,
+            tax: tax,
+            totalDebited: totalDebited
           };
         });
+
+        if (injectedTx) {
+          // Avoid duplicates if it somehow exists
+          if (!mapped.find(t => t.transactionId === injectedTx.transactionId)) {
+            mapped.unshift(injectedTx);
+          }
+        }
+
         if (mounted) setTransactions(mapped);
       } catch (err) {
         console.error("Failed to fetch transactions:", err);
-        if (mounted) setTransactions([]);
+        if (mounted) {
+          // Even if fetch fails, show the injected one
+          setTransactions(injectedTx ? [injectedTx] : []);
+        }
       } finally {
         if (mounted) setLoadingTx(false);
       }
@@ -77,7 +98,7 @@ const Transactions = () => {
 
     load();
     return () => { mounted = false; };
-  }, [accountId]);
+  }, [accountId, injectedTx]);
   // ==============================================
 
   const displayDate = (iso) => new Date(iso).toLocaleDateString('en-GB', { month: 'short', day: '2-digit' });
@@ -86,6 +107,7 @@ const Transactions = () => {
     if (filter === 'all') return transactions;
     if (filter === 'credited') return transactions.filter(tx => tx.amount.startsWith('+'));
     if (filter === 'debited') return transactions.filter(tx => tx.amount.startsWith('-'));
+    if (filter === 'failed') return transactions.filter(tx => tx.status.toLowerCase() === 'failed');
     if (filter === 'bills') return transactions.filter(tx => tx.type.toLowerCase().includes('bill'));
     return transactions.filter(tx => tx.channel === filter);
   }, [transactions, filter]);
@@ -94,7 +116,7 @@ const Transactions = () => {
     const from = fromDate ? new Date(fromDate) : null;
     const to = toDate ? new Date(toDate) : null;
     const query = searchQuery.toLowerCase();
-    
+
     return filteredByChip.filter(tx => {
       const d = new Date(tx.dateISO);
       if (from && d < from) return false;
@@ -141,7 +163,7 @@ const Transactions = () => {
       const idText = (tx.transactionId || '').slice(0, 12);
       const toText = (tx.to || '').slice(0, 18);
       const typeText = (tx.type || '').slice(0, 18);
-      
+
       doc.text(idText, colX[0], y);
       doc.text(toText, colX[1], y);
       doc.text(typeText, colX[2], y);
@@ -155,36 +177,56 @@ const Transactions = () => {
     setExportOpen(false);
   };
 
+  useEffect(() => {
+    if (location.state?.receipt) {
+      setSelectedTx(location.state.receipt);
+      // Clear state to prevent reopening on refresh (optional, but good practice)
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
+
+  // ... (existing code)
+
   const downloadReceipt = (tx) => {
     const doc = new jsPDF();
     doc.setFontSize(18);
     doc.text('Transaction Receipt', 105, 20, { align: 'center' });
-    
+
     doc.setFontSize(12);
     doc.text(`Transaction ID: ${tx.transactionId}`, 20, 40);
     doc.text(`Date: ${new Date(tx.dateISO).toLocaleString()}`, 20, 50);
     doc.text(`Status: ${tx.status}`, 20, 60);
-    
+
     doc.line(20, 65, 190, 65);
-    
+
     const isIncoming = tx.amount.startsWith('+');
     doc.text(`Type: ${tx.type}`, 20, 80);
     doc.text(`${isIncoming ? 'Received From' : 'Paid To'}: ${tx.to}`, 20, 90);
-    
+
     doc.setFontSize(16);
     doc.text(`Amount: ${tx.amount}`, 20, 110);
-    
+
+    if (tx.fee) {
+      doc.setFontSize(12);
+      doc.text(`Convenience Fee: ${tx.fee}`, 20, 125);
+      doc.text(`Taxes: ${tx.tax}`, 20, 135);
+      doc.setFontSize(14);
+      doc.text(`Total Debited: ${tx.totalDebited}`, 20, 150);
+    }
+
     doc.setFontSize(10);
-    doc.text('Thank you for banking with us.', 105, 140, { align: 'center' });
-    
+    doc.text('Thank you for banking with us.', 105, 180, { align: 'center' });
+
     doc.save(`Receipt_${tx.transactionId}.pdf`);
   };
 
   const getStatusClass = (status) => {
+    if (!status) return 'status-completed';
     switch (status.toLowerCase()) {
       case 'completed': return 'status-completed';
+      case 'pending': return 'status-pending';
       case 'failed': return 'status-failed';
-      default: return '';
+      default: return 'status-completed';
     }
   };
 
@@ -199,6 +241,7 @@ const Transactions = () => {
                 { key: 'all', label: 'All' },
                 { key: 'credited', label: 'Credited' },
                 { key: 'debited', label: 'Debited' },
+                { key: 'failed', label: 'Failed' },
                 { key: 'bank', label: 'Bank Transfer' },
                 { key: 'card', label: 'Card' },
                 { key: 'self', label: 'Self Transfer' },
@@ -225,13 +268,13 @@ const Transactions = () => {
               )}
             </div>
             <div className="search-bar-container">
-               <input 
-                 type="text" 
-                 placeholder="Search by Transaction ID..." 
-                 value={searchQuery}
-                 onChange={(e) => setSearchQuery(e.target.value)}
-                 className="search-input"
-               />
+              <input
+                type="text"
+                placeholder="Search by Transaction ID..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="search-input"
+              />
             </div>
           </div>
         </div>
@@ -249,7 +292,7 @@ const Transactions = () => {
             </thead>
             <tbody>
               {filtered.map(tx => (
-                <tr key={tx.id} onClick={() => setSelectedTx(tx)} style={{ cursor: 'pointer' }}>
+                <tr key={tx.transactionId || tx.id} onClick={() => setSelectedTx(tx)} style={{ cursor: 'pointer' }}>
                   <td>{tx.to}</td>
                   <td>{tx.type}</td>
                   <td>{displayDate(tx.dateISO)}</td>
@@ -278,57 +321,75 @@ const Transactions = () => {
       </div>
 
       {/* Transaction Details Modal */}
-      {selectedTx && (
-        <div className="modal-overlay" onClick={() => setSelectedTx(null)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>Transaction Details</h3>
-              <button className="close-btn" onClick={() => setSelectedTx(null)}>×</button>
-            </div>
-            <div className="modal-body">
-              <div className="detail-row">
-                <span className="label">Transaction ID</span>
-                <span className="value">{selectedTx.transactionId}</span>
+      {
+        selectedTx && (
+          <div className="modal-overlay" onClick={() => setSelectedTx(null)}>
+            <div className="modal-content" onClick={e => e.stopPropagation()}>
+              <div className="modal-header">
+                <h3>Transaction Details</h3>
+                <button className="close-btn" onClick={() => setSelectedTx(null)}>×</button>
               </div>
-              <div className="detail-row">
-                <span className="label">Date</span>
-                <span className="value">{new Date(selectedTx.dateISO).toLocaleString()}</span>
+              <div className="modal-body">
+                <div className="detail-row">
+                  <span className="label">Transaction ID</span>
+                  <span className="value">{selectedTx.transactionId}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="label">Date</span>
+                  <span className="value">{new Date(selectedTx.dateISO).toLocaleString()}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="label">Type</span>
+                  <span className="value">{selectedTx.type}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="label">From</span>
+                  <span className="value">
+                    {selectedTx.amount.startsWith('+') ? selectedTx.to : (localStorage.getItem('fullname') || 'My Account')}
+                  </span>
+                </div>
+                <div className="detail-row">
+                  <span className="label">To</span>
+                  <span className="value">
+                    {selectedTx.amount.startsWith('+') ? (localStorage.getItem('fullname') || 'My Account') : selectedTx.to}
+                  </span>
+                </div>
+                <div className="detail-row">
+                  <span className="label">Amount</span>
+                  <span className={`value ${selectedTx.amount.startsWith('+') ? 'amount-positive' : 'amount-negative'}`}>
+                    {selectedTx.amount}
+                  </span>
+                </div>
+                {selectedTx.fee && (
+                  <>
+                    <div className="detail-row">
+                      <span className="label">Convenience Fee</span>
+                      <span className="value">{selectedTx.fee}</span>
+                    </div>
+                    <div className="detail-row">
+                      <span className="label">Taxes</span>
+                      <span className="value">{selectedTx.tax}</span>
+                    </div>
+                    <div className="detail-row" style={{ marginTop: '10px', borderTop: '1px solid #eee', paddingTop: '10px' }}>
+                      <span className="label" style={{ fontWeight: 'bold' }}>Total Debited</span>
+                      <span className="value" style={{ fontWeight: 'bold' }}>{selectedTx.totalDebited}</span>
+                    </div>
+                  </>
+                )}
+                <div className="detail-row">
+                  <span className="label">Status</span>
+                  <span className={`status-pill ${getStatusClass(selectedTx.status)}`}>{selectedTx.status}</span>
+                </div>
               </div>
-              <div className="detail-row">
-                <span className="label">Type</span>
-                <span className="value">{selectedTx.type}</span>
+              <div className="modal-footer">
+                <button className="btn-secondary" onClick={() => downloadReceipt(selectedTx)}>Download Receipt</button>
+                <button className="btn-primary" onClick={() => setSelectedTx(null)}>Close</button>
               </div>
-              <div className="detail-row">
-                <span className="label">From</span>
-                <span className="value">
-                  {selectedTx.amount.startsWith('+') ? selectedTx.to : (localStorage.getItem('fullname') || 'My Account')}
-                </span>
-              </div>
-              <div className="detail-row">
-                <span className="label">To</span>
-                <span className="value">
-                  {selectedTx.amount.startsWith('+') ? (localStorage.getItem('fullname') || 'My Account') : selectedTx.to}
-                </span>
-              </div>
-              <div className="detail-row">
-                <span className="label">Amount</span>
-                <span className={`value ${selectedTx.amount.startsWith('+') ? 'amount-positive' : 'amount-negative'}`}>
-                  {selectedTx.amount}
-                </span>
-              </div>
-              <div className="detail-row">
-                <span className="label">Status</span>
-                <span className={`status-pill ${getStatusClass(selectedTx.status)}`}>{selectedTx.status}</span>
-              </div>
-            </div>
-            <div className="modal-footer">
-              <button className="btn-secondary" onClick={() => downloadReceipt(selectedTx)}>Download Receipt</button>
-              <button className="btn-primary" onClick={() => setSelectedTx(null)}>Close</button>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   );
 };
 
