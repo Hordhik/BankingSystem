@@ -1,8 +1,8 @@
-// Client/src/main.jsx (example)
+// Client/src/main.jsx
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
-import { setAuthToken } from '../../Client/src/services/api'   // <<< add this import
+import { setAuthToken } from './services/api'   // <<< FIXED
 
 
 // If you want to proactively set token from localStorage on app start:
