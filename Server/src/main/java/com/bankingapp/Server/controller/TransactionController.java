@@ -42,7 +42,7 @@ public class TransactionController {
     @PostMapping("/card-transfer")
     public ResponseEntity<String> cardTransfer(@RequestBody CardTransferRequest req) {
         System.out.println("Controller: Received Card Transfer Request. Sender=" + req.getSenderCardNumber());
-        transactionService.transferByCard(req.getSenderCardNumber(), req.getSenderCvv(), req.getSenderExpiryDate(),
+        transactionService.transferByCard(req.getSenderCardNumber(), req.getSenderCvv(), req.getSenderExpiryDate(), req.getPin(),
                 req.getReceiverCardNumber(), req.getAmount());
         return ResponseEntity.ok("Card Transfer successful");
     }

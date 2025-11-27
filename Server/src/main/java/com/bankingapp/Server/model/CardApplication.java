@@ -24,6 +24,9 @@ public class CardApplication {
     @Column(name = "status", nullable = false)
     private String status; // PENDING, APPROVED, REJECTED
 
+    @Column(name = "card_name")
+    private String cardName;
+
     @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -33,10 +36,11 @@ public class CardApplication {
         this.status = "PENDING";
     }
 
-    public CardApplication(User user, String cardType, String network) {
+    public CardApplication(User user, String cardType, String network, String cardName) {
         this.user = user;
         this.cardType = cardType;
         this.network = network;
+        this.cardName = cardName;
         this.status = "PENDING";
         this.createdAt = LocalDateTime.now();
     }
@@ -81,6 +85,14 @@ public class CardApplication {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getCardName() {
+        return cardName;
+    }
+
+    public void setCardName(String cardName) {
+        this.cardName = cardName;
     }
 
     public LocalDateTime getCreatedAt() {

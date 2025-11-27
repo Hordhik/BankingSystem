@@ -8,6 +8,7 @@ public class CardTransferRequest {
     private String senderExpiryDate; // MM/YY
     private String receiverCardNumber;
     private BigDecimal amount;
+    private String pin;
 
     public String getSenderCardNumber() {
         return senderCardNumber;
@@ -47,5 +48,13 @@ public class CardTransferRequest {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public String getPin() {
+        return pin;
+    }
+
+    public void setPin(String pin) {
+        this.pin = pin;
     }
 }

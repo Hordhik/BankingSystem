@@ -124,7 +124,7 @@ public class TransactionService {
     }
 
     @Transactional
-    public void transferByCard(String senderCardNumber, String senderCvv, String senderExpiry,
+    public void transferByCard(String senderCardNumber, String senderCvv, String senderExpiry, String pin,
             String receiverCardNumber, BigDecimal amount) {
         System.out.println("Card Transfer Request: SenderCard=" + senderCardNumber + ", Amount=" + amount);
 
@@ -133,6 +133,13 @@ public class TransactionService {
 
         if (!senderCard.getCvv().equals(senderCvv)) {
             throw new IllegalArgumentException("Invalid CVV");
+        }
+        
+        // PIN Verification
+        if (senderCard.getPin() != null && !senderCard.getPin().equals(pin)) {
+             throw new IllegalArgumentException("Invalid PIN");
+        } else if (senderCard.getPin() != null && pin == null) {
+             throw new IllegalArgumentException("PIN required");
         }
         // Simple expiry check (MM/YY)
         // In production, parse date properly

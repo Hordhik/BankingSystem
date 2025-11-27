@@ -9,12 +9,17 @@ public class CardResponse {
     private String cvv;
 
 
+    private String cardName;
+    private String network;
     private String status;
+
+    @com.fasterxml.jackson.annotation.JsonProperty("isPrimary")
+    private boolean isPrimary;
 
     public CardResponse() {
     }
 
-    public CardResponse(Long id, String cardNumber, String ownerName, String cardType, String expiryDate, String cvv, String status) {
+    public CardResponse(Long id, String cardNumber, String ownerName, String cardType, String expiryDate, String cvv, String status, String cardName, String network, boolean isPrimary) {
         this.id = id;
         this.cardNumber = cardNumber;
         this.ownerName = ownerName;
@@ -22,6 +27,9 @@ public class CardResponse {
         this.expiryDate = expiryDate;
         this.cvv = cvv;
         this.status = status;
+        this.cardName = cardName;
+        this.network = network;
+        this.isPrimary = isPrimary;
     }
 
     public Long getId() {
@@ -80,6 +88,30 @@ public class CardResponse {
         this.status = status;
     }
 
+    public String getCardName() {
+        return cardName;
+    }
+
+    public void setCardName(String cardName) {
+        this.cardName = cardName;
+    }
+
+    public String getNetwork() {
+        return network;
+    }
+
+    public void setNetwork(String network) {
+        this.network = network;
+    }
+
+    public boolean isPrimary() {
+        return isPrimary;
+    }
+
+    public void setPrimary(boolean primary) {
+        isPrimary = primary;
+    }
+
     public static CardResponseBuilder builder() {
         return new CardResponseBuilder();
     }
@@ -92,6 +124,9 @@ public class CardResponse {
         private String expiryDate;
         private String cvv;
         private String status;
+        private String cardName;
+        private String network;
+        private boolean isPrimary;
 
         CardResponseBuilder() {
         }
@@ -131,8 +166,23 @@ public class CardResponse {
             return this;
         }
 
+        public CardResponseBuilder cardName(String cardName) {
+            this.cardName = cardName;
+            return this;
+        }
+
+        public CardResponseBuilder network(String network) {
+            this.network = network;
+            return this;
+        }
+
+        public CardResponseBuilder isPrimary(boolean isPrimary) {
+            this.isPrimary = isPrimary;
+            return this;
+        }
+
         public CardResponse build() {
-            return new CardResponse(id, cardNumber, ownerName, cardType, expiryDate, cvv, status);
+            return new CardResponse(id, cardNumber, ownerName, cardType, expiryDate, cvv, status, cardName, network, isPrimary);
         }
     }
 }

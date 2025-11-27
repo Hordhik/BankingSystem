@@ -9,29 +9,68 @@ const VisaLogoSVG = () => (
   </svg>
 );
 
+import { getCards } from '../../../services/api';
+import { useState, useEffect } from 'react';
+
 export const DebitCardDisplay = () => {
-  const cardNumber = localStorage.getItem('cardNumber') || 'XXXX XXXX XXXX XXXX';
-  const formattedCardNumber = cardNumber.replace(/\s/g, '').replace(/(\d{4})/g, '$1 ').trim();
+  const [card, setCard] = useState(null);
+
+  useEffect(() => {
+    const fetchPrimaryCard = async () => {
+      try {
+        const cards = await getCards();
+        const primary = cards.find(c => c.isPrimary) || cards[0]; // Fallback to first if no primary
+        if (primary) {
+          setCard({
+            number: primary.cardNumber.replace(/(\d{4})(?=\d)/g, '$1 '),
+            holder: primary.ownerName,
+            network: primary.network || 'Visa',
+            cardName: primary.cardName || 'Fluit Debit Card'
+          });
+        }
+      } catch (error) {
+        console.error("Failed to fetch card for dashboard", error);
+      }
+    };
+    fetchPrimaryCard();
+  }, []);
+
+  if (!card) return <div className="debit-card-placeholder">Loading Card...</div>;
 
   return (
     <div className="debit-card-container">
       <div className="debit-card">
         <div className="debit-card__header">
           <div className="debit-card__brand">
-            <span className="debit-card__logo">FLUIT</span>
+            <span className="debit-card__logo">{card.cardName}</span>
             <span className="debit-card__type">DEBIT</span>
           </div>
           <div className="debit-card__chip"></div>
         </div>
         <div className="debit-card__number">
-          <span>{formattedCardNumber}</span>
+          <span>{card.number}</span>
         </div>
         <div className="debit-card__footer">
           <div className="debit-card__holder">
             <span className="label">Card Holder</span>
-            <span>{localStorage.getItem('fullname') || 'Cardholder Name'}</span>
+            <span>{card.holder}</span>
           </div>
-          <VisaLogoSVG />
+          <div className="card-network-logo">
+            {card.network === 'Mastercard' ? (
+              <svg className="debit-card__vendor-logo" viewBox="0 0 100 62" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="34" cy="31" r="22" fill="#EB001B" fillOpacity="0.9" />
+                <circle cx="66" cy="31" r="22" fill="#F79E1B" fillOpacity="0.9" />
+              </svg>
+            ) : card.network === 'RuPay' ? (
+              <svg className="debit-card__vendor-logo" viewBox="0 0 100 62" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <text x="10" y="40" fontFamily="Arial" fontSize="24" fill="white" fontWeight="bold">RuPay</text>
+              </svg>
+            ) : (
+              <svg className="debit-card__vendor-logo" viewBox="0 0 100 62" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fontFamily="Arial" fontSize="28" fill="white" fontStyle="italic" fontWeight="bold">VISA</text>
+              </svg>
+            )}
+          </div>
         </div>
       </div>
     </div>

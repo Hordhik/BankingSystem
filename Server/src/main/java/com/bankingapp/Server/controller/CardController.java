@@ -48,6 +48,32 @@ public class CardController {
                         .expiryDate(card.getExpiryDate().toString())
                         .cvv(card.getCvv())
                         .status(card.getStatus())
+                        .cardName(card.getCardName())
+                        .network(card.getNetwork())
+                        .isPrimary(card.isPrimary())
+                        .build())
+                .collect(Collectors.toList());
+        System.out.println("Returning cards for user " + email + ": " + cards.size());
+        cards.forEach(c -> System.out.println("Card: " + c.getCardNumber() + ", Name: " + c.getCardName() + ", Network: " + c.getNetwork()));
+        return ResponseEntity.ok(cards);
+
+    }
+
+    @GetMapping("/api/cards/all")
+    public ResponseEntity<List<CardResponse>> getAllCards() {
+        List<CardResponse> cards = cardRepository.findAll()
+                .stream()
+                .map(card -> CardResponse.builder()
+                        .id(card.getId())
+                        .cardNumber(card.getCardNumber())
+                        .ownerName(card.getUser().getFullname())
+                        .cardType(card.getCardType())
+                        .expiryDate(card.getExpiryDate().toString())
+                        .cvv(card.getCvv())
+                        .status(card.getStatus())
+                        .cardName(card.getCardName())
+                        .network(card.getNetwork())
+                        .isPrimary(card.isPrimary())
                         .build())
                 .collect(Collectors.toList());
         return ResponseEntity.ok(cards);
@@ -58,8 +84,11 @@ public class CardController {
         String userIdStr = request.get("userId");
         String cardType = request.get("cardType");
         String network = request.get("network");
+        String cardName = request.get("cardName");
 
-        if (userIdStr == null || cardType == null || network == null) {
+        System.out.println("Applying for card: " + cardName + ", Type: " + cardType + ", Network: " + network);
+
+        if (userIdStr == null || cardType == null || network == null || cardName == null) {
             return ResponseEntity.badRequest().body("Missing required fields");
         }
 
@@ -67,7 +96,22 @@ public class CardController {
         com.bankingapp.Server.model.User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        com.bankingapp.Server.model.CardApplication application = new com.bankingapp.Server.model.CardApplication(user, cardType, network);
+        com.bankingapp.Server.model.CardApplication application = new com.bankingapp.Server.model.CardApplication(user, cardType, network, cardName);
+
+        // Check if user already has this card
+        boolean alreadyHasCard = cardRepository.findByUser(user).stream()
+                .anyMatch(c -> cardName.equals(c.getCardName()));
+        if (alreadyHasCard) {
+            return ResponseEntity.badRequest().body("You already own this card");
+        }
+
+        // Check if user has a pending application for this card
+        boolean hasPendingApp = cardApplicationRepository.findByUser(user).stream()
+                .anyMatch(app -> cardName.equals(app.getCardName()) && "PENDING".equals(app.getStatus()));
+        if (hasPendingApp) {
+            return ResponseEntity.badRequest().body("You already have a pending application for this card");
+        }
+
         cardApplicationRepository.save(application);
 
         return ResponseEntity.ok("Application submitted successfully");
@@ -96,7 +140,9 @@ public class CardController {
         String cvv = String.format("%03d", (int) (Math.random() * 1000));
         java.time.LocalDate expiryDate = java.time.LocalDate.now().plusYears(5);
 
-        com.bankingapp.Server.model.Card card = new com.bankingapp.Server.model.Card(cardNumber, expiryDate, cvv, application.getCardType(), "ACTIVE", user, account);
+        boolean isFirstCard = cardRepository.findByUser(user).isEmpty();
+
+        com.bankingapp.Server.model.Card card = new com.bankingapp.Server.model.Card(cardNumber, expiryDate, cvv, application.getCardType(), "ACTIVE", application.getCardName(), application.getNetwork(), isFirstCard, null, user, account);
         cardRepository.save(card);
 
         // Update Application Status
@@ -119,6 +165,52 @@ public class CardController {
         cardApplicationRepository.save(application);
 
         return ResponseEntity.ok("Application rejected");
+    }
+
+    @org.springframework.web.bind.annotation.PostMapping("/api/cards/{id}/primary")
+    public ResponseEntity<?> setPrimaryCard(@org.springframework.web.bind.annotation.PathVariable Long id, org.springframework.security.core.Authentication authentication) {
+        String email = authentication.getName();
+        com.bankingapp.Server.model.User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        com.bankingapp.Server.model.Card targetCard = cardRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Card not found"));
+
+        if (!targetCard.getUser().getUserId().equals(user.getUserId())) {
+            return ResponseEntity.status(403).body("Unauthorized");
+        }
+
+        List<com.bankingapp.Server.model.Card> userCards = cardRepository.findByUser(user);
+        for (com.bankingapp.Server.model.Card card : userCards) {
+            card.setPrimary(card.getId().equals(id));
+            cardRepository.save(card);
+        }
+
+        return ResponseEntity.ok("Primary card updated");
+    }
+
+    @org.springframework.web.bind.annotation.PostMapping("/api/cards/{id}/pin")
+    public ResponseEntity<?> setCardPin(@org.springframework.web.bind.annotation.PathVariable Long id, @org.springframework.web.bind.annotation.RequestBody java.util.Map<String, String> body, org.springframework.security.core.Authentication authentication) {
+        String email = authentication.getName();
+        com.bankingapp.Server.model.User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        com.bankingapp.Server.model.Card card = cardRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Card not found"));
+
+        if (!card.getUser().getUserId().equals(user.getUserId())) {
+            return ResponseEntity.status(403).body("Unauthorized");
+        }
+
+        String pin = body.get("pin");
+        if (pin == null || pin.length() != 4) {
+            return ResponseEntity.badRequest().body("Invalid PIN. Must be 4 digits.");
+        }
+
+        card.setPin(pin);
+        cardRepository.save(card);
+
+        return ResponseEntity.ok("PIN updated successfully");
     }
 
     private String generateCardNumber() {

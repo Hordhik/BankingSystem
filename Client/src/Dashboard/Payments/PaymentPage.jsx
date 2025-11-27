@@ -3,7 +3,7 @@ import QRCode from 'react-qr-code';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import './PaymentPage.css';
 import { CreditCard, Landmark, Smartphone, Wallet, LayoutDashboard, ArrowLeft, Check, XCircle } from 'lucide-react';
-import { transfer, cardTransfer, getAccounts, getCards } from '../../services/bankApi';
+import { transfer, cardTransfer, getAccounts, getCards, getAllCards } from '../../services/bankApi';
 
 export default function PaymentPage() {
   const location = useLocation();
@@ -21,6 +21,7 @@ export default function PaymentPage() {
     receiverCardNumber: '',
     receiverAccount: '',
     amount: '',
+    pin: '',
   });
   // ... existing billDetails state ...
   const [billDetails, setBillDetails] = useState({
@@ -35,6 +36,7 @@ export default function PaymentPage() {
   const [qrValue, setQrValue] = useState('');
   const [accounts, setAccounts] = useState([]);
   const [cards, setCards] = useState([]);
+  const [allCards, setAllCards] = useState([]);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showFailure, setShowFailure] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -106,9 +108,10 @@ export default function PaymentPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [cardsData, accountsData] = await Promise.all([getCards(), getAccounts()]);
+        const [cardsData, accountsData, allCardsData] = await Promise.all([getCards(), getAccounts(), getAllCards()]);
         setCards(cardsData || []);
         setAccounts(accountsData || []);
+        setAllCards(allCardsData || []);
 
         // Prefill sender card details if available
         if (cardsData && cardsData.length > 0) {
@@ -234,10 +237,9 @@ export default function PaymentPage() {
 
       } else if (selectedPayment === 'card') {
         // Remove spaces from card numbers
-        const fromCard = paymentDetails.myCardNumber.replace(/\s/g, '');
         const toCard = paymentDetails.receiverCardNumber.replace(/\s/g, '');
 
-        await cardTransfer(fromCard, toCard, amount, paymentDetails.cvv, paymentDetails.expiry);
+        await cardTransfer(fromCard, toCard, amount, paymentDetails.cvv, paymentDetails.expiry, paymentDetails.pin);
 
         // Construct receipt object for Card Transfer
         const receipt = {
@@ -618,6 +620,17 @@ export default function PaymentPage() {
                   </div>
                 </div>
 
+                <label>Card PIN</label>
+                <input
+                  type="password"
+                  name="pin"
+                  placeholder="****"
+                  maxLength="4"
+                  value={paymentDetails.pin}
+                  onChange={handleInputChange}
+                  required
+                />
+
                 <label>Receiver Card Number</label>
                 {!isLoanPayment && (
                   <select
@@ -627,7 +640,7 @@ export default function PaymentPage() {
                     required
                   >
                     <option value="">Choose Card</option>
-                    {cards.map(card => (
+                    {allCards.map(card => (
                       <option key={card.id} value={card.cardNumber}>
                         {card.ownerName} ({card.cardNumber})
                       </option>

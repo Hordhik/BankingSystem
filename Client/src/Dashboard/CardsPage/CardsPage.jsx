@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import './CardsPage.css';
-import { applyForCard, getCards } from '../../services/api';
+import { applyForCard, getCards, setCardAsPrimary, setCardPin } from '../../services/api';
 
 const VisaLogoSVG = () => (
   <svg className="card-vendor-logo" viewBox="0 0 100 62" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="100" height="62" fill="transparent" />
-    <path
-      d="M72.952 23.01H65.816L60.012 39.01C59.66 40.04 59.204 40.544 58.748 40.544C57.732 40.544 57.06 39.772 56.604 38.648L52.124 23.01H45.228L40.924 38.648C40.468 39.772 39.796 40.544 38.78 40.544C38.324 40.544 37.868 40.04 37.516 39.01L31.712 23.01H24.576L21.432 39.01C20.976 40.04 20.472 40.544 19.964 40.544C18.948 40.544 18.276 39.772 17.82 38.648L13.34 23.01H6.444L2.14 38.648C1.684 39.772 1.012 40.544 0 40.544C-0.456 40.544 -0.96 40.04 -1.416 39.01L-7.22 23.01H-14.356L-17.496 39.01C-17.952 40.04 -18.456 40.544 -18.96 40.544C-19.976 40.544 -20.648 39.772 -21.104 38.648L-25.584 23.01H-32.48L-36.784 38.648C-37.24 39.772 -37.912 40.544 -38.928 40.544C-39.384 40.544 -39.888 40.04 -40.344 39.01L-46.148 23.01H-53.284"
-      transform="translate(39 10)"
-      fill="#fff"
-    />
-    <path
-      d="M96.7932 23.0098H89.6572L83.8532 39.0098C83.5012 40.0498 83.0452 40.5438 82.5892 40.5438C81.5732 40.5438 80.9012 39.7718 80.4452 38.6478L75.9652 23.0098H69.0692L64.7652 38.6478C64.3092 39.7718 63.6372 40.5438 62.6212 40.5438C62.1652 40.5438 61.7092 40.0498 61.3572 39.0098L55.5532 23.0098H48.4172L45.2732 39.0098C44.8172 40.0498 44.3132 40.5438 43.8052 40.5438C42.7892 40.5438 42.1172 39.7718 41.6612 38.6478L37.1812 23.0098H30.2852L25.9812 38.6478C25.5252 39.7718 24.8532 40.5438 23.8372 40.5438C23.3812 40.5438 22.8772 40.0498 22.4212 39.0098L16.6172 23.0098H9.48122L6.33722 39.0098C5.88122 40.0498 5.37722 40.5438 4.86922 40.5438C3.85322 40.5438 3.18122 39.7718 2.72522 38.6478L-1.75478 23.0098H-8.65078L-12.9548 38.6478C-13.4108 39.7718 -14.0828 40.5438 -15.0988 40.5438C-15.5548 40.5438 -16.0588 40.0498 -16.5148 39.0098L-22.3188 23.0098H-29.4548"
-      transform="translate(0 10)"
-      fill="#F79500"
-    />
+    <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fontFamily="Arial" fontSize="28" fill="white" fontStyle="italic" fontWeight="bold">VISA</text>
+  </svg>
+);
+
+const MastercardLogoSVG = () => (
+  <svg className="card-vendor-logo" viewBox="0 0 100 62" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="34" cy="31" r="22" fill="#EB001B" fillOpacity="0.9" />
+    <circle cx="66" cy="31" r="22" fill="#F79E1B" fillOpacity="0.9" />
+  </svg>
+);
+
+const RuPayLogoSVG = () => (
+  <svg className="card-vendor-logo" viewBox="0 0 100 62" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <text x="10" y="40" fontFamily="Arial" fontSize="24" fill="white" fontWeight="bold">RuPay</text>
   </svg>
 );
 
@@ -27,6 +30,7 @@ const CardsPage = () => {
   const [loading, setLoading] = useState(true);
 
   const [appliedCards, setAppliedCards] = useState({});
+  const [ownedCards, setOwnedCards] = useState({});
 
   // Modal State
   const [showModal, setShowModal] = useState(false);
@@ -42,16 +46,27 @@ const CardsPage = () => {
     const fetchCards = async () => {
       try {
         const data = await getCards();
+        console.log("Fetched cards:", data); // Debugging log
         const formattedCards = data.map((card, index) => ({
           id: card.id,
           number: card.cardNumber.replace(/(\d{4})(?=\d)/g, '$1 '),
           holder: card.ownerName,
           expiry: card.expiryDate ? new Date(card.expiryDate).toLocaleDateString('en-US', { month: '2-digit', year: '2-digit' }) : 'MM/YY',
           cvv: card.cvv,
-          isPrimary: index === 0, // Default first card as primary
-          type: card.cardType
+          cvv: card.cvv,
+          isPrimary: card.isPrimary,
+          type: card.cardType,
+          cardName: card.cardName || 'Fluit Debit Card',
+          network: card.network || 'Visa'
         }));
         setCards(formattedCards);
+
+        // Track owned cards by name
+        const owned = {};
+        formattedCards.forEach(c => {
+          if (c.cardName) owned[c.cardName] = true;
+        });
+        setOwnedCards(owned);
       } catch (error) {
         console.error("Failed to fetch cards", error);
       } finally {
@@ -76,14 +91,59 @@ const CardsPage = () => {
     setCurrentCardIndex((prev) => (prev - 1 + cards.length) % cards.length);
   };
 
-  const setPrimaryCard = (e) => {
+  const setPrimaryCard = async (e) => {
     e.stopPropagation();
-    setCards((prev) =>
-      prev.map((card, index) => ({
-        ...card,
-        isPrimary: index === currentCardIndex,
-      }))
-    );
+    try {
+      await setCardAsPrimary(currentCard.id);
+
+      // Refresh cards to get updated status
+      const data = await getCards();
+      const formattedCards = data.map((card, index) => ({
+        id: card.id,
+        number: card.cardNumber.replace(/(\d{4})(?=\d)/g, '$1 '),
+        holder: card.ownerName,
+        expiry: card.expiryDate ? new Date(card.expiryDate).toLocaleDateString('en-US', { month: '2-digit', year: '2-digit' }) : 'MM/YY',
+        cvv: card.cvv,
+        isPrimary: card.isPrimary,
+        type: card.cardType,
+        cardName: card.cardName || 'Fluit Debit Card',
+        network: card.network || 'Visa'
+      }));
+
+      // Sort so primary is first? Or just update state
+      // Let's keep the current index but update the list
+      setCards(formattedCards);
+      alert("Primary card updated successfully!");
+    } catch (error) {
+      console.error("Failed to set primary card", error);
+      alert("Failed to set primary card");
+    }
+  };
+
+  const handleSetPin = async () => {
+    const newPin = document.getElementById('new-pin').value;
+    const confirmPin = document.getElementById('confirm-pin').value;
+
+    if (!newPin || newPin.length !== 4) {
+      alert("Please enter a valid 4-digit PIN");
+      return;
+    }
+
+    if (newPin !== confirmPin) {
+      alert("PINs do not match");
+      return;
+    }
+
+    try {
+      await setCardPin(currentCard.id, newPin);
+      alert("PIN set successfully!");
+      // Clear inputs
+      document.getElementById('new-pin').value = '';
+      document.getElementById('confirm-pin').value = '';
+    } catch (error) {
+      console.error("Failed to set PIN", error);
+      alert("Failed to set PIN. Please try again.");
+    }
   };
 
   const toggleFlip = () => setIsFlipped((prev) => !prev);
@@ -203,7 +263,7 @@ const CardsPage = () => {
         return;
       }
 
-      await applyForCard(userId, applicationForm.cardType, applicationForm.network);
+      await applyForCard(userId, applicationForm.cardType, applicationForm.network, selectedCardForApp.title);
 
       setAppliedCards((prev) => ({ ...prev, [selectedCardForApp.id]: true }));
       alert("Application submitted successfully!");
@@ -244,7 +304,7 @@ const CardsPage = () => {
           <div className="debit-card-visual card-front">
             <div className="card-shine"></div>
             <div className="debit-card-visual__header">
-              <span className="debit-card-visual__logo">FLUIT</span>
+              <span className="debit-card-visual__logo">{currentCard.cardName}</span>
               <div className="debit-card-visual__chip"></div>
             </div>
 
@@ -257,7 +317,8 @@ const CardsPage = () => {
                 <span className="label">Card Holder</span>
                 <span>{currentCard.holder}</span>
               </div>
-              <VisaLogoSVG />
+              {currentCard.network === 'Mastercard' ? <MastercardLogoSVG /> :
+                currentCard.network === 'RuPay' ? <RuPayLogoSVG /> : <VisaLogoSVG />}
             </div>
           </div>
 
@@ -318,7 +379,7 @@ const CardsPage = () => {
                   <input type="password" placeholder=" " maxLength="4" id="confirm-pin" />
                   <label htmlFor="confirm-pin">Confirm new PIN</label>
                 </div>
-                <button className="set-pin-btn">Update PIN</button>
+                <button className="set-pin-btn" onClick={handleSetPin}>Update PIN</button>
               </div>
             )}
 
@@ -381,6 +442,10 @@ const CardsPage = () => {
                 <div className="application-status">
                   <span className="status-icon">✓</span> Application Sent
                 </div>
+              ) : ownedCards[card.title] ? (
+                <div className="application-status">
+                  <span className="status-icon">✓</span> Owned
+                </div>
               ) : (
                 <button className="view-details-btn" onClick={() => handleOpenModal(card)}>
                   View Details & Apply
@@ -413,6 +478,8 @@ const CardsPage = () => {
                   <div className="marketplace-footer">
                     {appliedCards[card.id] ? (
                       <button className="applied-btn" disabled>Applied</button>
+                    ) : ownedCards[card.title] ? (
+                      <button className="applied-btn" disabled>Owned</button>
                     ) : (
                       <button className="apply-btn" onClick={() => handleOpenModal(card)}>Apply Now</button>
                     )}

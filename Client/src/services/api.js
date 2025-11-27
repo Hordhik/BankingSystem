@@ -31,14 +31,24 @@ try {
   // localStorage not available in some environments — ignore
 }
 
-export const applyForCard = async (userId, cardType, network) => {
+export const applyForCard = async (userId, cardType, network, cardName) => {
   try {
-    const response = await API.post('/cards/apply', { userId, cardType, network });
+    const response = await API.post('/cards/apply', { userId, cardType, network, cardName });
     return response.data;
   } catch (error) {
     console.error("Error applying for card:", error);
     throw error;
   }
+};
+
+export const setCardAsPrimary = async (cardId) => {
+  const response = await API.post(`/cards/${cardId}/primary`);
+  return response.data;
+};
+
+export const setCardPin = async (cardId, pin) => {
+  const response = await API.post(`/cards/${cardId}/pin`, { pin });
+  return response.data;
 };
 
 export const getCards = async () => {
@@ -47,6 +57,16 @@ export const getCards = async () => {
     return response.data;
   } catch (error) {
     console.error("Error fetching cards:", error);
+    throw error;
+  }
+};
+
+export const getAllCards = async () => {
+  try {
+    const response = await API.get('/cards/all');
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching all cards:", error);
     throw error;
   }
 };

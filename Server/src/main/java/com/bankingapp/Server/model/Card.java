@@ -27,6 +27,18 @@ public class Card {
     @Column(name = "status", nullable = false)
     private String status; // ACTIVE, BLOCKED
 
+    @Column(name = "card_name")
+    private String cardName;
+
+    @Column(name = "network")
+    private String network;
+
+    @Column(name = "is_primary")
+    private Boolean isPrimary = false; // Default to false
+
+    @Column(name = "pin")
+    private String pin;
+
     @ManyToOne
     @JoinColumn(name = "user_ref_id", nullable = false)
     private User user;
@@ -38,12 +50,16 @@ public class Card {
     public Card() {
     }
 
-    public Card(String cardNumber, LocalDate expiryDate, String cvv, String cardType, String status, User user, Account account) {
+    public Card(String cardNumber, LocalDate expiryDate, String cvv, String cardType, String status, String cardName, String network, Boolean isPrimary, String pin, User user, Account account) {
         this.cardNumber = cardNumber;
         this.expiryDate = expiryDate;
         this.cvv = cvv;
         this.cardType = cardType;
         this.status = status;
+        this.cardName = cardName;
+        this.network = network;
+        this.isPrimary = isPrimary;
+        this.pin = pin;
         this.user = user;
         this.account = account;
     }
@@ -94,6 +110,38 @@ public class Card {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getCardName() {
+        return cardName;
+    }
+
+    public void setCardName(String cardName) {
+        this.cardName = cardName;
+    }
+
+    public String getNetwork() {
+        return network;
+    }
+
+    public void setNetwork(String network) {
+        this.network = network;
+    }
+
+    public boolean isPrimary() {
+        return isPrimary != null && isPrimary;
+    }
+
+    public void setPrimary(Boolean primary) {
+        isPrimary = primary;
+    }
+
+    public String getPin() {
+        return pin;
+    }
+
+    public void setPin(String pin) {
+        this.pin = pin;
     }
 
     public User getUser() {
