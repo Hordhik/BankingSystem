@@ -1,24 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Download, Eye, Ban, CheckCircle, XCircle, Clock, X } from 'lucide-react';
-import { getAllTransactions, updateTransactionStatus } from '../../../services/adminApi';
+import { Search, Filter, Download, Eye, Ban, TrendingUp, Activity } from 'lucide-react';
+import { getAllTransactions } from '../../../services/adminApi';
 import './TransactionManagement.css';
+import { jsPDF } from 'jspdf';
 
 const TransactionManagement = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('All');
   const [filterType, setFilterType] = useState('All');
-
-  // Modal state
-  const [showModal, setShowModal] = useState(false);
-  const [selectedTransaction, setSelectedTransaction] = useState(null);
+  const [filterStatus, setFilterStatus] = useState('All');
+  const [selectedTx, setSelectedTx] = useState(null);
 
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
         const data = await getAllTransactions();
-        setTransactions(data);
+        // Map backend data to frontend model
+        const formatted = data.map(t => {
+          // Use the raw ISO timestamp from backend if available, otherwise fallback
+          const dateISO = t.createdAt || t.date || new Date().toISOString();
+          const dateObj = new Date(dateISO);
+          const isValidDate = !isNaN(dateObj.getTime());
+
+          return {
+            id: t.id,
+            transactionId: t.transactionId || `TXN${t.id}`,
+            // Backend sends 'from' which is the user name
+            user: t.from || 'Unknown User',
+            type: t.type,
+            amount: t.amount,
+            date: isValidDate ? dateObj.toLocaleDateString() : 'N/A',
+            dateISO: dateISO,
+            status: t.status || 'Completed',
+            to: t.to || 'Self / External',
+            fee: t.fee ? `₹${t.fee.toFixed(2)}` : null,
+            tax: t.tax ? `₹${t.tax.toFixed(2)}` : null,
+            totalDebited: (t.fee && t.tax && t.amount) ? `₹${(Math.abs(Number(t.amount)) + t.fee + t.tax).toFixed(2)}` : null
+          };
+        });
+        setTransactions(formatted);
       } catch (error) {
         console.error("Error fetching transactions:", error);
       } finally {
@@ -29,90 +50,64 @@ const TransactionManagement = () => {
     fetchTransactions();
   }, []);
 
-  const filteredTransactions = transactions.filter(txn => {
-    const matchesSearch = txn.from.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      txn.to.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === 'All' || txn.status === filterStatus;
-    const matchesType = filterType === 'All' || txn.type === filterType;
-    return matchesSearch && matchesStatus && matchesType;
+  const filteredTransactions = transactions.filter(tx => {
+    const matchesSearch = tx.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      tx.transactionId.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType = filterType === 'All' || tx.type === filterType;
+    const matchesStatus = filterStatus === 'All' || tx.status === filterStatus;
+    return matchesSearch && matchesType && matchesStatus;
   });
 
-  const handleViewTransaction = (txn) => {
-    setSelectedTransaction(txn);
-    setShowModal(true);
-  };
-
-  const handleBlockTransaction = async (id) => {
-    if (window.confirm('Are you sure you want to block this transaction?')) {
-      try {
-        await updateTransactionStatus(id, 'FAILED');
-        setTransactions(transactions.map(t =>
-          t.id === id ? { ...t, status: 'Failed' } : t
-        ));
-      } catch (error) {
-        console.error("Error blocking transaction:", error);
-        alert("Failed to block transaction");
-      }
+  const getStatusClass = (status) => {
+    switch (status.toLowerCase()) {
+      case 'completed': return 'status-completed';
+      case 'pending': return 'status-pending';
+      case 'failed': return 'status-failed';
+      default: return 'status-completed';
     }
   };
 
-  const handleExport = () => {
-    if (filteredTransactions.length === 0) {
-      alert("No transactions to export");
-      return;
+  const downloadReceipt = (tx) => {
+    const doc = new jsPDF();
+    doc.setFontSize(18);
+    doc.text('Transaction Receipt', 105, 20, { align: 'center' });
+
+    doc.setFontSize(12);
+    doc.text(`Transaction ID: ${tx.transactionId}`, 20, 40);
+    doc.text(`Date: ${new Date(tx.dateISO).toLocaleString()}`, 20, 50);
+    doc.text(`Status: ${tx.status}`, 20, 60);
+
+    doc.line(20, 65, 190, 65);
+
+    const isIncoming = tx.amount.toString().startsWith('+');
+    doc.text(`Type: ${tx.type}`, 20, 80);
+    doc.text(`User: ${tx.user}`, 20, 90);
+    doc.text(`${isIncoming ? 'Received From' : 'Paid To'}: ${tx.to}`, 20, 100);
+
+    doc.setFontSize(16);
+    if (tx.status === 'Failed') {
+      doc.setTextColor(0, 0, 0); // Black
+    } else if (isIncoming) {
+      doc.setTextColor(16, 185, 129); // Green
+    } else {
+      doc.setTextColor(239, 68, 68); // Red
+    }
+    doc.text(`Amount: ${tx.amount}`, 20, 120);
+    doc.setTextColor(0, 0, 0); // Reset to black
+
+    if (tx.fee) {
+      doc.setFontSize(12);
+      doc.text(`Convenience Fee: ${tx.fee}`, 20, 135);
+      doc.text(`Taxes: ${tx.tax}`, 20, 145);
+      doc.setFontSize(14);
+      doc.text(`Total Debited: ${tx.totalDebited}`, 20, 160);
     }
 
-    // Define CSV headers
-    const headers = ["ID", "From", "To", "Amount", "Type", "Date", "Status"];
+    doc.setFontSize(10);
+    doc.text('Thank you for banking with us.', 105, 190, { align: 'center' });
 
-    // Map transactions to CSV rows
-    const csvRows = [
-      headers.join(','), // Header row
-      ...filteredTransactions.map(txn => {
-        return [
-          txn.id,
-          `"${txn.from}"`, // Quote strings to handle commas
-          `"${txn.to}"`,
-          `"${txn.amount.replace(/[₹,]/g, '')}"`, // Clean amount
-          txn.type,
-          txn.date,
-          txn.status
-        ].join(',');
-      })
-    ];
-
-    // Create CSV content
-    const csvContent = csvRows.join('\n');
-
-    // Create download link
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `transactions_export_${new Date().toISOString().slice(0, 10)}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    doc.save(`Receipt_${tx.transactionId}.pdf`);
   };
-
-  const totalAmount = filteredTransactions.reduce((sum, txn) => {
-    const amount = parseInt(txn.amount.replace(/[₹,]/g, ''));
-    return sum + amount;
-  }, 0);
-
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'Completed': return <CheckCircle size={14} />;
-      case 'Pending': return <Clock size={14} />;
-      case 'Failed': return <XCircle size={14} />;
-      default: return null;
-    }
-  };
-
-  if (loading) {
-    return <div className="loading-state">Loading transactions...</div>;
-  }
 
   return (
     <div className="transaction-management">
@@ -122,13 +117,23 @@ const TransactionManagement = () => {
           <p>Monitor and manage all system transactions</p>
         </div>
         <div className="txn-stats">
-          <div className="stat-box">
-            <p className="stat-label">Total Count</p>
-            <p className="stat-value">{filteredTransactions.length}</p>
+          <div className="stat-box total-volume">
+            <div className="stat-content">
+              <p className="stat-label">Total Volume</p>
+              <p className="stat-value">₹{transactions.reduce((acc, curr) => acc + Math.abs(parseFloat(curr.amount) || 0), 0).toLocaleString()}</p>
+            </div>
+            <div className="stat-icon-wrapper">
+              <TrendingUp size={24} color="#fff" />
+            </div>
           </div>
-          <div className="stat-box">
-            <p className="stat-label">Total Volume</p>
-            <p className="stat-value">₹{totalAmount.toLocaleString('en-IN')}</p>
+          <div className="stat-box todays-txns">
+            <div className="stat-content">
+              <p className="stat-label">Today's Txns</p>
+              <p className="stat-value">{transactions.filter(t => new Date(t.dateISO).toDateString() === new Date().toDateString()).length}</p>
+            </div>
+            <div className="stat-icon-wrapper">
+              <Activity size={24} color="#111" />
+            </div>
           </div>
         </div>
       </div>
@@ -138,149 +143,150 @@ const TransactionManagement = () => {
           <Search size={18} className="search-icon" />
           <input
             type="text"
-            placeholder="Search by sender or receiver..."
+            placeholder="Search by ID or User..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
           />
         </div>
-
         <div className="filters-wrapper">
           <div className="filter-group">
             <Filter size={16} className="filter-icon" />
-            <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="filter-select">
+            <select value={filterType} onChange={(e) => setFilterType(e.target.value)} className="filter-select">
+              <option value="All">All Types</option>
+              <option value="TRANSFER_SENT">Transfers</option>
+              <option value="CARD_PAYMENT">Card Payments</option>
+              <option value="DEPOSIT">Deposits</option>
+            </select>
+          </div>
+          <div className="filter-group">
+            <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="filter-select" style={{ paddingLeft: '14px' }}>
               <option value="All">All Status</option>
               <option value="Completed">Completed</option>
               <option value="Pending">Pending</option>
               <option value="Failed">Failed</option>
             </select>
           </div>
-
-          <div className="filter-group">
-            <select value={filterType} onChange={(e) => setFilterType(e.target.value)} className="filter-select">
-              <option value="All">All Types</option>
-              <option value="Transfer">Transfer</option>
-              <option value="Payment">Payment</option>
-            </select>
-          </div>
-
-          <button className="export-btn" onClick={handleExport}>
-            <Download size={16} />
-            <span>Export</span>
-          </button>
         </div>
+        <button className="export-btn">
+          <Download size={18} />
+          Export CSV
+        </button>
       </div>
 
       <div className="transactions-table-container">
         <div className="table-header">
-          <div className="col col-from">From</div>
-          <div className="col col-to">To</div>
-          <div className="col col-amount">Amount</div>
-          <div className="col col-type">Type</div>
-          <div className="col col-date">Date</div>
-          <div className="col col-status">Status</div>
-          <div className="col col-actions">Actions</div>
+          <div className="col">Transaction ID</div>
+          <div className="col" style={{ flex: 1.5 }}>Flow (User → Recipient)</div>
+          <div className="col">Date</div>
+          <div className="col">Amount</div>
+          <div className="col">Status</div>
+          <div className="col">Actions</div>
         </div>
 
         <div className="table-body">
-          {filteredTransactions.length > 0 ? (
-            filteredTransactions.map(txn => (
-              <div key={txn.id} className="table-row">
-                <div className="col col-from">
-                  <span className="user-name">{txn.from}</span>
+          {loading ? (
+            <div className="loading-state">Loading transactions...</div>
+          ) : filteredTransactions.length > 0 ? (
+            filteredTransactions.map((tx) => (
+              <div key={tx.id} className="table-row">
+                <div className="col" style={{ fontFamily: 'SF Mono, monospace', fontSize: '12px', color: '#555' }}>{tx.transactionId}</div>
+                <div className="col" style={{ flex: 1.5, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <span style={{ fontWeight: 600, color: '#111' }}>{tx.user}</span>
+                    <span style={{ fontSize: '11px', color: '#888', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <span style={{ color: '#ccc' }}>↳</span> {tx.to}
+                    </span>
+                  </div>
                 </div>
-                <div className="col col-to">
-                  <span className="user-name">{txn.to}</span>
+                <div className="col" style={{ color: '#666' }}>{tx.date}</div>
+                <div className={`col col-amount ${tx.status === 'Failed' ? 'amount-failed' : 'amount-success'}`}>
+                  {tx.amount}
                 </div>
-                <div className="col col-amount">{txn.amount}</div>
-                <div className="col col-type">
-                  <span className={`type-badge ${txn.type.toLowerCase()}`}>{txn.type}</span>
-                </div>
-                <div className="col col-date">{txn.date}</div>
-                <div className="col col-status">
-                  <span className={`status-badge ${txn.status.toLowerCase()}`}>
-                    {getStatusIcon(txn.status)}
-                    {txn.status}
+                <div className="col">
+                  <span className={`status-badge ${getStatusClass(tx.status)}`}>
+                    {tx.status}
                   </span>
                 </div>
                 <div className="col col-actions">
-                  <button
-                    className="action-btn view"
-                    title="View Details"
-                    onClick={() => handleViewTransaction(txn)}
-                  >
+                  <button className="action-btn view" title="View Details" onClick={() => setSelectedTx(tx)}>
                     <Eye size={16} />
                   </button>
-                  {txn.status === 'Pending' && (
-                    <button
-                      className="action-btn block"
-                      title="Block Transaction"
-                      onClick={() => handleBlockTransaction(txn.id)}
-                    >
-                      <Ban size={16} />
-                    </button>
-                  )}
                 </div>
               </div>
             ))
           ) : (
-            <div className="no-transactions">
-              <p>No transactions found matching your criteria</p>
-            </div>
+            <div className="no-transactions">No transactions found matching your criteria</div>
           )}
         </div>
       </div>
 
-      {/* Transaction Details Modal */}
-      {showModal && selectedTransaction && (
-        <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '500px' }}>
-            <div className="modal-header">
-              <h3>Transaction Details</h3>
-              <button className="close-btn" onClick={() => setShowModal(false)}>
-                <X size={20} />
-              </button>
-            </div>
-            <div className="modal-body">
-              <div className="txn-details-grid">
-                <div className="detail-item">
-                  <label>Transaction ID</label>
-                  <p>#{selectedTransaction.id}</p>
+      {/* Transaction Details Modal - Receipt Style */}
+      {
+        selectedTx && (
+          <div className="modal-overlay" onClick={() => setSelectedTx(null)}>
+            <div className="modal-content" onClick={e => e.stopPropagation()}>
+              <div className="modal-header">
+                <h3>Transaction Details</h3>
+                <button className="close-btn" onClick={() => setSelectedTx(null)}>×</button>
+              </div>
+              <div className="modal-body">
+                <div className="detail-row">
+                  <span className="label">Transaction ID</span>
+                  <span className="value">{selectedTx.transactionId}</span>
                 </div>
-                <div className="detail-item">
-                  <label>Date</label>
-                  <p>{selectedTransaction.date}</p>
+                <div className="detail-row">
+                  <span className="label">Date & Time</span>
+                  <span className="value">{new Date(selectedTx.dateISO).toLocaleString()}</span>
                 </div>
-                <div className="detail-item">
-                  <label>From</label>
-                  <p>{selectedTransaction.from}</p>
+                <div className="detail-row">
+                  <span className="label">User</span>
+                  <span className="value">{selectedTx.user}</span>
                 </div>
-                <div className="detail-item">
-                  <label>To</label>
-                  <p>{selectedTransaction.to}</p>
+                <div className="detail-row">
+                  <span className="label">To / From</span>
+                  <span className="value">{selectedTx.to}</span>
                 </div>
-                <div className="detail-item">
-                  <label>Amount</label>
-                  <p className="amount">{selectedTransaction.amount}</p>
+                <div className="detail-row">
+                  <span className="label">Type</span>
+                  <span className="value">{selectedTx.type}</span>
                 </div>
-                <div className="detail-item">
-                  <label>Type</label>
-                  <span className={`type-badge ${selectedTransaction.type.toLowerCase()}`}>
-                    {selectedTransaction.type}
+                <div className="detail-row">
+                  <span className="label">Amount</span>
+                  <span className={`value ${selectedTx.status === 'Failed' ? 'amount-failed' : (selectedTx.amount.toString().startsWith('+') ? 'amount-positive' : 'amount-negative')}`}>
+                    {selectedTx.amount}
                   </span>
                 </div>
-                <div className="detail-item">
-                  <label>Status</label>
-                  <span className={`status-badge ${selectedTransaction.status.toLowerCase()}`}>
-                    {selectedTransaction.status}
-                  </span>
+                {selectedTx.fee && (
+                  <>
+                    <div className="detail-row">
+                      <span className="label">Convenience Fee</span>
+                      <span className="value">{selectedTx.fee}</span>
+                    </div>
+                    <div className="detail-row">
+                      <span className="label">Taxes</span>
+                      <span className="value">{selectedTx.tax}</span>
+                    </div>
+                    <div className="detail-row" style={{ marginTop: '10px', borderTop: '1px solid #eee', paddingTop: '10px' }}>
+                      <span className="label" style={{ fontWeight: 'bold' }}>Total Debited</span>
+                      <span className="value" style={{ fontWeight: 'bold' }}>{selectedTx.totalDebited}</span>
+                    </div>
+                  </>
+                )}
+                <div className="detail-row">
+                  <span className="label">Status</span>
+                  <span className={`status-pill ${getStatusClass(selectedTx.status)}`}>{selectedTx.status}</span>
                 </div>
+              </div>
+              <div className="modal-footer">
+                <button className="btn-secondary" onClick={() => downloadReceipt(selectedTx)}>Download Receipt</button>
+                <button className="btn-primary" onClick={() => setSelectedTx(null)}>Close</button>
               </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   );
 };
 

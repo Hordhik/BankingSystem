@@ -40,17 +40,18 @@ public class Card {
     private String pin;
 
     @ManyToOne
-    @JoinColumn(name = "user_ref_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "account_ref_id", nullable = false)
+    @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
     public Card() {
     }
 
-    public Card(String cardNumber, LocalDate expiryDate, String cvv, String cardType, String status, String cardName, String network, Boolean isPrimary, String pin, User user, Account account) {
+    public Card(String cardNumber, LocalDate expiryDate, String cvv, String cardType, String status, User user,
+            Account account) {
         this.cardNumber = cardNumber;
         this.expiryDate = expiryDate;
         this.cvv = cvv;

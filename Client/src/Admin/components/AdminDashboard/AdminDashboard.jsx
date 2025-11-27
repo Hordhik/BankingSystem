@@ -74,45 +74,52 @@ const AdminDashboard = () => {
         })}
       </div>
 
-      <div className="recent-activities">
-        <h3>Recent Activities</h3>
-        <div style={{ overflowX: 'auto' }}>
-          <table className="activities-table">
-            <thead>
-              <tr>
-                <th>Activity Type</th>
-                <th>User / Reference</th>
-                <th>Time</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {activities.length > 0 ? (
-                activities.map((activity) => (
-                  <tr key={activity.id}>
-                    <td>{activity.type}</td>
-                    <td>{activity.from} {activity.to !== '-' ? `→ ${activity.to}` : ''}</td>
-                    <td>{activity.date}</td>
-                    <td>
-                      <span className={`status-badge ${activity.status.toLowerCase()}`}>
-                        {activity.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="4" className="no-activities">
-                    <div className="empty-state">
-                      <Clock size={48} strokeWidth={1} />
-                      <p>No recent activities found</p>
-                      <span>New activities will appear here</span>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+      <div className="system-health-section">
+        <h3>System Health</h3>
+        <div className="health-grid">
+          <div className="health-card">
+            <div className="health-icon success">
+              <Server size={20} />
+            </div>
+            <div className="health-info">
+              <span className="health-label">Database Status</span>
+              <span className="health-value">Operational</span>
+            </div>
+            <div className="health-status-indicator online"></div>
+          </div>
+
+          <div className="health-card">
+            <div className="health-icon warning">
+              <Activity size={20} />
+            </div>
+            <div className="health-info">
+              <span className="health-label">API Latency</span>
+              <span className="health-value">45ms</span>
+            </div>
+            <div className="health-metric">Avg</div>
+          </div>
+
+          <div className="health-card">
+            <div className="health-icon info">
+              <Clock size={20} />
+            </div>
+            <div className="health-info">
+              <span className="health-label">System Uptime</span>
+              <span className="health-value">99.9%</span>
+            </div>
+            <div className="health-metric">30d</div>
+          </div>
+
+          <div className="health-card">
+            <div className="health-icon primary">
+              <TrendingUp size={20} />
+            </div>
+            <div className="health-info">
+              <span className="health-label">Last Backup</span>
+              <span className="health-value">2h ago</span>
+            </div>
+            <div className="health-metric">Auto</div>
+          </div>
         </div>
       </div>
 
