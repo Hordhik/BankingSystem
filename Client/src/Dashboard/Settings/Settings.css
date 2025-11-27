@@ -211,7 +211,8 @@
     flex-direction: column;
     gap: 10px;
     width: 100%;
-    /* Ensure no outer box styling */
+    align-items: flex-start;
+    /* Ensure items align to start */
     background: transparent;
     border: none;
     box-shadow: none;
@@ -224,12 +225,14 @@
 
 .account-settings-container .input-group label {
     display: block;
+    width: 100%;
     font-size: 13px;
     font-weight: 700;
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-left: 4px;
+    text-align: left !important;
 }
 
 .account-settings-container .input-wrapper {
