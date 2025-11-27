@@ -8,16 +8,21 @@ public class CardResponse {
     private String expiryDate;
     private String cvv;
 
+    private String expiryDate;
+    private String cvv;
+    private String status;
+
     public CardResponse() {
     }
 
-    public CardResponse(Long id, String cardNumber, String ownerName, String cardType, String expiryDate, String cvv) {
+    public CardResponse(Long id, String cardNumber, String ownerName, String cardType, String expiryDate, String cvv, String status) {
         this.id = id;
         this.cardNumber = cardNumber;
         this.ownerName = ownerName;
         this.cardType = cardType;
         this.expiryDate = expiryDate;
         this.cvv = cvv;
+        this.status = status;
     }
 
     public Long getId() {
@@ -68,6 +73,14 @@ public class CardResponse {
         this.cvv = cvv;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public static CardResponseBuilder builder() {
         return new CardResponseBuilder();
     }
@@ -79,6 +92,7 @@ public class CardResponse {
         private String cardType;
         private String expiryDate;
         private String cvv;
+        private String status;
 
         CardResponseBuilder() {
         }
@@ -113,8 +127,13 @@ public class CardResponse {
             return this;
         }
 
+        public CardResponseBuilder status(String status) {
+            this.status = status;
+            return this;
+        }
+
         public CardResponse build() {
-            return new CardResponse(id, cardNumber, ownerName, cardType, expiryDate, cvv);
+            return new CardResponse(id, cardNumber, ownerName, cardType, expiryDate, cvv, status);
         }
     }
 }

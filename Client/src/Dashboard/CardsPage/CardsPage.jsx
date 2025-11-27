@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './CardsPage.css';
+import { applyForCard, getCards } from '../../services/api';
 
 const VisaLogoSVG = () => (
   <svg className="card-vendor-logo" viewBox="0 0 100 62" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -22,20 +23,9 @@ const CardsPage = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
 
-  const [cards, setCards] = useState([
-    {
-      id: 1,
-      number: (localStorage.getItem('cardNumber') || '4564 8901 2048 6756').replace(/(\d{4})(?=\d)/g, '$1 '),
-      holder: localStorage.getItem('fullname') || 'User Name',
-      expiry: localStorage.getItem('expiryDate') || '12/28',
-      cvv: localStorage.getItem('cvv') || '123',
-      isPrimary: true
-    },
-    { id: 2, number: '6712 9988 4402 1123', holder: 'Rahul Menon', expiry: '07/26', cvv: '411', isPrimary: false },
-    { id: 3, number: '5520 3344 2201 9087', holder: 'Sneha Patel', expiry: '03/29', cvv: '862', isPrimary: false },
-  ]);
+  const [cards, setCards] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const currentCard = cards[currentCardIndex];
   const [appliedCards, setAppliedCards] = useState({});
 
   // Modal State
@@ -47,6 +37,34 @@ const CardsPage = () => {
     network: 'Visa',
     cardType: 'Debit', // New field for card type selection
   });
+
+  useEffect(() => {
+    const fetchCards = async () => {
+      try {
+        const data = await getCards();
+        const formattedCards = data.map((card, index) => ({
+          id: card.id,
+          number: card.cardNumber.replace(/(\d{4})(?=\d)/g, '$1 '),
+          holder: card.ownerName,
+          expiry: card.expiryDate ? new Date(card.expiryDate).toLocaleDateString('en-US', { month: '2-digit', year: '2-digit' }) : 'MM/YY',
+          cvv: card.cvv,
+          isPrimary: index === 0, // Default first card as primary
+          type: card.cardType
+        }));
+        setCards(formattedCards);
+      } catch (error) {
+        console.error("Failed to fetch cards", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCards();
+  }, []);
+
+  const currentCard = cards[currentCardIndex];
+
+  if (loading) return <div className="cards-page-container">Loading cards...</div>;
+  if (!currentCard) return <div className="cards-page-container">No cards found. Apply for a new card!</div>;
 
   const handleNextCard = (e) => {
     e.stopPropagation();
@@ -176,13 +194,24 @@ const CardsPage = () => {
     setApplicationForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleConfirmApplication = (e) => {
+  const handleConfirmApplication = async (e) => {
     e.preventDefault();
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        alert("User ID not found. Please log in again.");
+        return;
+      }
+
+      await applyForCard(userId, applicationForm.cardType, applicationForm.network);
+
       setAppliedCards((prev) => ({ ...prev, [selectedCardForApp.id]: true }));
+      alert("Application submitted successfully!");
       handleCloseModal();
-    }, 1000);
+    } catch (error) {
+      console.error("Application failed:", error);
+      alert("Failed to submit application. Please try again.");
+    }
   };
 
   return (
