@@ -78,7 +78,7 @@ public class AuthService {
         String cvv = String.format("%03d", (int) (Math.random() * 1000));
         java.time.LocalDate expiryDate = java.time.LocalDate.now().plusYears(5);
 
-        Card card = new Card(cardNumber, expiryDate, cvv, "DEBIT", "ACTIVE", "Fluit Debit Card", "Visa", true, null, user, account);
+        Card card = new Card(cardNumber, expiryDate, cvv, "DEBIT", "ACTIVE", "Fluit Debit Card", "Debit", true, null, user, account);
         try {
             cardRepository.save(card);
         } catch (Exception e) {
@@ -131,7 +131,7 @@ public class AuthService {
             String cardNumber = generateCardNumber();
             String cvv = String.format("%03d", (int) (Math.random() * 1000));
             java.time.LocalDate expiryDate = java.time.LocalDate.now().plusYears(5);
-            Card newCard = new Card(cardNumber, expiryDate, cvv, "DEBIT", "ACTIVE", "Fluit Debit Card", "Visa", true, null, user, account);
+            Card newCard = new Card(cardNumber, expiryDate, cvv, "DEBIT", "ACTIVE", "Fluit Debit Card", "Debit", true, null, user, account);
             try {
                 card = cardRepository.save(newCard);
                 System.out.println("Login: New card saved");

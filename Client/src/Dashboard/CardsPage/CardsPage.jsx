@@ -318,7 +318,9 @@ const CardsPage = () => {
                 <span>{currentCard.holder}</span>
               </div>
               {currentCard.network === 'Mastercard' ? <MastercardLogoSVG /> :
-                currentCard.network === 'RuPay' ? <RuPayLogoSVG /> : <VisaLogoSVG />}
+                currentCard.network === 'RuPay' ? <RuPayLogoSVG /> :
+                  currentCard.network === 'Visa' ? <VisaLogoSVG /> :
+                    <span style={{ color: 'white', fontWeight: 'bold', fontSize: '18px', letterSpacing: '1px' }}>DEBIT</span>}
             </div>
           </div>
 
