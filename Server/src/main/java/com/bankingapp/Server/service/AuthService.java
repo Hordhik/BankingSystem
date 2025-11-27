@@ -41,7 +41,7 @@ public class AuthService {
         if (userRepository.existsByEmail(email)) {
             throw new RuntimeException("Email already exists");
         }
-        if (!isBlank(req.getAccountNumber()) && userRepository.existsByAccountNumber(req.getAccountNumber().trim())) {
+        if (!isBlank(req.getAccountNumber()) && (userRepository.existsByAccountNumber(req.getAccountNumber().trim()) || accountRepository.existsByAccountNumber(req.getAccountNumber().trim()))) {
             throw new RuntimeException("Account number already exists");
         }
 
@@ -52,7 +52,11 @@ public class AuthService {
                 isBlank(req.getUsername()) ? generateUsername(req.getFullname()) : req.getUsername().trim(),
                 acctNumber,
                 isBlank(req.getIfsc()) ? "SBIN000000" : req.getIfsc().trim().toUpperCase());
-        userRepository.save(user);
+        try {
+            userRepository.save(user);
+        } catch (Exception e) {
+            throw new RuntimeException("Error saving user: " + e.getMessage());
+        }
 
         // create primary savings account with opening balance 10000.00
         Account account = Account.builder()
@@ -63,7 +67,11 @@ public class AuthService {
                 .currency("INR")
                 .user(user)
                 .build();
-        accountRepository.save(account); // persist primary account
+        try {
+            accountRepository.save(account); // persist primary account
+        } catch (Exception e) {
+            throw new RuntimeException("Error saving account: " + e.getMessage());
+        }
 
         // Generate and save Card
         String cardNumber = generateCardNumber();
@@ -71,7 +79,11 @@ public class AuthService {
         java.time.LocalDate expiryDate = java.time.LocalDate.now().plusYears(5);
 
         Card card = new Card(cardNumber, expiryDate, cvv, "DEBIT", "ACTIVE", user, account);
-        cardRepository.save(card);
+        try {
+            cardRepository.save(card);
+        } catch (Exception e) {
+            throw new RuntimeException("Error saving card: " + e.getMessage());
+        }
 
         String token = jwtUtil.generateToken(user.getEmail());
         return new AuthResponse(token, user.getUserId(), user.getFullname(), user.getEmail(), user.getUsername(),
@@ -93,9 +105,11 @@ public class AuthService {
             throw new RuntimeException("Invalid credentials");
         }
         String token = jwtUtil.generateToken(user.getEmail());
+        System.out.println("Login: User found: " + user.getEmail());
         // ensure account exists (lazy creation if absent)
         Account account = accountRepository.findByUser(user)
                 .orElseGet(() -> {
+                    System.out.println("Login: Creating new account for user");
                     Account created = Account.builder()
                             .accountNumber(user.getAccountNumber())
                             .accountType("SAVINGS")
@@ -106,15 +120,30 @@ public class AuthService {
                             .build();
                     return accountRepository.save(created);
                 });
+        System.out.println("Login: Account found/created: " + account.getAccountNumber());
 
-        Card card = cardRepository.findByUser(user).orElseGet(() -> {
+        java.util.List<Card> cards = cardRepository.findByUser(user);
+        System.out.println("Login: Cards found: " + cards.size());
+        Card card;
+        if (cards.isEmpty()) {
+            System.out.println("Login: Creating new card");
             // Generate new card for existing users who don't have one
             String cardNumber = generateCardNumber();
             String cvv = String.format("%03d", (int) (Math.random() * 1000));
             java.time.LocalDate expiryDate = java.time.LocalDate.now().plusYears(5);
             Card newCard = new Card(cardNumber, expiryDate, cvv, "DEBIT", "ACTIVE", user, account);
-            return cardRepository.save(newCard);
-        });
+            try {
+                card = cardRepository.save(newCard);
+                System.out.println("Login: New card saved");
+            } catch (Exception e) {
+                System.out.println("Login: Error saving card: " + e.getMessage());
+                e.printStackTrace();
+                throw e;
+            }
+        } else {
+            card = cards.get(0); // Use the first card for login response
+            System.out.println("Login: Using existing card");
+        }
 
         String cNum = card.getCardNumber();
         String cCvv = card.getCvv();
@@ -138,7 +167,7 @@ public class AuthService {
         String num;
         do {
             num = String.valueOf((long) (Math.random() * 9000000000L) + 1000000000L);
-        } while (userRepository.existsByAccountNumber(num));
+        } while (userRepository.existsByAccountNumber(num) || accountRepository.existsByAccountNumber(num));
         return num;
     }
 

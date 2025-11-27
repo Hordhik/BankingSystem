@@ -27,12 +27,12 @@ public class Card {
     @Column(name = "status", nullable = false)
     private String status; // ACTIVE, BLOCKED
 
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "user_ref_id", nullable = false)
     private User user;
 
-    @OneToOne
-    @JoinColumn(name = "account_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "account_ref_id", nullable = false)
     private Account account;
 
     public Card() {
