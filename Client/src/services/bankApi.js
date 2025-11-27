@@ -65,6 +65,9 @@ export const register = (fullname, email, password, username, accountNumber, ifs
 export const getUserLoans = (userId) =>
   request(`/loans/user/${userId}`, "GET");
 
+export const payLoan = (userId, accountId, amount, loanType) =>
+  request("/loans/pay", "POST", { userId, accountId, amount, loanType });
+
 
 export const changePassword = async (userId, data) => {
   const token = localStorage.getItem('token');

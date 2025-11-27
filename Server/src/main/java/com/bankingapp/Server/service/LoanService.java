@@ -18,7 +18,8 @@ public class LoanService {
     private final com.bankingapp.Server.repository.AccountRepository accountRepository;
     private final com.bankingapp.Server.repository.UserRepository userRepository;
 
-    public LoanService(LoanRepository repo, com.bankingapp.Server.repository.AccountRepository accountRepository, com.bankingapp.Server.repository.UserRepository userRepository) {
+    public LoanService(LoanRepository repo, com.bankingapp.Server.repository.AccountRepository accountRepository,
+            com.bankingapp.Server.repository.UserRepository userRepository) {
         this.repo = repo;
         this.accountRepository = accountRepository;
         this.userRepository = userRepository;
@@ -33,7 +34,6 @@ public class LoanService {
     public List<Loan> getLoansForUser(Long userId) {
         return repo.findByUserIdOrderByCreatedAtDesc(userId);
     }
-
 
     @Transactional
     public Loan approveLoan(Long id) {
@@ -50,7 +50,8 @@ public class LoanService {
 
         BigDecimal monthlyEmi = BigDecimal.valueOf(emi).setScale(2, java.math.RoundingMode.HALF_UP);
 
-        BigDecimal totalPayable = monthlyEmi.multiply(BigDecimal.valueOf(N)).setScale(2, java.math.RoundingMode.HALF_UP);
+        BigDecimal totalPayable = monthlyEmi.multiply(BigDecimal.valueOf(N)).setScale(2,
+                java.math.RoundingMode.HALF_UP);
         BigDecimal totalInterest = totalPayable.subtract(P).setScale(2, java.math.RoundingMode.HALF_UP);
 
         loan.setMonthlyEmi(monthlyEmi);
@@ -60,15 +61,13 @@ public class LoanService {
         loan.setDetails(
                 "Principal: ₹" + P +
                         " | Tenure: " + N + " months" +
-                        " | EMI: ₹" + monthlyEmi.setScale(0, java.math.RoundingMode.HALF_UP)
-        );
+                        " | EMI: ₹" + monthlyEmi.setScale(0, java.math.RoundingMode.HALF_UP));
 
         loan.setStatus(LoanStatus.ACTIVE);
         loan.setAdminReason(null);
 
         loan.setNextPayment(
-                "EMI due on " + LocalDate.now().plusMonths(1).getDayOfMonth()
-        );
+                "EMI due on " + LocalDate.now().plusMonths(1).getDayOfMonth());
 
         // Credit loan amount to user account
         com.bankingapp.Server.model.User user = userRepository.findById(loan.getUserId())
@@ -108,22 +107,46 @@ public class LoanService {
     }
 
     @Transactional
-    public void recordPayment(Long userId) {
+    public void recordPayment(Long userId, BigDecimal amount, String loanType) {
         List<Loan> loans = repo.findByUserIdOrderByCreatedAtDesc(userId);
         for (Loan loan : loans) {
             if (loan.getStatus() == LoanStatus.ACTIVE) {
-                int paid = loan.getEmisPaid() == null ? 0 : loan.getEmisPaid();
-                loan.setEmisPaid(paid + 1);
-                
-                // Update next payment date
-                loan.setNextPayment("EMI due on " + LocalDate.now().plusMonths(1).getDayOfMonth());
-                
-                // Update details
-                String currentDetails = loan.getDetails();
-                // Append or update paid status
-                loan.setDetails(currentDetails + " | Paid: " + (paid + 1) + " months");
-                
+                // If loanType is provided, match it. Otherwise, just take the first active loan.
+                if (loanType != null && !loanType.isEmpty() && !loan.getLoanType().equalsIgnoreCase(loanType) && !loan.getDetails().contains(loanType)) {
+                    continue;
+                }
+
+                BigDecimal emi = loan.getMonthlyEmi();
+                BigDecimal totalPayable = loan.getTotalPayable();
+                int paidCount = loan.getEmisPaid() == null ? 0 : loan.getEmisPaid();
+                BigDecimal paidSoFar = emi.multiply(BigDecimal.valueOf(paidCount));
+                BigDecimal remaining = totalPayable.subtract(paidSoFar);
+
+                // Check if this is a full payment (or close enough)
+                if (amount.compareTo(remaining) >= 0) {
+                    loan.setStatus(LoanStatus.CLOSED);
+                    loan.setEmisPaid(loan.getTenureMonths());
+                    loan.setNextPayment("Loan Closed");
+                    loan.setDetails(loan.getDetails() + " | Status: Closed (Paid in Full)");
+                } else {
+                    // Assume it's a monthly EMI payment
+                    // Calculate how many EMIs this amount covers (roughly)
+                    // For simplicity, we just increment by 1 if it's at least 1 EMI
+                    if (amount.compareTo(emi) >= 0) {
+                        int emisCovered = amount.divide(emi, 0, RoundingMode.DOWN).intValue();
+                        loan.setEmisPaid(paidCount + emisCovered);
+                        loan.setNextPayment("EMI due on " + LocalDate.now().plusMonths(1).getDayOfMonth());
+                        loan.setDetails(loan.getDetails() + " | Paid: " + (paidCount + emisCovered) + " months");
+                        
+                        // Check if that completed the loan
+                        if (loan.getEmisPaid() >= loan.getTenureMonths()) {
+                             loan.setStatus(LoanStatus.CLOSED);
+                             loan.setNextPayment("Loan Closed");
+                        }
+                    }
+                }
                 repo.save(loan);
+                return; // Only pay one loan at a time
             }
         }
     }

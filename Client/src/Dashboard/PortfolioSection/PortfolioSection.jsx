@@ -63,11 +63,15 @@ export const PortfolioSection = () => {
       return `You will pay ₹${item.emi.toLocaleString()} per month for ${item.tenureMonths} months (Principal: ₹${item.principalAmount.toLocaleString()})`;
     }
 
+    if (item.status === "CLOSED" || item.status === "COMPLETED") {
+      return "Loan Closed (Paid in Full)";
+    }
+
     return "—";
   };
 
   const handleRowClick = (item) => {
-    if (item.status === "ACTIVE" || item.status === "APPROVED") {
+    if (item.status === "ACTIVE" || item.status === "APPROVED" || item.status === "CLOSED" || item.status === "COMPLETED") {
       setSelectedLoan(item);
     }
   };
@@ -231,7 +235,7 @@ export const PortfolioSection = () => {
                   </div>
 
                   <div className="payment-actions">
-                    {balance <= 0 || monthsRemaining <= 0 || selectedLoan.status === 'COMPLETED' ? (
+                    {balance <= 0 || monthsRemaining <= 0 || selectedLoan.status === 'COMPLETED' || selectedLoan.status === 'CLOSED' ? (
                       <div className="completed-tag">Completed</div>
                     ) : (
                       <>

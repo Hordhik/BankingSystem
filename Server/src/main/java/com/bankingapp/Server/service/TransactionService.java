@@ -25,7 +25,8 @@ public class TransactionService {
     private final LoanService loanService;
 
     public TransactionService(AccountRepository accountRepository, TransactionRepository transactionRepository,
-            CardRepository cardRepository, TransactionLoggingService transactionLoggingService, LoanService loanService) {
+            CardRepository cardRepository, TransactionLoggingService transactionLoggingService,
+            LoanService loanService) {
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
         this.cardRepository = cardRepository;
@@ -45,18 +46,16 @@ public class TransactionService {
             account.setBalance(account.getBalance().add(amount));
             Account saved = accountRepository.save(account);
             transactionLoggingService.saveTransaction(saved, "DEPOSIT", amount, null, BigDecimal.ZERO, BigDecimal.ZERO,
-                    "SUCCESS");
+                    "SUCCESS", null);
             return saved;
         } catch (Exception e) {
             transactionLoggingService.saveTransaction(account, "DEPOSIT", amount, null, BigDecimal.ZERO,
-                    BigDecimal.ZERO, "FAILED");
+                    BigDecimal.ZERO, "FAILED", null);
             throw e;
         }
     }
-    
+
     // ... (existing methods)
-
-
 
     @Transactional
     public Account withdraw(Long accountId, BigDecimal amount) {
@@ -73,11 +72,11 @@ public class TransactionService {
             account.setBalance(account.getBalance().subtract(amount));
             Account saved = accountRepository.save(account);
             transactionLoggingService.saveTransaction(saved, "WITHDRAW", amount, null, BigDecimal.ZERO, BigDecimal.ZERO,
-                    "SUCCESS");
+                    "SUCCESS", null);
             return saved;
         } catch (Exception e) {
             transactionLoggingService.saveTransaction(account, "WITHDRAW", amount, null, BigDecimal.ZERO,
-                    BigDecimal.ZERO, "FAILED");
+                    BigDecimal.ZERO, "FAILED", null);
             throw e;
         }
     }
@@ -117,14 +116,14 @@ public class TransactionService {
             accountRepository.save(to);
 
             transactionLoggingService.saveTransaction(from, "TRANSFER_SENT", amount, to.getId(), safeFee, safeTax,
-                    "SUCCESS");
+                    "SUCCESS", null);
             transactionLoggingService.saveTransaction(to, "TRANSFER_RECEIVED", amount, from.getId(), BigDecimal.ZERO,
-                    BigDecimal.ZERO, "SUCCESS");
+                    BigDecimal.ZERO, "SUCCESS", null);
         } catch (Exception e) {
             transactionLoggingService.saveTransaction(from, "TRANSFER_SENT", amount, to.getId(), safeFee, safeTax,
-                    "FAILED");
+                    "FAILED", null);
             transactionLoggingService.saveTransaction(to, "TRANSFER_RECEIVED", amount, from.getId(), BigDecimal.ZERO,
-                    BigDecimal.ZERO, "FAILED");
+                    BigDecimal.ZERO, "FAILED", null);
             throw e;
         }
     }
@@ -140,12 +139,12 @@ public class TransactionService {
         if (!senderCard.getCvv().equals(senderCvv)) {
             throw new IllegalArgumentException("Invalid CVV");
         }
-        
+
         // PIN Verification
         if (senderCard.getPin() != null && !senderCard.getPin().equals(pin)) {
-             throw new IllegalArgumentException("Invalid PIN");
+            throw new IllegalArgumentException("Invalid PIN");
         } else if (senderCard.getPin() != null && pin == null) {
-             throw new IllegalArgumentException("PIN required");
+            throw new IllegalArgumentException("PIN required");
         }
         // Simple expiry check (MM/YY)
         // In production, parse date properly
@@ -164,7 +163,8 @@ public class TransactionService {
         BigDecimal totalDeduction = amount.add(fee).add(tax);
 
         if (from.getBalance().compareTo(totalDeduction) < 0) {
-            transactionLoggingService.saveTransaction(from, "CARD_PAYMENT", amount, to.getId(), fee, tax, "FAILED");
+            transactionLoggingService.saveTransaction(from, "CARD_PAYMENT", amount, to.getId(), fee, tax, "FAILED",
+                    null);
             throw new IllegalArgumentException("Insufficient funds for card transfer + fees");
         }
 
@@ -175,13 +175,15 @@ public class TransactionService {
             accountRepository.save(from);
             accountRepository.save(to);
 
-            transactionLoggingService.saveTransaction(from, "CARD_PAYMENT", amount, to.getId(), fee, tax, "SUCCESS");
+            transactionLoggingService.saveTransaction(from, "CARD_PAYMENT", amount, to.getId(), fee, tax, "SUCCESS",
+                    null);
             transactionLoggingService.saveTransaction(to, "CARD_RECEIVE", amount, from.getId(), BigDecimal.ZERO,
-                    BigDecimal.ZERO, "SUCCESS");
+                    BigDecimal.ZERO, "SUCCESS", null);
         } catch (Exception e) {
-            transactionLoggingService.saveTransaction(from, "CARD_PAYMENT", amount, to.getId(), fee, tax, "FAILED");
+            transactionLoggingService.saveTransaction(from, "CARD_PAYMENT", amount, to.getId(), fee, tax, "FAILED",
+                    null);
             transactionLoggingService.saveTransaction(to, "CARD_RECEIVE", amount, from.getId(), BigDecimal.ZERO,
-                    BigDecimal.ZERO, "FAILED");
+                    BigDecimal.ZERO, "FAILED", null);
             throw e;
         }
     }
@@ -193,7 +195,7 @@ public class TransactionService {
         if (cards.isEmpty()) {
             throw new IllegalArgumentException("No cards found for user to process autopayment");
         }
-        
+
         // Prefer primary card, otherwise first card
         Card card = cards.stream()
                 .filter(Card::isPrimary)
@@ -203,17 +205,65 @@ public class TransactionService {
         Account account = card.getAccount();
 
         if (account.getBalance().compareTo(amount) < 0) {
-            transactionLoggingService.saveTransaction(account, "AUTOPAY_FAIL", amount, null, BigDecimal.ZERO, BigDecimal.ZERO, "FAILED");
+            transactionLoggingService.saveTransaction(account, "AUTOPAY_FAIL", amount, null, BigDecimal.ZERO,
+                    BigDecimal.ZERO, "FAILED", null);
             throw new IllegalArgumentException("Insufficient funds for autopayment");
         }
 
         account.setBalance(account.getBalance().subtract(amount));
         accountRepository.save(account);
 
-        transactionLoggingService.saveTransaction(account, "CARD_AUTOPAY", amount, null, BigDecimal.ZERO, BigDecimal.ZERO, "SUCCESS");
-        
         // Update loan status
-        loanService.recordPayment(userId);
+        String loanType = "EMI";
+        List<com.bankingapp.Server.model.Loan> loans = loanService.getLoansForUser(userId);
+        for (com.bankingapp.Server.model.Loan loan : loans) {
+            if (loan.getStatus() == com.bankingapp.Server.model.LoanStatus.ACTIVE) {
+                loanType = loan.getLoanType();
+                break;
+            }
+        }
+
+        loanService.recordPayment(userId, amount, loanType);
+
+        transactionLoggingService.saveTransaction(account, "CARD_AUTOPAY", amount, null, BigDecimal.ZERO,
+                BigDecimal.ZERO, "SUCCESS", loanType);
+    }
+
+    @Transactional
+    public void payLoan(Long userId, Long accountId, BigDecimal amount, String loanType) {
+        Account account;
+        if (accountId != null) {
+            account = accountRepository.findById(accountId)
+                    .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+        } else {
+            // Fallback to finding via card if accountId is not provided (backward compatibility)
+            List<Card> cards = cardRepository.findByUser_UserId(userId);
+            if (cards.isEmpty()) {
+                throw new IllegalArgumentException("No cards found for user to process loan payment");
+            }
+            Card card = cards.stream()
+                    .filter(Card::isPrimary)
+                    .findFirst()
+                    .orElse(cards.get(0));
+            account = card.getAccount();
+        }
+
+        if (account.getBalance().compareTo(amount) < 0) {
+            transactionLoggingService.saveTransaction(account, "LOAN_PAYMENT_FAIL", amount, null, BigDecimal.ZERO,
+                    BigDecimal.ZERO, "FAILED", loanType);
+            throw new IllegalArgumentException("Insufficient funds for loan payment");
+        }
+
+        account.setBalance(account.getBalance().subtract(amount));
+        accountRepository.save(account);
+
+        // Update loan status (optional, if we want to track paid amount vs due)
+        // For now, just record it as a payment
+        loanService.recordPayment(userId, amount, loanType);
+
+        // Log with type "EMI" and description as loanType (e.g. "Personal Loan")
+        transactionLoggingService.saveTransaction(account, "EMI", amount, null, BigDecimal.ZERO,
+                BigDecimal.ZERO, "SUCCESS", loanType);
     }
 
     public List<TransactionResponse> getTransactionsForAccount(Long accountId, String userEmail) {
@@ -233,6 +283,8 @@ public class TransactionService {
                         counterpartyName = accountRepository.findById(t.getCounterpartyAccountId())
                                 .map(acc -> acc.getUser().getFullname())
                                 .orElse("Unknown");
+                    } else if (t.getDescription() != null && !t.getDescription().isEmpty()) {
+                        counterpartyName = t.getDescription();
                     }
 
                     return TransactionResponse.builder()
@@ -247,6 +299,7 @@ public class TransactionService {
                             .fee(t.getFee())
                             .tax(t.getTax())
                             .status(t.getStatus())
+                            .description(t.getDescription())
                             .build();
                 })
                 .collect(Collectors.toList());

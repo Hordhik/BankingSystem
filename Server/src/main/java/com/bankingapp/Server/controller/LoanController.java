@@ -1,9 +1,11 @@
 package com.bankingapp.Server.controller;
 
 import com.bankingapp.Server.dto.LoanApplyRequest;
+import com.bankingapp.Server.dto.LoanPaymentRequest;
 import com.bankingapp.Server.dto.LoanResponse;
 import com.bankingapp.Server.model.Loan;
 import com.bankingapp.Server.service.LoanService;
+import com.bankingapp.Server.service.TransactionService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +17,22 @@ import java.util.List;
 public class LoanController {
 
     private final LoanService service;
+    private final TransactionService transactionService;
 
-    public LoanController(LoanService service) {
+    public LoanController(LoanService service, TransactionService transactionService) {
         this.service = service;
+        this.transactionService = transactionService;
+    }
+
+    // ---------------- PAY LOAN ----------------
+    @PostMapping("/pay")
+    public ResponseEntity<String> payLoan(@RequestBody LoanPaymentRequest req) {
+        try {
+            transactionService.payLoan(req.userId, req.accountId, req.amount, req.loanType);
+            return ResponseEntity.ok("Loan payment successful");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Payment failed: " + e.getMessage());
+        }
     }
 
     // ---------------- APPLY LOAN ----------------
@@ -77,14 +92,13 @@ public class LoanController {
             testLoan.setInterestRate(new java.math.BigDecimal("10.00"));
             testLoan.setStatus(com.bankingapp.Server.model.LoanStatus.PENDING);
             testLoan.setDetails("Test PENDING loan for demonstration");
-            
+
             service.saveLoan(testLoan);
             return ResponseEntity.ok("✅ Test PENDING loan created successfully! Check admin loans page.");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("❌ Error: " + e.getMessage());
         }
     }
-
 
     // ---------------- MAPPER ----------------
     private LoanResponse toResponse(Loan loan) {
@@ -96,9 +110,15 @@ public class LoanController {
         response.setStatus(loan.getStatus().name());
         response.setPrincipalAmount("₹" + loan.getPrincipalAmount());
         response.setTenure(loan.getTenureMonths() + " months");
-        response.setMonthlyEmi(loan.getMonthlyEmi() != null ? ("₹" + loan.getMonthlyEmi().setScale(0, java.math.RoundingMode.HALF_UP)) : "--");
-        response.setTotalInterest(loan.getTotalInterest() != null ? ("₹" + loan.getTotalInterest().setScale(0, java.math.RoundingMode.HALF_UP)) : "--");
-        response.setTotalPayable(loan.getTotalPayable() != null ? ("₹" + loan.getTotalPayable().setScale(0, java.math.RoundingMode.HALF_UP)) : "--");
+        response.setMonthlyEmi(
+                loan.getMonthlyEmi() != null ? ("₹" + loan.getMonthlyEmi().setScale(0, java.math.RoundingMode.HALF_UP))
+                        : "--");
+        response.setTotalInterest(loan.getTotalInterest() != null
+                ? ("₹" + loan.getTotalInterest().setScale(0, java.math.RoundingMode.HALF_UP))
+                : "--");
+        response.setTotalPayable(loan.getTotalPayable() != null
+                ? ("₹" + loan.getTotalPayable().setScale(0, java.math.RoundingMode.HALF_UP))
+                : "--");
         response.setDetails(loan.getDetails() != null ? loan.getDetails() : "Awaiting approval");
         response.setAdminReason(loan.getAdminReason());
         response.setEmisPaid(loan.getEmisPaid() != null ? loan.getEmisPaid() : 0);

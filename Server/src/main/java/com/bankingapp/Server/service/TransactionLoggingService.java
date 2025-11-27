@@ -21,7 +21,7 @@ public class TransactionLoggingService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void saveTransaction(Account account, String type, BigDecimal amount, Long counterpartyAccountId,
-                                BigDecimal fee, BigDecimal tax, String status) {
+            BigDecimal fee, BigDecimal tax, String status, String description) {
         Transaction tx = Transaction.builder()
                 .account(account)
                 .type(type)
@@ -33,6 +33,7 @@ public class TransactionLoggingService {
                 .fee(fee)
                 .tax(tax)
                 .status(status)
+                .description(description)
                 .build();
         transactionRepository.save(tx);
     }

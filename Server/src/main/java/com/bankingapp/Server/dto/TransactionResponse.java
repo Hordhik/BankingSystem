@@ -15,12 +15,14 @@ public class TransactionResponse {
     private BigDecimal fee;
     private BigDecimal tax;
     private String status;
+    private String description;
 
     public TransactionResponse() {
     }
 
     public TransactionResponse(Long id, String type, BigDecimal amount, Long accountId, Long counterpartyAccountId,
-            String counterpartyName, String transactionId, LocalDateTime createdAt, BigDecimal fee, BigDecimal tax, String status) {
+            String counterpartyName, String transactionId, LocalDateTime createdAt, BigDecimal fee, BigDecimal tax,
+            String status, String description) {
         this.id = id;
         this.type = type;
         this.amount = amount;
@@ -32,6 +34,7 @@ public class TransactionResponse {
         this.fee = fee;
         this.tax = tax;
         this.status = status;
+        this.description = description;
     }
 
     public Long getId() {
@@ -122,6 +125,14 @@ public class TransactionResponse {
         this.status = status;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public static TransactionResponseBuilder builder() {
         return new TransactionResponseBuilder();
     }
@@ -138,6 +149,7 @@ public class TransactionResponse {
         private BigDecimal fee;
         private BigDecimal tax;
         private String status;
+        private String description;
 
         TransactionResponseBuilder() {
         }
@@ -197,9 +209,14 @@ public class TransactionResponse {
             return this;
         }
 
+        public TransactionResponseBuilder description(String description) {
+            this.description = description;
+            return this;
+        }
+
         public TransactionResponse build() {
             return new TransactionResponse(id, type, amount, accountId, counterpartyAccountId, counterpartyName,
-                    transactionId, createdAt, fee, tax, status);
+                    transactionId, createdAt, fee, tax, status, description);
         }
 
         public String toString() {

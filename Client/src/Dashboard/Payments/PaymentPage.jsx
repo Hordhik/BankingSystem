@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import QRCode from 'react-qr-code';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import './PaymentPage.css';
 import { CreditCard, Landmark, Smartphone, Wallet, LayoutDashboard, ArrowLeft, Check, XCircle } from 'lucide-react';
-import { transfer, cardTransfer, getAccounts, getCards, getAllCards } from '../../services/bankApi';
+import { transfer, cardTransfer, getAccounts, getCards, getAllCards, payLoan } from '../../services/bankApi';
 
 export default function PaymentPage() {
   const location = useLocation();
@@ -131,6 +131,17 @@ export default function PaymentPage() {
     fetchData();
   }, []);
 
+  const myAccountId = localStorage.getItem('primaryAccountId');
+
+  const otherCards = useMemo(() => {
+    const myCardNumbers = cards.map(c => c.cardNumber);
+    return allCards.filter(c => !myCardNumbers.includes(c.cardNumber));
+  }, [cards, allCards]);
+
+  const otherAccounts = useMemo(() => {
+    return accounts.filter(a => String(a.id) !== String(myAccountId));
+  }, [accounts, myAccountId]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setPaymentDetails((prev) => ({ ...prev, [name]: value }));
@@ -178,11 +189,17 @@ export default function PaymentPage() {
 
       if (isLoanPayment) {
         // Loan Payment Logic
+        const userId = localStorage.getItem('userId');
+        const accountId = localStorage.getItem('primaryAccountId');
+        const loanType = loanDetails?.product || 'Loan';
+        
+        await payLoan(userId, accountId, numericAmount, loanType);
+
         const receipt = {
           transactionId: "TXN" + Math.random().toString(36).substr(2, 9).toUpperCase(),
           dateISO: new Date().toISOString(),
           amount: `- ₹${numericAmount.toFixed(2)}`,
-          to: `Loan Repayment (${loanDetails?.product || 'Loan'})`,
+          to: `Loan Repayment (${loanType})`,
           type: 'LOAN_PAYMENT',
           status: 'Completed',
           fee: `₹0.00`,
@@ -239,7 +256,7 @@ export default function PaymentPage() {
         // Remove spaces from card numbers
         const toCard = paymentDetails.receiverCardNumber.replace(/\s/g, '');
 
-        await cardTransfer(fromCard, toCard, amount, paymentDetails.cvv, paymentDetails.expiry, paymentDetails.pin);
+        await cardTransfer(paymentDetails.myCardNumber, toCard, amount, paymentDetails.cvv, paymentDetails.expiry, paymentDetails.pin);
 
         // Construct receipt object for Card Transfer
         const receipt = {
@@ -640,7 +657,7 @@ export default function PaymentPage() {
                     required
                   >
                     <option value="">Choose Card</option>
-                    {allCards.map(card => (
+                    {otherCards.map(card => (
                       <option key={card.id} value={card.cardNumber}>
                         {card.ownerName} ({card.cardNumber})
                       </option>
@@ -695,7 +712,7 @@ export default function PaymentPage() {
                           required
                         >
                           <option value="">Choose Account</option>
-                          {accounts.map(acc => (
+                          {otherAccounts.map(acc => (
                             <option key={acc.id} value={acc.id}>
                               {acc.ownerName}  ({acc.accountNumber})
                             </option>

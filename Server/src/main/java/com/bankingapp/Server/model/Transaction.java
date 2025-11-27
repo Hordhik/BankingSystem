@@ -40,11 +40,15 @@ public class Transaction {
     @Column(nullable = false)
     private String status; // SUCCESS, FAILED
 
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
     public Transaction() {
     }
 
     public Transaction(Long id, Account account, String type, BigDecimal amount, Long counterpartyAccountId,
-            String transactionId, LocalDateTime createdAt, BigDecimal fee, BigDecimal tax, String status) {
+            String transactionId, LocalDateTime createdAt, BigDecimal fee, BigDecimal tax, String status,
+            String description) {
         this.id = id;
         this.account = account;
         this.type = type;
@@ -55,6 +59,7 @@ public class Transaction {
         this.fee = fee;
         this.tax = tax;
         this.status = status;
+        this.description = description;
     }
 
     public Long getId() {
@@ -97,44 +102,12 @@ public class Transaction {
         this.counterpartyAccountId = counterpartyAccountId;
     }
 
-    public String getTransactionId() {
-        return transactionId;
+    public String getDescription() {
+        return description;
     }
 
-    public void setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public BigDecimal getFee() {
-        return fee;
-    }
-
-    public void setFee(BigDecimal fee) {
-        this.fee = fee;
-    }
-
-    public BigDecimal getTax() {
-        return tax;
-    }
-
-    public void setTax(BigDecimal tax) {
-        this.tax = tax;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public static TransactionBuilder builder() {
@@ -152,6 +125,7 @@ public class Transaction {
         private BigDecimal fee;
         private BigDecimal tax;
         private String status;
+        private String description;
 
         TransactionBuilder() {
         }
@@ -206,16 +180,65 @@ public class Transaction {
             return this;
         }
 
-        public Transaction build() {
-            return new Transaction(id, account, type, amount, counterpartyAccountId, transactionId, createdAt, fee,
-                    tax, status);
+        public TransactionBuilder description(String description) {
+            this.description = description;
+            return this;
         }
 
-        public String toString() {
-            return "Transaction.TransactionBuilder(id=" + this.id + ", account=" + this.account + ", type=" + this.type
-                    + ", amount=" + this.amount + ", counterpartyAccountId=" + this.counterpartyAccountId
-                    + ", transactionId=" + this.transactionId + ", createdAt=" + this.createdAt + ", fee=" + this.fee
-                    + ", tax=" + this.tax + ", status=" + this.status + ")";
+        public Transaction build() {
+            Transaction transaction = new Transaction();
+            transaction.setId(id);
+            transaction.setAccount(account);
+            transaction.setType(type);
+            transaction.setAmount(amount);
+            transaction.setCounterpartyAccountId(counterpartyAccountId);
+            transaction.setTransactionId(transactionId);
+            transaction.setCreatedAt(createdAt);
+            transaction.setFee(fee);
+            transaction.setTax(tax);
+            transaction.setStatus(status);
+            transaction.setDescription(description);
+            return transaction;
         }
+    }
+
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public BigDecimal getFee() {
+        return fee;
+    }
+
+    public void setFee(BigDecimal fee) {
+        this.fee = fee;
+    }
+
+    public BigDecimal getTax() {
+        return tax;
+    }
+
+    public void setTax(BigDecimal tax) {
+        this.tax = tax;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
