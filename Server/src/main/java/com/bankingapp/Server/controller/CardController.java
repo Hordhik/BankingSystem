@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 public class CardController {
 
     private final CardRepository cardRepository;
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yy");
 
     public CardController(CardRepository cardRepository) {
         this.cardRepository = cardRepository;
@@ -29,6 +31,8 @@ public class CardController {
                         .cardNumber(card.getCardNumber())
                         .ownerName(card.getUser().getFullname())
                         .cardType(card.getCardType())
+                        .expiryDate(card.getExpiryDate().format(formatter))
+                        .cvv(card.getCvv())
                         .build())
                 .collect(Collectors.toList());
         return ResponseEntity.ok(cards);

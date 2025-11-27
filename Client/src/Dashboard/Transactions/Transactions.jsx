@@ -117,6 +117,7 @@ const Transactions = () => {
     if (filter === 'debited') return transactions.filter(tx => tx.amount.startsWith('-') && tx.status !== 'Failed');
     if (filter === 'failed') return transactions.filter(tx => tx.status.toLowerCase() === 'failed');
     if (filter === 'bills') return transactions.filter(tx => tx.type.toLowerCase().includes('bill'));
+    if (filter === 'emi') return transactions.filter(tx => tx.type === 'LOAN_PAYMENT' || tx.type === 'Monthly EMI');
     return transactions.filter(tx => tx.channel === filter);
   }, [transactions, filter]);
 
@@ -283,6 +284,7 @@ const Transactions = () => {
                 { key: 'self', label: 'Self Transfer' },
                 { key: 'upi', label: 'UPI' },
                 { key: 'bills', label: 'Bills' },
+                { key: 'emi', label: 'EMI' },
               ].map(({ key, label }) => (
                 <button key={key} className={`chip ${filter === key ? 'active' : ''}`} onClick={() => setFilter(key)}>
                   {label}

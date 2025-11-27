@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import QRCode from 'react-qr-code';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import './PaymentPage.css';
 import { CreditCard, Landmark, Smartphone, Wallet, LayoutDashboard, ArrowLeft, Check, XCircle } from 'lucide-react';
 import { transfer, cardTransfer, getAccounts, getCards } from '../../services/bankApi';
 
 export default function PaymentPage() {
+  const location = useLocation();
   const { type } = useParams();
   const navigate = useNavigate();
   const [selectedPayment, setSelectedPayment] = useState('card');
@@ -21,6 +22,7 @@ export default function PaymentPage() {
     receiverAccount: '',
     amount: '',
   });
+  // ... existing billDetails state ...
   const [billDetails, setBillDetails] = useState({
     operator: '',
     provider: '',
@@ -37,6 +39,10 @@ export default function PaymentPage() {
   const [showFailure, setShowFailure] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // Loan Payment State
+  const isLoanPayment = location.state?.isLoanPayment || false;
+  const loanDetails = location.state?.loanDetails || null;
+
   const paymentTypes = [
     { key: 'card', label: 'Card', icon: CreditCard },
     { key: 'banks', label: 'Bank Transfer', icon: Landmark },
@@ -47,8 +53,21 @@ export default function PaymentPage() {
 
   const bankList = ['HDFC Bank', 'ICICI Bank', 'SBI', 'Axis Bank', 'Kotak Bank'];
 
-  // Preselect via route param if provided
+  // Preselect via route param or location state
   useEffect(() => {
+    if (isLoanPayment) {
+      if (location.state?.preselectedMethod) {
+        // Map uppercase to lowercase if needed, or use direct value
+        const method = location.state.preselectedMethod.toLowerCase();
+        const methodMap = { 'card': 'card', 'upi': 'upi', 'netbanking': 'banks', 'banks': 'banks' };
+        setSelectedPayment(methodMap[method] || 'card');
+      }
+      if (location.state?.amount) {
+        setPaymentDetails(prev => ({ ...prev, amount: String(location.state.amount) }));
+      }
+      return;
+    }
+
     if (!type) return;
     const key = String(type).toLowerCase();
     const match = paymentTypes.find(p => p.key === key);
@@ -58,60 +77,56 @@ export default function PaymentPage() {
     } else if (billTypeKeys.includes(key)) {
       setBillType(key);
     }
-  }, [type]);
+  }, [type, isLoanPayment]);
 
-  // Auto-fill card details from localStorage
+  // Auto-fill card details from localStorage or Database
   useEffect(() => {
     const savedCard = localStorage.getItem('cardNumber');
-    const savedExpiry = localStorage.getItem('expiryDate');
-    const savedCvv = localStorage.getItem('cvv');
-    const savedHolder = localStorage.getItem('fullname');
-
     if (savedCard) {
       setPaymentDetails(prev => ({
         ...prev,
-        myCardNumber: savedCard.replace(/(\d{4})(?=\d)/g, '$1 '), // Format with spaces
-        expiry: savedExpiry || '',
-        cvv: savedCvv || '',
-        cardHolder: savedHolder || ''
+        myCardNumber: savedCard,
+        cardHolder: localStorage.getItem('cardHolder') || '',
+        expiry: localStorage.getItem('cardExpiry') || '',
+        cvv: ''
       }));
     }
   }, []);
 
-  // Generate a fresh QR value when UPI/QR is selected or amount changes
+  // Generate QR Code
   useEffect(() => {
-    if (selectedPayment !== 'upi') return;
-    const ref = `UPI-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
-    setQrRef(ref);
-    const amt = amount || 0;
-    const payload = `upi://pay?pa=demo@bank&pn=Demo%20Merchant&am=${amt}&tn=${encodeURIComponent(ref)}`;
-    setQrValue(payload);
-  }, [selectedPayment, paymentDetails.amount, billType]);
-
-  // Fetch accounts when Bank Transfer is selected
-  useEffect(() => {
-    if (selectedPayment === 'banks') {
-      getAccounts().then(data => {
-        const myAccountId = localStorage.getItem('primaryAccountId');
-        // Filter out current user's account
-        const filtered = data.filter(acc => acc.id.toString() !== myAccountId);
-        setAccounts(filtered);
-      }).catch(err => console.error('Failed to fetch accounts:', err));
+    if (selectedPayment === 'upi') {
+      const randomRef = Math.floor(100000 + Math.random() * 900000);
+      setQrRef(randomRef);
+      setQrValue(`upi://pay?pa=shop@bank&pn=Shop&am=${paymentDetails.amount || '0'}&tr=${randomRef}&tn=Payment`);
     }
-  }, [selectedPayment]);
+  }, [selectedPayment, paymentDetails.amount]);
 
-  // Fetch cards when Card Transfer is selected
+  // Fetch Accounts and Cards
   useEffect(() => {
-    if (selectedPayment === 'card') {
-      getCards().then(data => {
-        const myCardNumber = localStorage.getItem('cardNumber');
-        // Filter out current user's card if needed, or just show all for now
-        // Assuming we want to show OTHER cards to transfer TO
-        const filtered = data.filter(c => c.cardNumber !== myCardNumber);
-        setCards(filtered);
-      }).catch(err => console.error('Failed to fetch cards:', err));
-    }
-  }, [selectedPayment]);
+    const fetchData = async () => {
+      try {
+        const [cardsData, accountsData] = await Promise.all([getCards(), getAccounts()]);
+        setCards(cardsData || []);
+        setAccounts(accountsData || []);
+
+        // Prefill sender card details if available
+        if (cardsData && cardsData.length > 0) {
+          const myCard = cardsData[0]; // Assuming the first card is the primary one
+          setPaymentDetails(prev => ({
+            ...prev,
+            myCardNumber: prev.myCardNumber || myCard.cardNumber,
+            cardHolder: prev.cardHolder || myCard.ownerName,
+            expiry: prev.expiry || myCard.expiryDate,
+            cvv: prev.cvv || myCard.cvv
+          }));
+        }
+      } catch (error) {
+        console.error("Failed to fetch payment data:", error);
+      }
+    };
+    fetchData();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -124,8 +139,9 @@ export default function PaymentPage() {
   };
 
   const amount = parseAmt(paymentDetails.amount);
-  const convenienceFee = amount ? Math.max(2, amount * 0.01) : 0; // 1% (min 2)
-  const taxes = amount ? +(convenienceFee * 0.18).toFixed(2) : 0; // 18% GST on fee
+  // Zero fees for loan payments
+  const convenienceFee = isLoanPayment ? 0 : (amount ? Math.max(2, amount * 0.01) : 0);
+  const taxes = isLoanPayment ? 0 : (amount ? +(convenienceFee * 0.18).toFixed(2) : 0);
   const total = +(amount + convenienceFee + taxes).toFixed(2);
 
   const handlePay = async (e) => {
@@ -140,8 +156,8 @@ export default function PaymentPage() {
       return;
     }
 
-    // For bank transfer, validate receiver
-    if (selectedPayment === 'banks' && !paymentDetails.receiverAccount) {
+    // For bank transfer, validate receiver ONLY if NOT loan payment
+    if (!isLoanPayment && selectedPayment === 'banks' && !paymentDetails.receiverAccount) {
       alert('Please select a receiver account');
       return;
     }
@@ -156,6 +172,32 @@ export default function PaymentPage() {
       const fee = convenienceFee;
       const tax = taxes;
       const totalDebited = (numericAmount + fee + tax).toFixed(2);
+
+      if (isLoanPayment) {
+        // Loan Payment Logic
+        const receipt = {
+          transactionId: "TXN" + Math.random().toString(36).substr(2, 9).toUpperCase(),
+          dateISO: new Date().toISOString(),
+          amount: `- ₹${numericAmount.toFixed(2)}`,
+          to: `Loan Repayment (${loanDetails?.product || 'Loan'})`,
+          type: 'LOAN_PAYMENT',
+          status: 'Completed',
+          fee: `₹0.00`,
+          tax: `₹0.00`,
+          totalDebited: `₹${totalDebited}`
+        };
+
+        setShowSuccess(true);
+        setTimeout(() => {
+          navigate('/dashboard', {
+            state: {
+              activeTab: 'Transactions',
+              receipt: receipt
+            }
+          });
+        }, 2500);
+        return;
+      }
 
       if (selectedPayment === 'banks') {
         const fromAccountId = localStorage.getItem('primaryAccountId');
@@ -240,8 +282,8 @@ export default function PaymentPage() {
         transactionId: "TXN" + Math.random().toString(36).substr(2, 9).toUpperCase(),
         dateISO: new Date().toISOString(),
         amount: `- ₹${numericAmount.toFixed(2)}`,
-        to: accounts.find(a => a.id == paymentDetails.receiverAccount)?.ownerName || 'Unknown',
-        type: 'TRANSFER_SENT',
+        to: isLoanPayment ? `Loan Repayment (${loanDetails?.product})` : (accounts.find(a => a.id == paymentDetails.receiverAccount)?.ownerName || 'Unknown'),
+        type: isLoanPayment ? 'LOAN_PAYMENT' : 'TRANSFER_SENT',
         status: 'Failed',
         fee: `₹${fee.toFixed(2)}`,
         tax: `₹${tax.toFixed(2)}`,
@@ -577,85 +619,110 @@ export default function PaymentPage() {
                 </div>
 
                 <label>Receiver Card Number</label>
-                <select
-                  name="receiverCardNumber"
-                  value={paymentDetails.receiverCardNumber}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="">Choose Card</option>
-                  {cards.map(card => (
-                    <option key={card.id} value={card.cardNumber}>
-                      {card.ownerName} ({card.cardNumber})
-                    </option>
-                  ))}
-                </select>
+                {!isLoanPayment && (
+                  <select
+                    name="receiverCardNumber"
+                    value={paymentDetails.receiverCardNumber}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="">Choose Card</option>
+                    {cards.map(card => (
+                      <option key={card.id} value={card.cardNumber}>
+                        {card.ownerName} ({card.cardNumber})
+                      </option>
+                    ))}
+                  </select>
+                )}
+                {isLoanPayment && (
+                  <input
+                    type="text"
+                    value="Loan Repayment"
+                    disabled
+                    className="disabled-input"
+                  />
+                )}
               </>
             )}
 
             {selectedPayment !== 'card' && (
               <>
                 <h3>{selectedPayment === 'wallet' ? 'Wallet Details' : 'Receiver Details'}</h3>
-                {selectedPayment === 'upi' && (
-                  <div className="qr-box">
-                    <div className="qr-inner">
-                      <QRCode value={qrValue || 'upi://pay?pa=demo@bank'} size={140} />
-                    </div>
-                    <div className="qr-meta">
-                      <span>Scan to pay</span>
-                      <span className="qr-ref">Ref: {qrRef || '—'}</span>
-                    </div>
-                  </div>
-                )}
-                {selectedPayment === 'banks' ? (
+
+                {isLoanPayment ? (
                   <>
-                    <label>Select Receiver Account</label>
-                    <select
-                      name="receiverAccount"
-                      value={paymentDetails.receiverAccount}
-                      onChange={handleInputChange}
-                      required
-                    >
-                      <option value="">Choose Account</option>
-                      {accounts.map(acc => (
-                        <option key={acc.id} value={acc.id}>
-                          {acc.ownerName}  ({acc.accountNumber})
-                        </option>
-                      ))}
-                    </select>
+                    <label>Receiver Account</label>
+                    <input
+                      type="text"
+                      value="Loan Repayment"
+                      disabled
+                      className="disabled-input"
+                    />
                   </>
                 ) : (
                   <>
-                    <label>{selectedPayment === 'wallet' ? 'Wallet ID / Mobile' : 'Receiver Account / UPI'}</label>
-                    <input
-                      type="text"
-                      name="receiverAccount"
-                      placeholder={
-                        selectedPayment === 'upi' ? 'name@bank' :
-                          selectedPayment === 'wallet' ? 'wallet id or mobile number' :
-                            'Enter account number'
-                      }
-                      value={paymentDetails.receiverAccount}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </>
-                )}
+                    {selectedPayment === 'upi' && (
+                      <div className="qr-box">
+                        <div className="qr-inner">
+                          <QRCode value={qrValue || 'upi://pay?pa=demo@bank'} size={140} />
+                        </div>
+                        <div className="qr-meta">
+                          <span>Scan to pay</span>
+                          <span className="qr-ref">Ref: {qrRef || '—'}</span>
+                        </div>
+                      </div>
+                    )}
+                    {selectedPayment === 'banks' ? (
+                      <>
+                        <label>Select Receiver Account</label>
+                        <select
+                          name="receiverAccount"
+                          value={paymentDetails.receiverAccount}
+                          onChange={handleInputChange}
+                          required
+                        >
+                          <option value="">Choose Account</option>
+                          {accounts.map(acc => (
+                            <option key={acc.id} value={acc.id}>
+                              {acc.ownerName}  ({acc.accountNumber})
+                            </option>
+                          ))}
+                        </select>
+                      </>
+                    ) : (
+                      <>
+                        <label>{selectedPayment === 'wallet' ? 'Wallet ID / Mobile' : 'Receiver Account / UPI'}</label>
+                        <input
+                          type="text"
+                          name="receiverAccount"
+                          placeholder={
+                            selectedPayment === 'upi' ? 'name@bank' :
+                              selectedPayment === 'wallet' ? 'wallet id or mobile number' :
+                                'Enter account number'
+                          }
+                          value={paymentDetails.receiverAccount}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </>
+                    )}
 
-                {selectedPayment === 'banks' && (
-                  <>
-                    <label>Select Bank</label>
-                    <select
-                      name="bank"
-                      value={selectedBank}
-                      onChange={(e) => setSelectedBank(e.target.value)}
-                      required
-                    >
-                      <option value="">Choose Bank</option>
-                      {bankList.map((bank) => (
-                        <option key={bank} value={bank}>{bank}</option>
-                      ))}
-                    </select>
+                    {selectedPayment === 'banks' && (
+                      <>
+                        <label>Select Bank</label>
+                        <select
+                          name="bank"
+                          value={selectedBank}
+                          onChange={(e) => setSelectedBank(e.target.value)}
+                          required
+                        >
+                          <option value="">Choose Bank</option>
+                          {bankList.map((bank) => (
+                            <option key={bank} value={bank}>{bank}</option>
+                          ))}
+                        </select>
+                      </>
+                    )}
                   </>
                 )}
               </>

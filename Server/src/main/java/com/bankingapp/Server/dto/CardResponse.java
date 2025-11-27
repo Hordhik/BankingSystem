@@ -5,15 +5,19 @@ public class CardResponse {
     private String cardNumber;
     private String ownerName;
     private String cardType;
+    private String expiryDate;
+    private String cvv;
 
     public CardResponse() {
     }
 
-    public CardResponse(Long id, String cardNumber, String ownerName, String cardType) {
+    public CardResponse(Long id, String cardNumber, String ownerName, String cardType, String expiryDate, String cvv) {
         this.id = id;
         this.cardNumber = cardNumber;
         this.ownerName = ownerName;
         this.cardType = cardType;
+        this.expiryDate = expiryDate;
+        this.cvv = cvv;
     }
 
     public Long getId() {
@@ -48,6 +52,22 @@ public class CardResponse {
         this.cardType = cardType;
     }
 
+    public String getExpiryDate() {
+        return expiryDate;
+    }
+
+    public void setExpiryDate(String expiryDate) {
+        this.expiryDate = expiryDate;
+    }
+
+    public String getCvv() {
+        return cvv;
+    }
+
+    public void setCvv(String cvv) {
+        this.cvv = cvv;
+    }
+
     public static CardResponseBuilder builder() {
         return new CardResponseBuilder();
     }
@@ -57,6 +77,8 @@ public class CardResponse {
         private String cardNumber;
         private String ownerName;
         private String cardType;
+        private String expiryDate;
+        private String cvv;
 
         CardResponseBuilder() {
         }
@@ -81,8 +103,18 @@ public class CardResponse {
             return this;
         }
 
+        public CardResponseBuilder expiryDate(String expiryDate) {
+            this.expiryDate = expiryDate;
+            return this;
+        }
+
+        public CardResponseBuilder cvv(String cvv) {
+            this.cvv = cvv;
+            return this;
+        }
+
         public CardResponse build() {
-            return new CardResponse(id, cardNumber, ownerName, cardType);
+            return new CardResponse(id, cardNumber, ownerName, cardType, expiryDate, cvv);
         }
     }
 }

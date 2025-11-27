@@ -1,7 +1,7 @@
 .portfolio-section-dashboard {
   padding: 3rem 2rem;
   font-family: "Nunito", sans-serif;
-  border-top: 1px solid #eaeaea; 
+  border-top: 1px solid #eaeaea;
   margin-top: 3rem;
 }
 
@@ -14,7 +14,7 @@
 }
 
 .portfolio-table-container {
-  overflow-x: auto; 
+  overflow-x: auto;
 }
 
 .portfolio-table {
@@ -50,42 +50,439 @@
 }
 
 .status-active {
-  background-color: #e0f2f1; 
+  background-color: #e0f2f1;
   color: #00796b;
 }
 
 .status-pending {
-  background-color: #fff3e0; 
+  background-color: #fff3e0;
   color: #e65100;
 }
 
 .status-in-verification {
-  background-color: #fff3e0; 
+  background-color: #fff3e0;
   color: #e65100;
 }
 
 .status-rejected {
-  background-color: #ffebee; 
+  background-color: #ffebee;
   color: #c62828;
 }
 
 .status-approved {
-  background-color: #e8f5e9; 
+  background-color: #e8f5e9;
   color: #2e7d32;
 }
 
 .status-growing {
-  background-color: #e3f2fd; 
+  background-color: #e3f2fd;
   color: #1565c0;
 }
 
 .status-maturing {
-  background-color: #fff3e0; 
+  background-color: #fff3e0;
   color: #e65100;
 }
 
 .rejection-note {
   margin-top: 6px;
   font-size: 0.8rem;
-  color: #b91c1c; /* red tone */
+  color: #b91c1c;
+  /* red tone */
+}
+
+/* Clickable Rows */
+.clickable-row {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.clickable-row:hover {
+  background-color: #f8fafc;
+}
+
+/* Modal Styles (Consistent with LoansSection) */
+.portfolio-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.portfolio-modal {
+  background-color: #ffffff;
+  border-radius: 32px;
+  padding: 3rem;
+  width: 90%;
+  max-width: 700px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.modal-header h3 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+  letter-spacing: -0.03em;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #64748b;
+  transition: color 0.2s;
+  line-height: 1;
+}
+
+.close-btn:hover {
+  color: #0f172a;
+}
+
+/* Progress Grid */
+.progress-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.progress-card {
+  background: #f8fafc;
+  padding: 1.5rem;
+  border-radius: 20px;
+  text-align: center;
+  border: 1px solid #e2e8f0;
+}
+
+.progress-card .label {
+  display: block;
+  font-size: 0.8rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.progress-card .value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.progress-card .value.highlight {
+  color: #2563eb;
+}
+
+/* Progress Bar */
+.progress-bar-container {
+  margin-bottom: 2.5rem;
+}
+
+.progress-bar {
+  height: 12px;
+  background: #e2e8f0;
+  border-radius: 100px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+  border-radius: 100px;
+  transition: width 1s ease-out;
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+/* Loan Info Grid */
+.loan-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  padding: 2rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.info-item .label {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.info-item .value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.status-text {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+.status-text.active {
+  color: #059669;
+}
+
+.status-text.approved {
+  color: #059669;
+}
+
+.status-text.pending {
+  color: #d97706;
+}
+
+/* Payment Actions */
+.payment-actions {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.pay-btn {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+}
+
+.pay-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+}
+
+.pay-btn:active {
+  transform: translateY(0);
+}
+
+/* Amortization Section */
+.amortization-section {
+  margin-top: 2rem;
+}
+
+.amortization-section h4 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 1rem;
+}
+
+.status-text.rejected {
+  color: #dc2626;
+}
+
+@media (max-width: 600px) {
+  .portfolio-modal {
+    padding: 1.5rem;
+  }
+
+  .loan-info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Secondary Button (Premium Dark) */
+.pay-btn.secondary {
+  background: #0f172a;
+  border: none;
+  color: white;
+  margin-left: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.2);
+}
+
+.pay-btn.secondary:hover {
+  background: #1e293b;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.3);
+}
+
+/* Completed Tag */
+.completed-tag {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background: #dcfce7;
+  color: #166534;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid #bbf7d0;
+  text-align: center;
+  width: 100%;
+}
+
+.pay-btn.full-width {
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.cancel-btn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-weight: 600;
+  margin-top: 1rem;
+  cursor: pointer;
+  width: 100%;
+}
+
+/* Payment Selection */
+.payment-selection {
+  text-align: center;
+  padding: 1rem;
+}
+
+.payment-summary {
+  font-size: 1.1rem;
+  color: #475569;
+  margin-bottom: 2rem;
+}
+
+.payment-summary .amount {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  display: block;
+  margin-top: 0.5rem;
+}
+
+.method-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.method-card {
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.method-card:hover {
+  border-color: #93c5fd;
+  background: #eff6ff;
+}
+
+.method-card.selected {
+  border-color: #2563eb;
+  background: #eff6ff;
+  color: #2563eb;
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.1);
+}
+
+/* Transaction History */
+.transactions-section {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.transactions-section h4 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 1rem;
+}
+
+/* Processing & Success States */
+.processing-state,
+.success-state {
+  text-align: center;
+  padding: 3rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e2e8f0;
+  border-top: 4px solid #2563eb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1.5rem auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.success-icon {
+  width: 60px;
+  height: 60px;
+  background: #22c55e;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin: 0 auto 1.5rem auto;
+}
+
+.success-state h4 {
+  font-size: 1.5rem;
+  color: #0f172a;
+  margin-bottom: 0.5rem;
+}
+
+.success-state p {
+  color: #64748b;
+  margin-bottom: 2rem;
 }
