@@ -6,8 +6,13 @@ const StatCard = ({ title, value, change, icon: Icon, color = 'primary' }) => {
       <div className="stat-card-header">
         <h3 className="stat-title">{title}</h3>
         {Icon && (
-          <div className="stat-icon-wrapper">
-            <Icon size={20} strokeWidth={1.5} />
+          <div className="stat-icon-wrapper" style={{
+            background: color === 'primary' ? 'rgba(0,0,0,0.05)' :
+              color === 'success' ? 'rgba(0,0,0,0.05)' :
+                color === 'warning' ? 'rgba(0,0,0,0.05)' : 'rgba(0,0,0,0.05)',
+            color: '#111'
+          }}>
+            <Icon size={22} strokeWidth={1.5} />
           </div>
         )}
       </div>
@@ -15,9 +20,12 @@ const StatCard = ({ title, value, change, icon: Icon, color = 'primary' }) => {
       <div className="stat-content">
         <h2 className="stat-value">{value}</h2>
         {change && (
-          <span className={`stat-change ${change.startsWith('+') ? 'positive' : 'negative'}`}>
-            {change}
-          </span>
+          <div className="stat-footer">
+            <span className={`stat-change ${change.startsWith('+') ? 'positive' : 'negative'}`}>
+              {change}
+            </span>
+            <span className="stat-period">vs last month</span>
+          </div>
         )}
       </div>
     </div>
