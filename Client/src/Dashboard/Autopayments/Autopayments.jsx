@@ -141,6 +141,12 @@ const Autopayments = ({ setActiveTab }) => {
                                     <div className="loan-info">
                                         <h4>{loan.loanType}</h4>
                                         <p>Account: {loan.accountNumber}</p>
+                                        {loan.details && loan.details.includes("Paid:") && (
+                                            <p className="paid-status" style={{ color: 'green', fontSize: '0.85rem', marginTop: '4px' }}>
+                                                <CheckCircle size={12} style={{ display: 'inline', marginRight: '4px' }} />
+                                                {loan.details.split('|').find(p => p.trim().startsWith('Paid:')).trim()}
+                                            </p>
+                                        )}
                                     </div>
                                     <div className="loan-emi">
                                         {loan.monthlyEmi}

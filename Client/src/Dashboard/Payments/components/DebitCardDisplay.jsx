@@ -65,10 +65,12 @@ export const DebitCardDisplay = () => {
               <svg className="debit-card__vendor-logo" viewBox="0 0 100 62" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <text x="10" y="40" fontFamily="Arial" fontSize="24" fill="white" fontWeight="bold">RuPay</text>
               </svg>
-            ) : (
+            ) : card.network === 'Visa' ? (
               <svg className="debit-card__vendor-logo" viewBox="0 0 100 62" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fontFamily="Arial" fontSize="28" fill="white" fontStyle="italic" fontWeight="bold">VISA</text>
               </svg>
+            ) : (
+              <span style={{ color: 'white', fontWeight: 'bold', fontSize: '18px', letterSpacing: '1px' }}>DEBIT</span>
             )}
           </div>
         </div>

@@ -54,7 +54,7 @@ public class CardController {
                         .build())
                 .collect(Collectors.toList());
         System.out.println("Returning cards for user " + email + ": " + cards.size());
-        cards.forEach(c -> System.out.println("Card: " + c.getCardNumber() + ", Name: " + c.getCardName() + ", Network: " + c.getNetwork()));
+        cards.forEach(c -> System.out.println("Card: " + c.getCardNumber() + ", Name: " + c.getCardName() + ", Network: " + c.getNetwork() + ", Primary: " + c.isPrimary()));
         return ResponseEntity.ok(cards);
 
     }

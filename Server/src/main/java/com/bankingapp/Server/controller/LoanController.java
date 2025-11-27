@@ -101,6 +101,7 @@ public class LoanController {
         response.setTotalPayable(loan.getTotalPayable() != null ? ("₹" + loan.getTotalPayable().setScale(0, java.math.RoundingMode.HALF_UP)) : "--");
         response.setDetails(loan.getDetails() != null ? loan.getDetails() : "Awaiting approval");
         response.setAdminReason(loan.getAdminReason());
+        response.setEmisPaid(loan.getEmisPaid() != null ? loan.getEmisPaid() : 0);
         response.setCreatedAt(loan.getCreatedAt().toString());
         return response;
     }

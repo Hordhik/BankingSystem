@@ -15,9 +15,13 @@ import java.util.List;
 public class LoanService {
 
     private final LoanRepository repo;
+    private final com.bankingapp.Server.repository.AccountRepository accountRepository;
+    private final com.bankingapp.Server.repository.UserRepository userRepository;
 
-    public LoanService(LoanRepository repo) {
+    public LoanService(LoanRepository repo, com.bankingapp.Server.repository.AccountRepository accountRepository, com.bankingapp.Server.repository.UserRepository userRepository) {
         this.repo = repo;
+        this.accountRepository = accountRepository;
+        this.userRepository = userRepository;
     }
 
     public Loan applyLoan(Loan loan) {
@@ -66,6 +70,15 @@ public class LoanService {
                 "EMI due on " + LocalDate.now().plusMonths(1).getDayOfMonth()
         );
 
+        // Credit loan amount to user account
+        com.bankingapp.Server.model.User user = userRepository.findById(loan.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        com.bankingapp.Server.model.Account account = accountRepository.findByUser(user)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        account.setBalance(account.getBalance().add(P));
+        accountRepository.save(account);
+
         return repo.save(loan);
     }
 
@@ -84,6 +97,35 @@ public class LoanService {
 
     public List<Loan> getAllLoans() {
         return repo.findAll();
+    }
+
+    public BigDecimal calculateTotalEmi(Long userId) {
+        List<Loan> loans = repo.findByUserIdOrderByCreatedAtDesc(userId);
+        return loans.stream()
+                .filter(l -> l.getStatus() == LoanStatus.ACTIVE)
+                .map(Loan::getMonthlyEmi)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    @Transactional
+    public void recordPayment(Long userId) {
+        List<Loan> loans = repo.findByUserIdOrderByCreatedAtDesc(userId);
+        for (Loan loan : loans) {
+            if (loan.getStatus() == LoanStatus.ACTIVE) {
+                int paid = loan.getEmisPaid() == null ? 0 : loan.getEmisPaid();
+                loan.setEmisPaid(paid + 1);
+                
+                // Update next payment date
+                loan.setNextPayment("EMI due on " + LocalDate.now().plusMonths(1).getDayOfMonth());
+                
+                // Update details
+                String currentDetails = loan.getDetails();
+                // Append or update paid status
+                loan.setDetails(currentDetails + " | Paid: " + (paid + 1) + " months");
+                
+                repo.save(loan);
+            }
+        }
     }
 
     public Loan saveLoan(Loan loan) {

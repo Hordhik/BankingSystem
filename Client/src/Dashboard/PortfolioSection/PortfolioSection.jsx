@@ -36,6 +36,7 @@ export const PortfolioSection = () => {
         tenureMonths: parseInt(l.tenure) || 0,
         principalAmount: parseCurrency(l.principalAmount),
         emi: parseCurrency(l.monthlyEmi),
+        emisPaid: l.emisPaid || 0,
         createdAt: l.createdAt || new Date().toISOString() // Fallback if missing
       }));
 
@@ -75,24 +76,15 @@ export const PortfolioSection = () => {
   const closeModal = () => {
     setSelectedLoan(null);
     setPaymentStep('DETAILS');
-    setPaymentType('EMI');
   };
 
   // Helper to calculate progress
   const calculateProgress = (loan) => {
-    // Mocking start date behavior for demo if needed, or using real date
-    const startDate = new Date(loan.createdAt);
+    // Use emisPaid from backend if available
+    let monthsPaid = loan.emisPaid !== undefined ? loan.emisPaid : 0;
 
-    if (isNaN(startDate.getTime())) {
-      return { monthsPaid: 0, monthsRemaining: loan.tenureMonths, totalPaid: 0, balance: loan.tenureMonths * loan.emi };
-    }
-
-    const now = new Date();
-
-    // Calculate months difference
-    let monthsPaid = (now.getFullYear() - startDate.getFullYear()) * 12;
-    monthsPaid -= startDate.getMonth();
-    monthsPaid += now.getMonth();
+    // Fallback to date calculation if emisPaid is 0 (optional, but backend should be source of truth)
+    // For now, we trust backend emisPaid.
 
     // Clamp values
     monthsPaid = Math.max(0, Math.min(monthsPaid, loan.tenureMonths));

@@ -10,13 +10,14 @@ import autopayIcon from '/src/assets/icons/autopay.svg';
 import offersIcon from '/src/assets/icons/offers.svg';
 import { useNavigate } from 'react-router-dom';
 import { DebitCardDisplay } from './components/DebitCardDisplay.jsx';
-import { getHistory, getAccounts } from '../../services/bankApi';
+import { getHistory, getAccounts, getUserLoans } from '../../services/bankApi';
 
 function Payments({ setActiveTab }) {
   const navigate = useNavigate();
   const [balance, setBalance] = useState(parseFloat(localStorage.getItem('primaryAccountBalance') || '0'));
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [totalLoans, setTotalLoans] = useState(0);
 
   const quickTiles = [
     { label: 'Transfer / Pay', icon: transferIcon, action: () => navigate('/payment') },
@@ -30,6 +31,8 @@ function Payments({ setActiveTab }) {
     const fetchData = async () => {
       try {
         const accountId = localStorage.getItem('primaryAccountId');
+        const userId = localStorage.getItem('userId');
+
         if (accountId) {
           // Fetch Transactions
           const history = await getHistory(accountId);
@@ -38,10 +41,16 @@ function Payments({ setActiveTab }) {
           const mappedTransactions = history.map(txn => {
             const isIncoming = txn.type === 'DEPOSIT' || txn.type === 'TRANSFER_RECEIVED';
             const absAmount = Math.abs(parseFloat(txn.amount)).toFixed(2);
+
+            let typeDisplay = txn.type;
+            if (txn.type === 'CARD_AUTOPAY' || txn.type === 'LOAN_AUTOPAYMENT_CARD') {
+              typeDisplay = 'EMI';
+            }
+
             return {
               id: txn.id,
               to: txn.counterpartyName || (txn.type === 'TRANSFER' ? `Account ${txn.counterpartyAccountId || 'Unknown'}` : txn.type),
-              type: txn.type, // DEPOSIT, WITHDRAWAL, TRANSFER
+              type: typeDisplay, // DEPOSIT, WITHDRAWAL, TRANSFER, EMI
               date: new Date(txn.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric' }),
               amount: (isIncoming ? '+ ' : '- ') + '₹' + absAmount,
               status: 'Completed' // Assuming all returned are completed for now
@@ -59,6 +68,18 @@ function Payments({ setActiveTab }) {
             localStorage.setItem('primaryAccountBalance', myAccount.balance);
           }
         }
+
+        if (userId) {
+          const loans = await getUserLoans(userId);
+          const activeLoans = loans.filter(l => l.status === 'ACTIVE');
+          const total = activeLoans.reduce((sum, loan) => {
+            // Parse "₹100,000.00" -> 100000.00
+            const amount = parseFloat(loan.principalAmount.replace(/[₹,]/g, ''));
+            return sum + (isNaN(amount) ? 0 : amount);
+          }, 0);
+          setTotalLoans(total);
+        }
+
       } catch (error) {
         console.error("Failed to fetch dashboard data", error);
       } finally {
@@ -89,7 +110,7 @@ function Payments({ setActiveTab }) {
             </div>
             <div className="mini">
               <div className="mini-title">Loans</div>
-              <div className="mini-value">₹2,50,000,00</div>
+              <div className="mini-value">₹{totalLoans.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
             </div>
             {/* Caption under the Savings tile (first column only) */}
             <div className="mini-caption">{localStorage.getItem('fullname') || 'User'}</div>

@@ -22,13 +22,15 @@ public class TransactionService {
     private final CardRepository cardRepository;
 
     private final TransactionLoggingService transactionLoggingService;
+    private final LoanService loanService;
 
     public TransactionService(AccountRepository accountRepository, TransactionRepository transactionRepository,
-            CardRepository cardRepository, TransactionLoggingService transactionLoggingService) {
+            CardRepository cardRepository, TransactionLoggingService transactionLoggingService, LoanService loanService) {
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
         this.cardRepository = cardRepository;
         this.transactionLoggingService = transactionLoggingService;
+        this.loanService = loanService;
     }
 
     @Transactional
@@ -51,6 +53,10 @@ public class TransactionService {
             throw e;
         }
     }
+    
+    // ... (existing methods)
+
+
 
     @Transactional
     public Account withdraw(Long accountId, BigDecimal amount) {
@@ -178,6 +184,36 @@ public class TransactionService {
                     BigDecimal.ZERO, "FAILED");
             throw e;
         }
+    }
+
+    @Transactional
+    public void processAutopayment(Long userId, BigDecimal amount) {
+        // Find user's primary card or account
+        List<Card> cards = cardRepository.findByUser_UserId(userId);
+        if (cards.isEmpty()) {
+            throw new IllegalArgumentException("No cards found for user to process autopayment");
+        }
+        
+        // Prefer primary card, otherwise first card
+        Card card = cards.stream()
+                .filter(Card::isPrimary)
+                .findFirst()
+                .orElse(cards.get(0));
+
+        Account account = card.getAccount();
+
+        if (account.getBalance().compareTo(amount) < 0) {
+            transactionLoggingService.saveTransaction(account, "AUTOPAY_FAIL", amount, null, BigDecimal.ZERO, BigDecimal.ZERO, "FAILED");
+            throw new IllegalArgumentException("Insufficient funds for autopayment");
+        }
+
+        account.setBalance(account.getBalance().subtract(amount));
+        accountRepository.save(account);
+
+        transactionLoggingService.saveTransaction(account, "CARD_AUTOPAY", amount, null, BigDecimal.ZERO, BigDecimal.ZERO, "SUCCESS");
+        
+        // Update loan status
+        loanService.recordPayment(userId);
     }
 
     public List<TransactionResponse> getTransactionsForAccount(Long accountId, String userEmail) {

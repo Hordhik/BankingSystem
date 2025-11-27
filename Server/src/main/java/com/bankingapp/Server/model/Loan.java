@@ -48,6 +48,9 @@ public class Loan {
     @Column(name = "admin_reason", columnDefinition = "TEXT")
     private String adminReason;
 
+    @Column(name = "emis_paid")
+    private Integer emisPaid = 0;
+
     @Column(name = "next_payment")
     private String nextPayment;
 
@@ -86,6 +89,7 @@ public class Loan {
     public String getDetails() { return details; }
     public LoanStatus getStatus() { return status; }
     public String getAdminReason() { return adminReason; }
+    public Integer getEmisPaid() { return emisPaid; }
     public String getNextPayment() { return nextPayment; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
@@ -103,6 +107,7 @@ public class Loan {
     public void setDetails(String details) { this.details = details; }
     public void setStatus(LoanStatus status) { this.status = status; }
     public void setAdminReason(String adminReason) { this.adminReason = adminReason; }
+    public void setEmisPaid(Integer emisPaid) { this.emisPaid = emisPaid; }
     public void setNextPayment(String nextPayment) { this.nextPayment = nextPayment; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }

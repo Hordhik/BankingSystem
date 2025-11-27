@@ -62,6 +62,9 @@ export const login = (email, password) =>
 export const register = (fullname, email, password, username, accountNumber, ifsc) =>
   request("/auth/register", "POST", { fullname, email, password, username, accountNumber, ifsc });
 
+export const getUserLoans = (userId) =>
+  request(`/loans/user/${userId}`, "GET");
+
 
 export const changePassword = async (userId, data) => {
   const token = localStorage.getItem('token');

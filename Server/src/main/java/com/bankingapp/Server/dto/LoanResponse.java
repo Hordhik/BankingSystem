@@ -13,6 +13,7 @@ public class LoanResponse {
     private String totalPayable;
     private String details;
     private String adminReason;
+    private Integer emisPaid;
     private String createdAt;
 
     public Long getId() { return id; }
@@ -50,6 +51,9 @@ public class LoanResponse {
 
     public String getAdminReason() { return adminReason; }
     public void setAdminReason(String adminReason) { this.adminReason = adminReason; }
+
+    public Integer getEmisPaid() { return emisPaid; }
+    public void setEmisPaid(Integer emisPaid) { this.emisPaid = emisPaid; }
 
     public String getCreatedAt() { return createdAt; }
     public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }

@@ -62,11 +62,16 @@ const Transactions = () => {
           const tax = t.tax ? `₹${t.tax.toFixed(2)}` : null;
           const totalDebited = (t.fee && t.tax) ? `₹${(num + t.fee + t.tax).toFixed(2)}` : null;
 
+          let typeDisplay = t.type;
+          if (t.type === 'CARD_AUTOPAY' || t.type === 'LOAN_AUTOPAYMENT_CARD') {
+            typeDisplay = 'EMI';
+          }
+
           return {
             id: t.id,
             transactionId: t.transactionId || `TXN${t.id}`, // Fallback if backend doesn't send it yet
             to: t.counterpartyName || (t.counterpartyAccountId ? `Account ${t.counterpartyAccountId}` : 'Self / External'),
-            type: t.type,
+            type: typeDisplay,
             dateISO: t.createdAt,
             amount: amountStr,
             status: (t.status === 'SUCCESS' ? 'Completed' : (t.status === 'FAILED' ? 'Failed' : (t.status || 'Completed'))),
@@ -117,7 +122,7 @@ const Transactions = () => {
     if (filter === 'debited') return transactions.filter(tx => tx.amount.startsWith('-') && tx.status !== 'Failed');
     if (filter === 'failed') return transactions.filter(tx => tx.status.toLowerCase() === 'failed');
     if (filter === 'bills') return transactions.filter(tx => tx.type.toLowerCase().includes('bill'));
-    if (filter === 'emi') return transactions.filter(tx => tx.type === 'LOAN_PAYMENT' || tx.type === 'Monthly EMI');
+    if (filter === 'emi') return transactions.filter(tx => tx.type === 'LOAN_PAYMENT' || tx.type === 'Monthly EMI' || tx.type === 'EMI');
     return transactions.filter(tx => tx.channel === filter);
   }, [transactions, filter]);
 
