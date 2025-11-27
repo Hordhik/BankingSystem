@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Settings, Shield, User, Save, RotateCcw, Check, AlertTriangle, Bell, Lock, Globe } from 'lucide-react';
 import './AdminSettings.css';
 
 const AdminSettings = () => {
@@ -36,13 +37,18 @@ const AdminSettings = () => {
     <div className="admin-settings">
       <h2>System Settings</h2>
 
-      {message && <div className="success-message">{message}</div>}
+      {message && (
+        <div className="success-message">
+          <Check size={18} />
+          {message}
+        </div>
+      )}
 
       <div className="settings-container">
         {/* General Settings */}
         <div className="settings-section">
-          <h3>General Settings</h3>
-          
+          <h3><Globe size={20} className="section-icon" /> General Settings</h3>
+
           <div className="setting-item">
             <label>Application Name</label>
             <input
@@ -72,11 +78,29 @@ const AdminSettings = () => {
               <option>GBP</option>
             </select>
           </div>
+
+          <div className="setting-item">
+            <label>Timezone</label>
+            <select>
+              <option>Asia/Kolkata (GMT+5:30)</option>
+              <option>UTC (GMT+0:00)</option>
+              <option>America/New_York (GMT-5:00)</option>
+            </select>
+          </div>
+
+          <div className="setting-item">
+            <label>Language</label>
+            <select>
+              <option>English (US)</option>
+              <option>Hindi</option>
+              <option>Spanish</option>
+            </select>
+          </div>
         </div>
 
         {/* Security Settings */}
         <div className="settings-section">
-          <h3>Security Settings</h3>
+          <h3><Shield size={20} className="section-icon" /> Security Settings</h3>
 
           <div className="setting-item toggle">
             <div className="toggle-info">
@@ -142,9 +166,10 @@ const AdminSettings = () => {
 
         {/* Account Management */}
         <div className="settings-section">
-          <h3>Account Management</h3>
+          <h3><User size={20} className="section-icon" /> Account Management</h3>
 
           <button className="btn-reset-password" onClick={handleResetPassword}>
+            <Lock size={16} style={{ marginRight: 8 }} />
             Reset Admin Password
           </button>
 
@@ -158,34 +183,15 @@ const AdminSettings = () => {
           </div>
         </div>
 
-        {/* System Information */}
-        <div className="settings-section">
-          <h3>System Information</h3>
 
-          <div className="info-grid">
-            <div className="info-item">
-              <label>System Version</label>
-              <p>1.0.0</p>
-            </div>
-            <div className="info-item">
-              <label>Database Status</label>
-              <p><span className="status-online">● Online</span></p>
-            </div>
-            <div className="info-item">
-              <label>Server Status</label>
-              <p><span className="status-online">● Running</span></p>
-            </div>
-            <div className="info-item">
-              <label>Last Backup</label>
-              <p>2024-11-13 at 02:00 AM</p>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div className="settings-footer">
         <button className="btn-cancel">Discard Changes</button>
-        <button className="btn-save" onClick={handleSaveSettings}>Save Settings</button>
+        <button className="btn-save" onClick={handleSaveSettings}>
+          <Save size={18} style={{ marginRight: 8 }} />
+          Save Settings
+        </button>
       </div>
     </div>
   );

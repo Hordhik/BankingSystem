@@ -1,106 +1,149 @@
 .card-requests-container {
-    padding: 20px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .card-requests-container h2 {
-    margin-bottom: 20px;
-    color: #111827;
+    margin: 0 0 24px 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
 }
 
 .requests-table {
     width: 100%;
+    flex: 1;
+    overflow-y: auto;
 }
 
 .table-header {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
-    padding: 15px;
-    background: #f9fafb;
-    border-radius: 8px;
+    padding: 16px 24px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 12px;
+    margin-bottom: 12px;
     font-weight: 600;
-    color: #6b7280;
-    font-size: 14px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .table-body {
-    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .table-row {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
-    padding: 15px;
-    border-bottom: 1px solid #f3f4f6;
+    padding: 16px 24px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 12px;
     align-items: center;
     font-size: 14px;
-    color: #374151;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
 }
 
-.table-row:last-child {
-    border-bottom: none;
+.table-row:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    border-color: rgba(255, 255, 255, 0.9);
 }
 
 .status-badge {
-    padding: 4px 10px;
-    border-radius: 20px;
+    padding: 6px 12px;
+    border-radius: 100px;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 600;
     text-transform: capitalize;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .status-badge.pending {
     background: #fff7ed;
     color: #c2410c;
+    border: 1px solid rgba(194, 65, 12, 0.1);
 }
 
 .status-badge.approved {
     background: #ecfdf5;
     color: #047857;
+    border: 1px solid rgba(4, 120, 87, 0.1);
 }
 
 .status-badge.rejected {
     background: #fef2f2;
     color: #b91c1c;
+    border: 1px solid rgba(185, 28, 28, 0.1);
 }
 
 .actions {
     display: flex;
-    gap: 10px;
+    gap: 8px;
 }
 
 .btn-approve {
-    background: none;
-    border: none;
+    background: #ecfdf5;
+    border: 1px solid rgba(4, 120, 87, 0.1);
     color: #059669;
     cursor: pointer;
-    padding: 5px;
-    border-radius: 50%;
-    transition: background 0.2s;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
 }
 
 .btn-approve:hover {
-    background: #ecfdf5;
+    background: #059669;
+    color: white;
+    transform: scale(1.05);
 }
 
 .btn-reject {
-    background: none;
-    border: none;
+    background: #fef2f2;
+    border: 1px solid rgba(185, 28, 28, 0.1);
     color: #dc2626;
     cursor: pointer;
-    padding: 5px;
-    border-radius: 50%;
-    transition: background 0.2s;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
 }
 
 .btn-reject:hover {
-    background: #fef2f2;
+    background: #dc2626;
+    color: white;
+    transform: scale(1.05);
 }
 
 .no-data {
-    padding: 20px;
+    padding: 40px;
     text-align: center;
-    color: #6b7280;
+    color: var(--text-secondary);
+    font-style: italic;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    border: 1px dashed rgba(0, 0, 0, 0.1);
 }

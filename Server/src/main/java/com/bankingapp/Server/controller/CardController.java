@@ -4,17 +4,19 @@ import com.bankingapp.Server.dto.CardResponse;
 import com.bankingapp.Server.repository.CardRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-//@RequestMapping("/api/cards") // Removed to allow mixed paths
+// @RequestMapping("/api/cards") // Removed to allow mixed paths
 public class CardController {
-
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yy");
     private final com.bankingapp.Server.repository.CardRepository cardRepository;
@@ -23,9 +25,9 @@ public class CardController {
     private final com.bankingapp.Server.repository.AccountRepository accountRepository;
 
     public CardController(com.bankingapp.Server.repository.CardRepository cardRepository,
-                          com.bankingapp.Server.repository.CardApplicationRepository cardApplicationRepository,
-                          com.bankingapp.Server.repository.UserRepository userRepository,
-                          com.bankingapp.Server.repository.AccountRepository accountRepository) {
+            com.bankingapp.Server.repository.CardApplicationRepository cardApplicationRepository,
+            com.bankingapp.Server.repository.UserRepository userRepository,
+            com.bankingapp.Server.repository.AccountRepository accountRepository) {
         this.cardRepository = cardRepository;
         this.cardApplicationRepository = cardApplicationRepository;
         this.userRepository = userRepository;
@@ -33,7 +35,8 @@ public class CardController {
     }
 
     @GetMapping("/api/cards")
-    public ResponseEntity<List<CardResponse>> getUserCards(org.springframework.security.core.Authentication authentication) {
+    public ResponseEntity<List<CardResponse>> getUserCards(
+            org.springframework.security.core.Authentication authentication) {
         String email = authentication.getName();
         com.bankingapp.Server.model.User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -53,8 +56,8 @@ public class CardController {
                         .isPrimary(card.isPrimary())
                         .build())
                 .collect(Collectors.toList());
-        System.out.println("Returning cards for user " + email + ": " + cards.size());
-        cards.forEach(c -> System.out.println("Card: " + c.getCardNumber() + ", Name: " + c.getCardName() + ", Network: " + c.getNetwork() + ", Primary: " + c.isPrimary()));
+        cards.forEach(c -> System.out.println("Card: " + c.getCardNumber() + ", Name: " + c.getCardName()
+                + ", Network: " + c.getNetwork() + ", Primary: " + c.isPrimary()));
         return ResponseEntity.ok(cards);
 
     }
@@ -80,7 +83,8 @@ public class CardController {
     }
 
     @org.springframework.web.bind.annotation.PostMapping("/api/cards/apply")
-    public ResponseEntity<?> applyForCard(@org.springframework.web.bind.annotation.RequestBody java.util.Map<String, String> request) {
+    public ResponseEntity<?> applyForCard(
+            @org.springframework.web.bind.annotation.RequestBody java.util.Map<String, String> request) {
         String userIdStr = request.get("userId");
         String cardType = request.get("cardType");
         String network = request.get("network");
@@ -96,7 +100,8 @@ public class CardController {
         com.bankingapp.Server.model.User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        com.bankingapp.Server.model.CardApplication application = new com.bankingapp.Server.model.CardApplication(user, cardType, network, cardName);
+        com.bankingapp.Server.model.CardApplication application = new com.bankingapp.Server.model.CardApplication(user,
+                cardType, network, cardName);
 
         // Check if user already has this card
         boolean alreadyHasCard = cardRepository.findByUser(user).stream()
@@ -142,7 +147,9 @@ public class CardController {
 
         boolean isFirstCard = cardRepository.findByUser(user).isEmpty();
 
-        com.bankingapp.Server.model.Card card = new com.bankingapp.Server.model.Card(cardNumber, expiryDate, cvv, application.getCardType(), "ACTIVE", application.getCardName(), application.getNetwork(), isFirstCard, null, user, account);
+        com.bankingapp.Server.model.Card card = new com.bankingapp.Server.model.Card(cardNumber, expiryDate, cvv,
+                application.getCardType(), "ACTIVE", application.getCardName(), application.getNetwork(), isFirstCard,
+                null, user, account);
         cardRepository.save(card);
 
         // Update Application Status
@@ -168,7 +175,8 @@ public class CardController {
     }
 
     @org.springframework.web.bind.annotation.PostMapping("/api/cards/{id}/primary")
-    public ResponseEntity<?> setPrimaryCard(@org.springframework.web.bind.annotation.PathVariable Long id, org.springframework.security.core.Authentication authentication) {
+    public ResponseEntity<?> setPrimaryCard(@org.springframework.web.bind.annotation.PathVariable Long id,
+            org.springframework.security.core.Authentication authentication) {
         String email = authentication.getName();
         com.bankingapp.Server.model.User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -190,7 +198,9 @@ public class CardController {
     }
 
     @org.springframework.web.bind.annotation.PostMapping("/api/cards/{id}/pin")
-    public ResponseEntity<?> setCardPin(@org.springframework.web.bind.annotation.PathVariable Long id, @org.springframework.web.bind.annotation.RequestBody java.util.Map<String, String> body, org.springframework.security.core.Authentication authentication) {
+    public ResponseEntity<?> setCardPin(@org.springframework.web.bind.annotation.PathVariable Long id,
+            @org.springframework.web.bind.annotation.RequestBody java.util.Map<String, String> body,
+            org.springframework.security.core.Authentication authentication) {
         String email = authentication.getName();
         com.bankingapp.Server.model.User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));

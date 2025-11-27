@@ -9,12 +9,12 @@ import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/api/autopayments")
-public class AutopaymentController {
+public class AutoPaymentController {
 
     private final LoanService loanService;
     private final TransactionService transactionService;
 
-    public AutopaymentController(LoanService loanService, TransactionService transactionService) {
+    public AutoPaymentController(LoanService loanService, TransactionService transactionService) {
         this.loanService = loanService;
         this.transactionService = transactionService;
     }

@@ -50,7 +50,9 @@ public class Card {
     public Card() {
     }
 
-    public Card(String cardNumber, LocalDate expiryDate, String cvv, String cardType, String status, String cardName, String network, Boolean isPrimary, String pin, User user, Account account) {
+    public Card(String cardNumber, LocalDate expiryDate, String cvv, String cardType, String status, String cardName,
+            String network, Boolean isPrimary, String pin, User user,
+            Account account) {
         this.cardNumber = cardNumber;
         this.expiryDate = expiryDate;
         this.cvv = cvv;

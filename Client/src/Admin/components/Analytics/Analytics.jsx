@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getAnalytics } from '../../../services/adminApi';
+import { Activity, DollarSign, Users, TrendingUp, BarChart2, PieChart, Clock, Calendar, AlertCircle } from 'lucide-react';
 import './Analytics.css';
 
 const Analytics = () => {
@@ -52,25 +53,44 @@ const Analytics = () => {
 
       {/* Top Metrics */}
       <div className="top-metrics">
-        {topMetrics.map((metric, idx) => (
-          <div key={idx} className="metric-card">
-            <p className="metric-label">{metric.label}</p>
-            <p className="metric-value">{metric.value}</p>
-            <p className="metric-subtext">{metric.subtext}</p>
-          </div>
-        ))}
+        {topMetrics.map((metric, idx) => {
+          let Icon = Activity;
+          let iconColor = "blue";
+          if (metric.label.includes("Revenue")) { Icon = DollarSign; iconColor = "green"; }
+          if (metric.label.includes("Users")) { Icon = Users; iconColor = "orange"; }
+          if (metric.label.includes("Growth")) { Icon = TrendingUp; iconColor = "purple"; }
+
+          return (
+            <div key={idx} className="metric-card">
+              <div className={`metric-icon-wrapper ${iconColor}`}>
+                <Icon size={20} />
+              </div>
+              <div>
+                <p className="metric-label">{metric.label}</p>
+                <p className="metric-value">{metric.value}</p>
+                <p className="metric-subtext">{metric.subtext}</p>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Charts Section */}
       <div className="charts-grid">
         {/* Transaction Trends */}
         <div className="chart-card">
-          <h3>Transaction Trends (Last 7 Days)</h3>
+          <h3><BarChart2 size={18} className="section-icon" /> Transaction Trends (Last 7 Days)</h3>
           <div className="chart-placeholder">
             <div className="mini-chart">
               {transactionTrends.map((data, idx) => (
                 <div key={idx} className="bar-container">
-                  <div className="bar" style={{ height: `${(data.amount / maxTxnAmount) * 100}%` }}></div>
+                  <div className="bar-wrapper">
+                    <div
+                      className="bar"
+                      style={{ height: `${Math.max((data.amount / maxTxnAmount) * 100, 4)}%` }}
+                      data-value={`₹${data.amount}`}
+                    ></div>
+                  </div>
                   <span className="bar-label">{data.day}</span>
                 </div>
               ))}
@@ -81,13 +101,19 @@ const Analytics = () => {
 
         {/* User Growth */}
         <div className="chart-card">
-          <h3>User Growth (Last 7 Days)</h3>
+          <h3><TrendingUp size={18} className="section-icon" /> User Growth (Last 7 Days)</h3>
           <div className="chart-placeholder">
-            <div className="mini-chart line-chart">
+            <div className="mini-chart">
               {userGrowth.map((data, idx) => (
-                <div key={idx} className="point-container">
-                  <div className="point" style={{ height: `${(data.users / maxUsers) * 100}%` }}></div>
-                  <span className="point-label">{data.day}</span>
+                <div key={idx} className="bar-container">
+                  <div className="bar-wrapper">
+                    <div
+                      className="bar"
+                      style={{ height: `${Math.max((data.users / maxUsers) * 100, 4)}%` }}
+                      data-value={`${data.users} Users`}
+                    ></div>
+                  </div>
+                  <span className="bar-label">{data.day}</span>
                 </div>
               ))}
             </div>
@@ -98,7 +124,7 @@ const Analytics = () => {
 
       {/* Transaction Distribution */}
       <div className="distribution-card">
-        <h3>Transaction Types Distribution</h3>
+        <h3><PieChart size={18} className="section-icon" /> Transaction Types Distribution</h3>
         <div className="distribution-list">
           {topTransactionTypes.map((item, idx) => (
             <div key={idx} className="distribution-item">
@@ -118,24 +144,36 @@ const Analytics = () => {
       {/* Detailed Stats */}
       <div className="detailed-stats">
         <div className="stat-box">
-          <h4>Hourly Average</h4>
-          <p className="stat-big">{detailedStats.hourlyAvg}</p>
-          <p className="stat-small">Per hour transaction value</p>
+          <div className="stat-icon-wrapper blue"><Clock size={18} /></div>
+          <div>
+            <h4>Hourly Average</h4>
+            <p className="stat-big">{detailedStats.hourlyAvg}</p>
+            <p className="stat-small">Per hour transaction value</p>
+          </div>
         </div>
         <div className="stat-box">
-          <h4>Daily Average</h4>
-          <p className="stat-big">{detailedStats.dailyAvg}</p>
-          <p className="stat-small">Daily transaction volume</p>
+          <div className="stat-icon-wrapper green"><Calendar size={18} /></div>
+          <div>
+            <h4>Daily Average</h4>
+            <p className="stat-big">{detailedStats.dailyAvg}</p>
+            <p className="stat-small">Daily transaction volume</p>
+          </div>
         </div>
         <div className="stat-box">
-          <h4>Weekly Average</h4>
-          <p className="stat-big">{detailedStats.weeklyAvg}</p>
-          <p className="stat-small">Weekly transaction volume</p>
+          <div className="stat-icon-wrapper orange"><BarChart2 size={18} /></div>
+          <div>
+            <h4>Weekly Average</h4>
+            <p className="stat-big">{detailedStats.weeklyAvg}</p>
+            <p className="stat-small">Weekly transaction volume</p>
+          </div>
         </div>
         <div className="stat-box">
-          <h4>Failed Transactions</h4>
-          <p className="stat-big">{detailedStats.failureRate}</p>
-          <p className="stat-small">Failure rate this week</p>
+          <div className="stat-icon-wrapper red"><AlertCircle size={18} /></div>
+          <div>
+            <h4>Failed Transactions</h4>
+            <p className="stat-big">{detailedStats.failureRate}</p>
+            <p className="stat-small">Failure rate this week</p>
+          </div>
         </div>
       </div>
     </div>

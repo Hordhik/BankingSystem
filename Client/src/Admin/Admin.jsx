@@ -15,7 +15,7 @@ import loan from '../assets/icons/loan.png';
 
 export const Admin = () => {
   const { tab } = useParams();
-  const [activeTab, setActiveTab] = useState(tab || "Dashboard");
+  const [activeTab, setActiveTab] = useState(localStorage.getItem('adminActiveTab') || tab || "Dashboard");
   const navigate = useNavigate();
 
   // Check for admin token on mount
@@ -82,6 +82,7 @@ export const Admin = () => {
               className={`admin-tab ${activeTab === tab.name ? 'active' : ''}`}
               onClick={() => {
                 setActiveTab(tab.name);
+                localStorage.setItem('adminActiveTab', tab.name);
                 navigate(`/admin/${tab.name.toLowerCase()}`);
               }}
             >
