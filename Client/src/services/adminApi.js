@@ -100,3 +100,36 @@ export const updateTransactionStatus = async (id, status) => {
     throw error;
   }
 };
+
+// Card Application Management
+const CARDS_API_ROOT = "http://localhost:6060/api/admin/cards";
+
+export const getCardApplications = async () => {
+  try {
+    const response = await axios.get(`${CARDS_API_ROOT}/applications`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching card applications:", error);
+    throw error;
+  }
+};
+
+export const approveCardApplication = async (id) => {
+  try {
+    const response = await axios.post(`${CARDS_API_ROOT}/applications/${id}/approve`);
+    return response.data;
+  } catch (error) {
+    console.error("Error approving card application:", error);
+    throw error;
+  }
+};
+
+export const rejectCardApplication = async (id) => {
+  try {
+    const response = await axios.post(`${CARDS_API_ROOT}/applications/${id}/reject`);
+    return response.data;
+  } catch (error) {
+    console.error("Error rejecting card application:", error);
+    throw error;
+  }
+};

@@ -31,4 +31,24 @@ try {
   // localStorage not available in some environments — ignore
 }
 
+export const applyForCard = async (userId, cardType, network) => {
+  try {
+    const response = await API.post('/cards/apply', { userId, cardType, network });
+    return response.data;
+  } catch (error) {
+    console.error("Error applying for card:", error);
+    throw error;
+  }
+};
+
+export const getCards = async () => {
+  try {
+    const response = await API.get('/cards');
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching cards:", error);
+    throw error;
+  }
+};
+
 export default API

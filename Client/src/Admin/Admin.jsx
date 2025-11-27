@@ -10,6 +10,7 @@ import Loans from './components/Loans/Loans.jsx';
 import AdminSettings from './components/AdminSettings/AdminSettings.jsx';
 import Reports from './components/Reports/Reports.jsx';
 import Analytics from './components/Analytics/Analytics.jsx';
+import CardRequests from './components/CardRequests/CardRequests.jsx';
 import loan from '../assets/icons/loan.png';
 
 export const Admin = () => {
@@ -34,6 +35,7 @@ export const Admin = () => {
     { name: "Dashboard", icon: LayoutDashboard, isImage: false },
     { name: "Users", icon: Users, isImage: false },
     { name: "Transactions", icon: CreditCard, isImage: false },
+    { name: "Card Requests", icon: CreditCard, isImage: false }, // Reusing CreditCard icon
     { name: "Loans", icon: loan, isImage: true },
     { name: "Reports", icon: FileText, isImage: false },
     { name: "Analytics", icon: BarChart2, isImage: false },
@@ -46,6 +48,8 @@ export const Admin = () => {
         return <UserManagement />;
       case 'Transactions':
         return <TransactionManagement />;
+      case 'Card Requests':
+        return <CardRequests />;
       case 'Reports':
         return <Reports />;
       case 'Analytics':
