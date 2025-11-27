@@ -8,8 +8,7 @@ public class CardResponse {
     private String expiryDate;
     private String cvv;
 
-    private String expiryDate;
-    private String cvv;
+
     private String status;
 
     public CardResponse() {
