@@ -49,18 +49,8 @@ const SignupPage = () => {
       // axios responses store data in res.data
       const data = res?.data ?? res
 
-      // Safely store token and user info
-      const token = data?.token
-      if (token) localStorage.setItem('token', token)
-      if (data?.fullname) localStorage.setItem('fullname', data.fullname)
-      if (data?.email) localStorage.setItem('email', data.email)
-      if (data?.cardNumber) localStorage.setItem('cardNumber', data.cardNumber)
-      if (data?.expiryDate) localStorage.setItem('expiryDate', data.expiryDate)
-      if (data?.cvv) localStorage.setItem('cvv', data.cvv)
-      if (data?.accountNumber) localStorage.setItem('accountNumber', data.accountNumber)
-
-      // Redirect to dashboard
-      navigate('/dashboard')
+      // Redirect to login page for user to sign in
+      navigate('/login')
     } catch (err) {
       console.error('Registration error:', err)
       // Prefer backend message, fallback to generic
