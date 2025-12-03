@@ -31,7 +31,12 @@ const LoginPage = () => {
         password
       }
 
-      const res = await API.post('/auth/login', payload)
+      // Explicitly remove Authorization header for this request to avoid sending invalid tokens
+      const res = await API.post('/auth/login', payload, {
+        headers: {
+          Authorization: ''
+        }
+      })
       const data = res?.data ?? res
 
       const token = data?.token

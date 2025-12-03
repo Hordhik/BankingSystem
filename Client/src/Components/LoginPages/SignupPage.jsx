@@ -45,7 +45,12 @@ const SignupPage = () => {
         ifsc: ifsc || null
       }
 
-      const res = await API.post('/auth/register', payload)
+      // Explicitly remove Authorization header for this request to avoid sending invalid tokens
+      const res = await API.post('/auth/register', payload, {
+        headers: {
+          Authorization: ''
+        }
+      })
       // axios responses store data in res.data
       const data = res?.data ?? res
 

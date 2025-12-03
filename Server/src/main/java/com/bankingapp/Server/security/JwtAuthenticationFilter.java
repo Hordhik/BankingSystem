@@ -27,10 +27,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        
+
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
-        final String userEmail;
+        String userEmail;
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
@@ -38,25 +38,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         jwt = authHeader.substring(7);
-        userEmail = jwtUtil.extractEmail(jwt);
+        try {
+            userEmail = jwtUtil.extractEmail(jwt);
+        } catch (Exception e) {
+            // Invalid token, proceed as anonymous
+            userEmail = null;
+        }
 
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-                
+
                 if (jwtUtil.validate(jwt)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,
-                            userDetails.getAuthorities()
-                    );
+                            userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             } catch (Exception e) {
-                // If user lookup fails (e.g. email changed) or token is invalid, 
+                // If user lookup fails (e.g. email changed) or token is invalid,
                 // just ignore the token and proceed as anonymous.
-                // This prevents 403 errors on public endpoints like /login when sending an old token.
+                // This prevents 403 errors on public endpoints like /login when sending an old
+                // token.
             }
         }
         filterChain.doFilter(request, response);
