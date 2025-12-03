@@ -1,7 +1,11 @@
 <div align="center">
   <br />
     <a href="https://github.com/Hordhik/BankingSystem">
-      <img src="Client/src/assets/icons/Zap.png" alt="Fluit Logo" width="80" height="80" />
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="Client/src/assets/fluit-icon-white.svg">
+        <source media="(prefers-color-scheme: light)" srcset="Client/src/assets/fluit-icon-black.svg">
+        <img alt="Fluit Logo" src="Client/src/assets/fluit-icon-black.svg" width="80" height="80">
+      </picture>
     </a>
   <h3 align="center">FLUIT BANKING SYSTEM</h3>
 
