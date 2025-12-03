@@ -1,22 +1,30 @@
 <div align="center">
-  <img src="Client/src/assets/fluit_logo.png" alt="Fluit Logo" width="200" />
-  <h1>Fluit Banking System</h1>
-  <p><strong>A modern, secure, and full-stack digital banking experience.</strong></p>
+  <br />
+    <a href="https://github.com/Hordhik/BankingSystem">
+      <img src="Client/src/assets/icons/Zap.png" alt="Fluit Logo" width="80" height="80" />
+    </a>
+  <h3 align="center">FLUIT BANKING SYSTEM</h3>
 
-  <p>
-    <img src="https://img.shields.io/badge/Java-17-orange?style=for-the-badge&logo=java" alt="Java" />
-    <img src="https://img.shields.io/badge/Spring_Boot-3.0-green?style=for-the-badge&logo=spring-boot" alt="Spring Boot" />
-    <img src="https://img.shields.io/badge/React-18-blue?style=for-the-badge&logo=react" alt="React" />
-    <img src="https://img.shields.io/badge/Vite-4.0-purple?style=for-the-badge&logo=vite" alt="Vite" />
-    <img src="https://img.shields.io/badge/MySQL-8.0-00758F?style=for-the-badge&logo=mysql" alt="MySQL" />
+  <p align="center">
+    A modern, secure, and full-stack digital banking experience.
+    <br />
+    <a href="#-getting-started"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="#-key-features">View Demo</a>
+    ·
+    <a href="https://github.com/Hordhik/BankingSystem/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/Hordhik/BankingSystem/issues">Request Feature</a>
   </p>
-  
-  <p>
-    <a href="#-key-features">Key Features</a> •
-    <a href="#-tech-stack">Tech Stack</a> •
-    <a href="#-getting-started">Getting Started</a> •
-    <a href="#-api-endpoints">API Endpoints</a>
-  </p>
+</div>
+
+<div align="center">
+  <img src="https://img.shields.io/badge/Java-17-orange?style=for-the-badge&logo=java" alt="Java" />
+  <img src="https://img.shields.io/badge/Spring_Boot-3.0-green?style=for-the-badge&logo=spring-boot" alt="Spring Boot" />
+  <img src="https://img.shields.io/badge/React-18-blue?style=for-the-badge&logo=react" alt="React" />
+  <img src="https://img.shields.io/badge/Vite-4.0-purple?style=for-the-badge&logo=vite" alt="Vite" />
+  <img src="https://img.shields.io/badge/MySQL-8.0-00758F?style=for-the-badge&logo=mysql" alt="MySQL" />
 </div>
 
 ---
